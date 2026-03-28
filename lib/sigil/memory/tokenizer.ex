@@ -32,6 +32,7 @@ defmodule Sigil.Memory.Tokenizer do
   @doc "Count tokens in a text string."
   def count(text, opts \\ [])
   def count(nil, _opts), do: 0
+
   def count(text, opts) when is_binary(text) do
     adapter = adapter(opts)
     adapter.count(text, opts)

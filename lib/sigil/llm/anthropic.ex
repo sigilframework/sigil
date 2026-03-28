@@ -209,7 +209,8 @@ defmodule Sigil.LLM.Anthropic do
         {:ok, %{"type" => "message_stop"}} ->
           [:done]
 
-        {:ok, %{"type" => "content_block_start", "content_block" => %{"type" => "tool_use"} = block}} ->
+        {:ok,
+         %{"type" => "content_block_start", "content_block" => %{"type" => "tool_use"} = block}} ->
           [{:tool_call_start, %{id: block["id"], name: block["name"]}}]
 
         {:ok, %{"type" => "content_block_delta", "delta" => %{"partial_json" => json}}} ->

@@ -14,8 +14,6 @@ defmodule Sigil.Memory.BudgetTest do
       budget = Budget.new(model: "custom", context_window: 8_000)
       assert budget.total == 8_000
     end
-
-
   end
 
   describe "reserve/3" do

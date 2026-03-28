@@ -285,10 +285,11 @@ defmodule Sigil.Agent do
     messages = state.messages ++ [user_message]
 
     # Emit user message event
-    state = emit_event(state, :user_message, %{
-      content: message,
-      token_count: Tokenizer.count(message)
-    })
+    state =
+      emit_event(state, :user_message, %{
+        content: message,
+        token_count: Tokenizer.count(message)
+      })
 
     case run_loop(messages, state) do
       {:ok, response, new_state} ->
@@ -326,10 +327,11 @@ defmodule Sigil.Agent do
     user_message = %{role: "user", content: message}
     messages = state.messages ++ [user_message]
 
-    state = emit_event(state, :user_message, %{
-      content: message,
-      token_count: Tokenizer.count(message)
-    })
+    state =
+      emit_event(state, :user_message, %{
+        content: message,
+        token_count: Tokenizer.count(message)
+      })
 
     # Run in a task to not block the GenServer
     Task.start(fn ->
@@ -347,16 +349,18 @@ defmodule Sigil.Agent do
 
   @impl true
   def handle_info({:sigil_agent_message, message}, state) do
-    state = emit_event(state, :agent_message_received, %{
-      from: inspect(message.from),
-      content: inspect(message.content)
-    })
+    state =
+      emit_event(state, :agent_message_received, %{
+        from: inspect(message.from),
+        content: inspect(message.content)
+      })
 
     case state.module.on_agent_message(message, state) do
       {:reply, reply, new_state} ->
         if message.from && is_pid(message.from) do
           send(message.from, {:sigil_agent_message, %{message | content: reply, from: self()}})
         end
+
         {:noreply, new_state}
 
       {:noreply, new_state} ->
@@ -400,13 +404,14 @@ defmodule Sigil.Agent do
             before_tokens = Tokenizer.count_messages(messages)
             after_tokens = Tokenizer.count_messages(compacted)
 
-            state = emit_event(state, :context_compacted, %{
-              strategy: to_string(memory_strategy),
-              before_tokens: before_tokens,
-              after_tokens: after_tokens,
-              messages_before: length(messages),
-              messages_after: length(compacted)
-            })
+            state =
+              emit_event(state, :context_compacted, %{
+                strategy: to_string(memory_strategy),
+                before_tokens: before_tokens,
+                after_tokens: after_tokens,
+                messages_before: length(messages),
+                messages_after: length(compacted)
+              })
 
             {compacted, %{state | summaries_cache: new_cache}}
           else
@@ -434,11 +439,12 @@ defmodule Sigil.Agent do
     {_adapter_name, adapter_opts} = state.config.llm
     model = Keyword.get(adapter_opts, :model, "unknown")
 
-    state = emit_event(state, :llm_request, %{
-      model: model,
-      message_count: length(messages),
-      total_tokens: message_tokens
-    })
+    state =
+      emit_event(state, :llm_request, %{
+        model: model,
+        message_count: length(messages),
+        total_tokens: message_tokens
+      })
 
     # Save context snapshot — what the LLM actually sees
     EventStore.save_context_snapshot(
@@ -457,13 +463,19 @@ defmodule Sigil.Agent do
         llm_duration = System.monotonic_time(:millisecond) - llm_start
 
         # Emit LLM response event + telemetry
-        state = emit_event(state, :llm_response, %{
-          content: truncate_for_event(response.content),
-          tool_calls: length(response.tool_calls),
-          stop_reason: response.stop_reason,
-          input_tokens: response.usage.input_tokens,
-          output_tokens: response.usage.output_tokens
-        }, token_count: Map.get(response, :token_count, 0))
+        state =
+          emit_event(
+            state,
+            :llm_response,
+            %{
+              content: truncate_for_event(response.content),
+              tool_calls: length(response.tool_calls),
+              stop_reason: response.stop_reason,
+              input_tokens: response.usage.input_tokens,
+              output_tokens: response.usage.output_tokens
+            },
+            token_count: Map.get(response, :token_count, 0)
+          )
 
         # Telemetry
         Telemetry.emit_llm_call(state.run_id, %{
@@ -508,11 +520,12 @@ defmodule Sigil.Agent do
           # Done — fire completion hook
           {:ok, final_response, state} = state.module.on_complete(response, state)
 
-          state = emit_event(state, :agent_complete, %{
-            final_response: truncate_for_event(final_response.content),
-            total_turns: state.turn_count,
-            total_tokens: EventStore.token_usage(state.run_id)
-          })
+          state =
+            emit_event(state, :agent_complete, %{
+              final_response: truncate_for_event(final_response.content),
+              total_turns: state.turn_count,
+              total_tokens: EventStore.token_usage(state.run_id)
+            })
 
           # Telemetry
           Telemetry.emit_complete(state.run_id, %{
@@ -523,20 +536,17 @@ defmodule Sigil.Agent do
           # Final checkpoint
           do_checkpoint(%{state | messages: messages})
 
-          new_state = %{state |
-            messages: messages,
-            status: :ready,
-            turn_count: 0
-          }
+          new_state = %{state | messages: messages, status: :ready, turn_count: 0}
 
           {:ok, final_response, new_state}
         end
 
       {:error, reason} ->
-        state = emit_event(state, :agent_error, %{
-          error: inspect(reason),
-          turn: state.turn_count
-        })
+        state =
+          emit_event(state, :agent_error, %{
+            error: inspect(reason),
+            turn: state.turn_count
+          })
 
         Telemetry.emit_error(state.run_id, reason)
 
@@ -553,10 +563,11 @@ defmodule Sigil.Agent do
 
       if tool_module do
         # Emit tool start event
-        st = emit_event(st, :tool_start, %{
-          tool_name: tool_call.name,
-          input: truncate_for_event(inspect(tool_call.input))
-        })
+        st =
+          emit_event(st, :tool_start, %{
+            tool_name: tool_call.name,
+            input: truncate_for_event(inspect(tool_call.input))
+          })
 
         # Notify stream listener
         if stream_to do
@@ -578,11 +589,12 @@ defmodule Sigil.Agent do
             {result, st} = st.module.on_tool_result(tool_call.name, result, st)
 
             # Emit tool result event + telemetry
-            st = emit_event(st, :tool_result, %{
-              tool_name: tool_call.name,
-              result: truncate_for_event(inspect(result)),
-              duration_ms: duration
-            })
+            st =
+              emit_event(st, :tool_result, %{
+                tool_name: tool_call.name,
+                result: truncate_for_event(inspect(result)),
+                duration_ms: duration
+              })
 
             Telemetry.emit_tool_call(st.run_id, tool_call.name, %{
               duration_ms: duration,
@@ -610,10 +622,11 @@ defmodule Sigil.Agent do
             {msgs ++ [tool_result_msg], st}
 
           {:approval_required, _tool, _params} ->
-            st = emit_event(st, :approval_requested, %{
-              tool_name: tool_call.name,
-              input: truncate_for_event(inspect(tool_call.input))
-            })
+            st =
+              emit_event(st, :approval_requested, %{
+                tool_name: tool_call.name,
+                input: truncate_for_event(inspect(tool_call.input))
+              })
 
             approval_msg = %{
               role: "user",
@@ -635,11 +648,12 @@ defmodule Sigil.Agent do
           {:error, reason} ->
             duration = System.monotonic_time(:millisecond) - start_time
 
-            st = emit_event(st, :tool_error, %{
-              tool_name: tool_call.name,
-              error: inspect(reason),
-              duration_ms: duration
-            })
+            st =
+              emit_event(st, :tool_error, %{
+                tool_name: tool_call.name,
+                error: inspect(reason),
+                duration_ms: duration
+              })
 
             error_msg = %{
               role: "user",
@@ -656,10 +670,11 @@ defmodule Sigil.Agent do
         end
       else
         # Unknown tool
-        st = emit_event(st, :tool_error, %{
-          tool_name: tool_call.name,
-          error: "Unknown tool"
-        })
+        st =
+          emit_event(st, :tool_error, %{
+            tool_name: tool_call.name,
+            error: "Unknown tool"
+          })
 
         unknown_msg = %{
           role: "user",
@@ -759,33 +774,33 @@ defmodule Sigil.Agent do
   defp validate_config!(config, agent_module) do
     unless is_map(config) do
       raise ArgumentError,
-        "#{inspect(agent_module)}.init_agent/1 must return a map, got: #{inspect(config)}"
+            "#{inspect(agent_module)}.init_agent/1 must return a map, got: #{inspect(config)}"
     end
 
     unless Map.has_key?(config, :llm) do
       raise ArgumentError,
-        "#{inspect(agent_module)}.init_agent/1 must include :llm key. " <>
-        "Example: %{llm: {Sigil.LLM.Anthropic, model: \"claude-sonnet-4-20250514\"}, ...}"
+            "#{inspect(agent_module)}.init_agent/1 must include :llm key. " <>
+              "Example: %{llm: {Sigil.LLM.Anthropic, model: \"claude-sonnet-4-20250514\"}, ...}"
     end
 
     case config.llm do
       {adapter, opts} when is_atom(adapter) and is_list(opts) ->
         unless Code.ensure_loaded?(adapter) do
           raise ArgumentError,
-            "LLM adapter #{inspect(adapter)} is not a loaded module. " <>
-            "Did you mean Sigil.LLM.Anthropic or Sigil.LLM.OpenAI?"
+                "LLM adapter #{inspect(adapter)} is not a loaded module. " <>
+                  "Did you mean Sigil.LLM.Anthropic or Sigil.LLM.OpenAI?"
         end
 
       other ->
         raise ArgumentError,
-          ":llm must be a {module, keyword()} tuple, got: #{inspect(other)}"
+              ":llm must be a {module, keyword()} tuple, got: #{inspect(other)}"
     end
 
     if tools = config[:tools] do
       Enum.each(tools, fn tool ->
         unless is_atom(tool) and Code.ensure_loaded?(tool) do
           raise ArgumentError,
-            "Tool #{inspect(tool)} is not a loaded module."
+                "Tool #{inspect(tool)} is not a loaded module."
         end
       end)
     end
@@ -803,14 +818,15 @@ defmodule Sigil.Agent do
       {:ok, response} ->
         {:ok, response}
 
-      {:error, %{status: status}} when status in [429, 529, 502, 503] and attempt < @max_retries ->
-        backoff = @retry_base_ms * :math.pow(2, attempt) |> trunc()
+      {:error, %{status: status}}
+      when status in [429, 529, 502, 503] and attempt < @max_retries ->
+        backoff = (@retry_base_ms * :math.pow(2, attempt)) |> trunc()
         jitter = :rand.uniform(backoff)
         Process.sleep(backoff + jitter)
         llm_call_with_retry(adapter, messages, opts, attempt + 1)
 
       {:error, %Req.TransportError{}} = _error when attempt < @max_retries ->
-        backoff = @retry_base_ms * :math.pow(2, attempt) |> trunc()
+        backoff = (@retry_base_ms * :math.pow(2, attempt)) |> trunc()
         Process.sleep(backoff)
         llm_call_with_retry(adapter, messages, opts, attempt + 1)
 

@@ -111,7 +111,8 @@ defmodule Sigil.Agent.Observer do
     {:ok, events} = EventStore.replay(run_id)
 
     if length(events) < 10 do
-      {:ok, %{drift_score: 0.0, status: :too_early, message: "Not enough events to measure drift"}}
+      {:ok,
+       %{drift_score: 0.0, status: :too_early, message: "Not enough events to measure drift"}}
     else
       # Get early conversation context
       early_events =
@@ -133,32 +134,34 @@ defmodule Sigil.Agent.Observer do
         {:ok, drift_score} ->
           status = if drift_score > threshold, do: :drifted, else: :on_track
 
-          {:ok, %{
-            drift_score: Float.round(drift_score, 4),
-            status: status,
-            threshold: threshold,
-            early_context_preview: String.slice(early_text, 0, 200),
-            recent_context_preview: String.slice(recent_text, 0, 200),
-            message:
-              if status == :drifted do
-                "Agent may have drifted from original task (score: #{Float.round(drift_score, 2)})"
-              else
-                "Agent appears to be on track (score: #{Float.round(drift_score, 2)})"
-              end
-          }}
+          {:ok,
+           %{
+             drift_score: Float.round(drift_score, 4),
+             status: status,
+             threshold: threshold,
+             early_context_preview: String.slice(early_text, 0, 200),
+             recent_context_preview: String.slice(recent_text, 0, 200),
+             message:
+               if status == :drifted do
+                 "Agent may have drifted from original task (score: #{Float.round(drift_score, 2)})"
+               else
+                 "Agent appears to be on track (score: #{Float.round(drift_score, 2)})"
+               end
+           }}
 
         {:error, _reason} ->
           # Fallback: simple heuristic based on topic overlap
           drift_score = heuristic_drift(early_text, recent_text)
           status = if drift_score > threshold, do: :drifted, else: :on_track
 
-          {:ok, %{
-            drift_score: Float.round(drift_score, 4),
-            status: status,
-            threshold: threshold,
-            method: :heuristic,
-            message: "Estimated drift (embedding unavailable): #{Float.round(drift_score, 2)}"
-          }}
+          {:ok,
+           %{
+             drift_score: Float.round(drift_score, 4),
+             status: status,
+             threshold: threshold,
+             method: :heuristic,
+             message: "Estimated drift (embedding unavailable): #{Float.round(drift_score, 2)}"
+           }}
       end
     end
   end
@@ -186,16 +189,18 @@ defmodule Sigil.Agent.Observer do
         |> Enum.drop_while(fn e -> e.id != event_id end)
         |> Enum.find(fn e -> e.event_type in ["llm_response", "tool_start"] end)
 
-      {:ok, %{
-        event: format_timeline_entry(event),
-        context: case context_result do
-          {:ok, snapshot} -> snapshot
-          _ -> nil
-        end,
-        decision: if(response_event, do: format_timeline_entry(response_event)),
-        sequence: event.sequence,
-        timestamp: event.inserted_at
-      }}
+      {:ok,
+       %{
+         event: format_timeline_entry(event),
+         context:
+           case context_result do
+             {:ok, snapshot} -> snapshot
+             _ -> nil
+           end,
+         decision: if(response_event, do: format_timeline_entry(response_event)),
+         sequence: event.sequence,
+         timestamp: event.inserted_at
+       }}
     else
       {:error, :event_not_found}
     end
@@ -208,7 +213,9 @@ defmodule Sigil.Agent.Observer do
     {:ok, events} = EventStore.replay(run_id)
     checkpoints = Checkpoint.list(run_id)
 
-    tool_events = Enum.filter(events, fn e -> e.event_type in ["tool_start", "tool_result", "tool_error"] end)
+    tool_events =
+      Enum.filter(events, fn e -> e.event_type in ["tool_start", "tool_result", "tool_error"] end)
+
     error_events = Enum.filter(events, fn e -> e.event_type in ["tool_error", "agent_error"] end)
     llm_events = Enum.filter(events, fn e -> e.event_type in ["llm_request", "llm_response"] end)
     compaction_events = Enum.filter(events, fn e -> e.event_type == "context_compacted" end)
@@ -217,30 +224,32 @@ defmodule Sigil.Agent.Observer do
 
     first_event = List.first(events)
     last_event = List.last(events)
+
     duration =
       if first_event && last_event do
         DateTime.diff(last_event.inserted_at, first_event.inserted_at, :second)
       end
 
-    {:ok, %{
-      run_id: run_id,
-      total_events: length(events),
-      total_tokens: total_tokens,
-      llm_calls: div(length(llm_events), 2),
-      tool_calls: div(length(tool_events), 2),
-      errors: length(error_events),
-      context_compactions: length(compaction_events),
-      checkpoints: length(checkpoints),
-      duration_seconds: duration,
-      started_at: first_event && first_event.inserted_at,
-      completed_at: last_event && last_event.inserted_at,
-      status:
-        cond do
-          Enum.any?(events, fn e -> e.event_type == "agent_complete" end) -> :completed
-          Enum.any?(events, fn e -> e.event_type == "agent_error" end) -> :errored
-          true -> :in_progress
-        end
-    }}
+    {:ok,
+     %{
+       run_id: run_id,
+       total_events: length(events),
+       total_tokens: total_tokens,
+       llm_calls: div(length(llm_events), 2),
+       tool_calls: div(length(tool_events), 2),
+       errors: length(error_events),
+       context_compactions: length(compaction_events),
+       checkpoints: length(checkpoints),
+       duration_seconds: duration,
+       started_at: first_event && first_event.inserted_at,
+       completed_at: last_event && last_event.inserted_at,
+       status:
+         cond do
+           Enum.any?(events, fn e -> e.event_type == "agent_complete" end) -> :completed
+           Enum.any?(events, fn e -> e.event_type == "agent_error" end) -> :errored
+           true -> :in_progress
+         end
+     }}
   end
 
   # Private helpers
@@ -267,6 +276,7 @@ defmodule Sigil.Agent.Observer do
 
       "llm_response" ->
         tools = event.payload["tool_calls"] || 0
+
         if tools > 0 do
           "LLM responded with #{tools} tool call(s)"
         else
@@ -326,9 +336,11 @@ defmodule Sigil.Agent.Observer do
 
   defp compute_drift(early_text, recent_text, opts) do
     adapter = Keyword.get(opts, :embed_adapter, Sigil.LLM.OpenAI)
-    api_key = Keyword.get(opts, :api_key) ||
-      Application.get_env(:sigil, :openai_api_key) ||
-      System.get_env("OPENAI_API_KEY")
+
+    api_key =
+      Keyword.get(opts, :api_key) ||
+        Application.get_env(:sigil, :openai_api_key) ||
+        System.get_env("OPENAI_API_KEY")
 
     if api_key do
       with {:ok, early_vec} <- Sigil.LLM.embed(adapter, early_text, api_key: api_key),
@@ -369,7 +381,7 @@ defmodule Sigil.Agent.Observer do
       union = MapSet.union(early_words, recent_words) |> MapSet.size()
 
       # Jaccard distance = 1 - (intersection / union)
-      1.0 - (overlap / union)
+      1.0 - overlap / union
     end
   end
 end

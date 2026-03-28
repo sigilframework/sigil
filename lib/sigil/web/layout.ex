@@ -52,11 +52,13 @@ defmodule Sigil.Layout do
   """
   def default_layout(assigns, inner_content) do
     title = assigns[:page_title] || "Sigil App"
-    csrf_meta = if assigns[:__csrf_token__] do
-      ~s(<meta name="sigil-csrf" content="#{assigns[:__csrf_token__]}" />)
-    else
-      ""
-    end
+
+    csrf_meta =
+      if assigns[:__csrf_token__] do
+        ~s(<meta name="sigil-csrf" content="#{assigns[:__csrf_token__]}" />)
+      else
+        ""
+      end
 
     """
     <!DOCTYPE html>

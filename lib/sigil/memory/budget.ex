@@ -189,11 +189,13 @@ defmodule Sigil.Memory.Budget do
     |> Enum.map(fn
       tool when is_atom(tool) ->
         # Tool module — serialize its schema
-        schema = Jason.encode!(%{
-          name: tool.name(),
-          description: tool.description(),
-          input_schema: tool.params()
-        })
+        schema =
+          Jason.encode!(%{
+            name: tool.name(),
+            description: tool.description(),
+            input_schema: tool.params()
+          })
+
         Tokenizer.count(schema, opts)
 
       text when is_binary(text) ->

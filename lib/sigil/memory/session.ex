@@ -39,6 +39,7 @@ defmodule Sigil.Memory.Session do
   @doc "Get all key-value pairs for a session."
   def get_all(session_id) do
     pattern = {{session_id, :"$1"}, :"$2"}
+
     :ets.match(@table, pattern)
     |> Enum.map(fn [key, value] -> {key, value} end)
     |> Map.new()

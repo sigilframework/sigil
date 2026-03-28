@@ -75,10 +75,11 @@ defmodule Sigil.Agent.Team do
       end
 
     # Start agents under a DynamicSupervisor
-    {:ok, sup_pid} = DynamicSupervisor.start_link(
-      strategy: :one_for_one,
-      name: :"sigil_team_sup_#{name}"
-    )
+    {:ok, sup_pid} =
+      DynamicSupervisor.start_link(
+        strategy: :one_for_one,
+        name: :"sigil_team_sup_#{name}"
+      )
 
     # Start each agent as a child of the DynamicSupervisor
     agents =

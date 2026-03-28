@@ -15,7 +15,8 @@ defmodule Sigil.MixProject do
       elixirc_paths: elixirc_paths(Mix.env()),
 
       # Hex
-      description: "AI agent framework for Elixir — long-running, fault-tolerant agents on the BEAM",
+      description:
+        "AI agent framework for Elixir — long-running, fault-tolerant agents on the BEAM",
       package: package(),
       source_url: @source_url,
       homepage_url: @source_url,
@@ -27,7 +28,7 @@ defmodule Sigil.MixProject do
         source_ref: "v#{@version}",
         extras: ["README.md", "CHANGELOG.md", "LICENSE"],
         groups_for_modules: [
-          "Agent": [
+          Agent: [
             Sigil.Agent,
             Sigil.Agent.State,
             Sigil.Agent.EventStore,
@@ -39,22 +40,22 @@ defmodule Sigil.MixProject do
             Sigil.Agent.Telemetry,
             Sigil.Agent.TelemetryEvents
           ],
-          "LLM": [
+          LLM: [
             Sigil.LLM,
             Sigil.LLM.Anthropic,
             Sigil.LLM.OpenAI
           ],
-          "Tools": [
+          Tools: [
             Sigil.Tool
           ],
-          "Memory": [
+          Memory: [
             Sigil.Memory.Budget,
             Sigil.Memory.Context,
             Sigil.Memory.Session,
             Sigil.Memory.Summarizer,
             Sigil.Memory.Tokenizer
           ],
-          "Web": [
+          Web: [
             Sigil.Router,
             Sigil.Layout,
             Sigil.Live,
@@ -66,7 +67,7 @@ defmodule Sigil.MixProject do
             Sigil.Web.Conn,
             Sigil.CSRF
           ],
-          "Auth": [
+          Auth: [
             Sigil.Auth,
             Sigil.Auth.User,
             Sigil.Auth.Password,

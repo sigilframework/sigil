@@ -41,7 +41,7 @@ defmodule Sigil.Memory.ContextTest do
       tool_msg = hd(result)
       # Tool results get truncated with a "tokens]" suffix
       assert String.contains?(tool_msg.content, "truncated") or
-             String.length(tool_msg.content) <= String.length(long_content)
+               String.length(tool_msg.content) <= String.length(long_content)
     end
   end
 

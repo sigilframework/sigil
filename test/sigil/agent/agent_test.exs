@@ -90,7 +90,8 @@ defmodule Sigil.Agent.AgentTest do
 
       run_id = Sigil.Agent.run_id(pid)
       assert is_binary(run_id)
-      assert String.length(run_id) == 36  # UUID
+      # UUID
+      assert String.length(run_id) == 36
 
       Sigil.Agent.stop(pid)
     end
@@ -112,9 +113,10 @@ defmodule Sigil.Agent.AgentTest do
 
   describe "mock LLM adapter" do
     test "cycles through responses" do
-      {:ok, pid} = Sigil.Agent.start(SimpleTestAgent,
-        responses: ["Response 1", "Response 2", "Response 3"]
-      )
+      {:ok, pid} =
+        Sigil.Agent.start(SimpleTestAgent,
+          responses: ["Response 1", "Response 2", "Response 3"]
+        )
 
       {:ok, r1} = Sigil.Agent.chat(pid, "First")
       {:ok, r2} = Sigil.Agent.chat(pid, "Second")

@@ -4,8 +4,8 @@ defmodule Sigil.Examples.Router do
   """
   use Sigil.Router
 
-  live "/", Sigil.Examples.CounterLive
-  live "/counter", Sigil.Examples.CounterLive
+  live("/", Sigil.Examples.CounterLive)
+  live("/counter", Sigil.Examples.CounterLive)
 
   # Must be last — adds WebSocket endpoint, static serving, and 404
   sigil_routes()

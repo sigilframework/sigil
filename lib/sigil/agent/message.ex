@@ -63,10 +63,10 @@ defmodule Sigil.Agent.Message do
       original.to,
       original.from,
       content,
-      Keyword.merge(opts, [
+      Keyword.merge(opts,
         reply_to: original.id,
         run_id: original.run_id
-      ])
+      )
     )
   end
 end

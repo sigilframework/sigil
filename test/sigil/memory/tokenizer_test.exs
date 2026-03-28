@@ -33,6 +33,7 @@ defmodule Sigil.Memory.TokenizerTest do
         def bar(x), do: x + 1
       end
       """
+
       count = Tokenizer.count(code)
       assert count > 5
     end
@@ -63,10 +64,13 @@ defmodule Sigil.Memory.TokenizerTest do
 
     test "handles messages with list content" do
       messages = [
-        %{role: "user", content: [
-          %{type: "text", text: "Hello"},
-          %{type: "tool_result", tool_use_id: "1", content: "result data"}
-        ]}
+        %{
+          role: "user",
+          content: [
+            %{type: "text", text: "Hello"},
+            %{type: "tool_result", tool_use_id: "1", content: "result data"}
+          ]
+        }
       ]
 
       count = Tokenizer.count_messages(messages)

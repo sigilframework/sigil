@@ -297,14 +297,29 @@ defmodule Sigil.Memory.Summarizer do
 
   defp extract_text_content(blocks) when is_list(blocks) do
     Enum.map_join(blocks, "\n", fn
-      %{text: text} -> text
-      %{"text" => text} -> text
-      %{content: content} -> to_string(content)
-      %{"content" => content} -> to_string(content)
-      %{type: "tool_use", name: name} -> "[Called tool: #{name}]"
-      %{"type" => "tool_use", "name" => name} -> "[Called tool: #{name}]"
-      %{type: "tool_result", content: content} -> "[Tool result: #{String.slice(to_string(content), 0, 200)}]"
-      other -> inspect(other)
+      %{text: text} ->
+        text
+
+      %{"text" => text} ->
+        text
+
+      %{content: content} ->
+        to_string(content)
+
+      %{"content" => content} ->
+        to_string(content)
+
+      %{type: "tool_use", name: name} ->
+        "[Called tool: #{name}]"
+
+      %{"type" => "tool_use", "name" => name} ->
+        "[Called tool: #{name}]"
+
+      %{type: "tool_result", content: content} ->
+        "[Tool result: #{String.slice(to_string(content), 0, 200)}]"
+
+      other ->
+        inspect(other)
     end)
   end
 
@@ -329,7 +344,8 @@ defmodule Sigil.Memory.Summarizer do
           nil ->
             # Last resort: pick based on available API keys
             cond do
-              Application.get_env(:sigil, :anthropic_api_key) || System.get_env("ANTHROPIC_API_KEY") ->
+              Application.get_env(:sigil, :anthropic_api_key) ||
+                  System.get_env("ANTHROPIC_API_KEY") ->
                 {Sigil.LLM.Anthropic, [model: "claude-haiku-3-20250422"]}
 
               Application.get_env(:sigil, :openai_api_key) || System.get_env("OPENAI_API_KEY") ->

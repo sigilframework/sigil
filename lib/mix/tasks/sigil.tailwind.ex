@@ -30,21 +30,35 @@ defmodule Mix.Tasks.Sigil.Tailwind do
   def run(["watch" | _]) do
     ensure_installed()
     Mix.shell().info("Watching for CSS changes...")
-    System.cmd(bin_path(), [
-      "--input", "assets/app.css",
-      "--output", "priv/static/app.css",
-      "--watch"
-    ], into: IO.stream(:stdio, :line))
+
+    System.cmd(
+      bin_path(),
+      [
+        "--input",
+        "assets/app.css",
+        "--output",
+        "priv/static/app.css",
+        "--watch"
+      ],
+      into: IO.stream(:stdio, :line)
+    )
   end
 
   def run(["build" | _]) do
     ensure_installed()
     Mix.shell().info("Building CSS for production...")
-    System.cmd(bin_path(), [
-      "--input", "assets/app.css",
-      "--output", "priv/static/app.css",
-      "--minify"
-    ], into: IO.stream(:stdio, :line))
+
+    System.cmd(
+      bin_path(),
+      [
+        "--input",
+        "assets/app.css",
+        "--output",
+        "priv/static/app.css",
+        "--minify"
+      ],
+      into: IO.stream(:stdio, :line)
+    )
   end
 
   def run(_) do
@@ -62,7 +76,9 @@ defmodule Mix.Tasks.Sigil.Tailwind do
     # Determine platform
     {os, arch} = platform()
     filename = "tailwindcss-#{os}-#{arch}"
-    url = "https://github.com/tailwindlabs/tailwindcss/releases/download/v#{@tailwind_version}/#{filename}"
+
+    url =
+      "https://github.com/tailwindlabs/tailwindcss/releases/download/v#{@tailwind_version}/#{filename}"
 
     # Download
     File.mkdir_p!(Path.dirname(bin_path()))
@@ -72,6 +88,7 @@ defmodule Mix.Tasks.Sigil.Tailwind do
       {_, 0} ->
         File.chmod!(bin_path(), 0o755)
         Mix.shell().info("✓ Tailwind CLI installed at #{bin_path()}")
+
       {err, _} ->
         Mix.raise("Failed to download Tailwind: #{err}")
     end
@@ -91,11 +108,13 @@ defmodule Mix.Tasks.Sigil.Tailwind do
         plugins: [],
       }
       """)
+
       Mix.shell().info("✓ Created tailwind.config.js")
     end
 
     # Create default input CSS
     File.mkdir_p!("assets")
+
     unless File.exists?("assets/app.css") do
       File.write!("assets/app.css", """
       @tailwind base;
@@ -104,6 +123,7 @@ defmodule Mix.Tasks.Sigil.Tailwind do
 
       /* Your custom styles below */
       """)
+
       Mix.shell().info("✓ Created assets/app.css")
     end
 

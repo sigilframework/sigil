@@ -204,7 +204,9 @@ defmodule Mix.Tasks.Sigil.Gen.Agent do
 
   defp detect_app_module do
     case Mix.Project.get() do
-      nil -> "MyApp"
+      nil ->
+        "MyApp"
+
       mod ->
         mod.project()[:app]
         |> Atom.to_string()

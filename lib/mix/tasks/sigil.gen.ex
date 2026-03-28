@@ -190,12 +190,16 @@ defmodule Mix.Tasks.Sigil.Gen do
       Mix.shell().info("  2. Add the routes shown above to your router")
     end
 
-    Mix.shell().info("  #{if has_migration or has_router, do: "3", else: "1"}. Restart your server: mix sigil.server")
+    Mix.shell().info(
+      "  #{if has_migration or has_router, do: "3", else: "1"}. Restart your server: mix sigil.server"
+    )
   end
 
   defp detect_app_module do
     case Mix.Project.get() do
-      nil -> "MyApp"
+      nil ->
+        "MyApp"
+
       mod ->
         mod.project()[:app]
         |> Atom.to_string()
@@ -205,15 +209,16 @@ defmodule Mix.Tasks.Sigil.Gen do
 
   defp timestamp do
     {{y, m, d}, {h, mi, s}} = :calendar.universal_time()
+
     :io_lib.format("~4..0B~2..0B~2..0B~2..0B~2..0B~2..0B", [y, m, d, h, mi, s])
     |> IO.iodata_to_binary()
   end
 
   defp gen_config do
-    Application.get_env(:sigil, :gen, [
+    Application.get_env(:sigil, :gen,
       adapter: Sigil.LLM.Anthropic,
       model: "claude-sonnet-4-20250514",
       api_key: System.get_env("ANTHROPIC_API_KEY")
-    ])
+    )
   end
 end

@@ -211,7 +211,8 @@ defmodule Sigil.LLM.OpenAI do
     |> Enum.reject(&(&1 == "[DONE]"))
     |> Enum.flat_map(fn json_str ->
       case Jason.decode(json_str) do
-        {:ok, %{"choices" => [%{"delta" => %{"content" => content}} | _]}} when is_binary(content) ->
+        {:ok, %{"choices" => [%{"delta" => %{"content" => content}} | _]}}
+        when is_binary(content) ->
           [{:chunk, content}]
 
         {:ok, %{"choices" => [%{"delta" => %{"tool_calls" => [tc | _]}} | _]}} ->

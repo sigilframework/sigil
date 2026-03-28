@@ -315,7 +315,19 @@ defmodule Sigil.Live.Diff do
       if old_content == new_content do
         []
       else
-        [%{op: "replace", path: path, html: node_to_html(%{type: :raw_element, tag: tag, attrs: new_attrs, content: new_content})}]
+        [
+          %{
+            op: "replace",
+            path: path,
+            html:
+              node_to_html(%{
+                type: :raw_element,
+                tag: tag,
+                attrs: new_attrs,
+                content: new_content
+              })
+          }
+        ]
       end
 
     attr_patches ++ content_patches
@@ -391,12 +403,16 @@ defmodule Sigil.Live.Diff do
   defp attrs_to_string([]), do: ""
 
   defp attrs_to_string(attrs) do
-    " " <> Enum.map_join(attrs, " ", fn
-      {k, ""} -> k  # Boolean attribute
-      {k, v} ->
-        # Use double quotes, escape any double quotes in the value
-        escaped = String.replace(v, "\"", "&quot;")
-        ~s(#{k}="#{escaped}")
-    end)
+    " " <>
+      Enum.map_join(attrs, " ", fn
+        # Boolean attribute
+        {k, ""} ->
+          k
+
+        {k, v} ->
+          # Use double quotes, escape any double quotes in the value
+          escaped = String.replace(v, "\"", "&quot;")
+          ~s(#{k}="#{escaped}")
+      end)
   end
 end

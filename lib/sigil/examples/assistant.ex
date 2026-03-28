@@ -63,7 +63,10 @@ defmodule Sigil.Examples.Assistant do
 
   @impl true
   def on_complete(response, state) do
-    IO.puts("[Sigil] Response received (#{response.usage.input_tokens}+#{response.usage.output_tokens} tokens)")
+    IO.puts(
+      "[Sigil] Response received (#{response.usage.input_tokens}+#{response.usage.output_tokens} tokens)"
+    )
+
     {:ok, response, state}
   end
 end
