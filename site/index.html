@@ -1,0 +1,1393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sigil — The Easiest Way to Build AI Agents and Web Apps with Elixir</title>
+  <meta name="description" content="Sigil is a full-stack Elixir framework for building fault-tolerant AI agents and real-time web apps. One command to start. No Phoenix required." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    /* === DESIGN SYSTEM === */
+    :root {
+      --bg-primary: #030712;
+      --bg-secondary: #0a0f1e;
+      --bg-card: #111827;
+      --bg-code: #0d1117;
+      --border: #1e293b;
+      --border-accent: #7c3aed33;
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --accent: #a78bfa;
+      --accent-bright: #c4b5fd;
+      --accent-dim: #7c3aed;
+      --accent-glow: #a78bfa22;
+      --success: #34d399;
+      --font-sans: 'Inter', -apple-system, system-ui, sans-serif;
+      --font-mono: 'JetBrains Mono', 'SF Mono', monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* === NAVIGATION === */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      background: rgba(3, 7, 18, 0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+    }
+
+    .nav-inner {
+      max-width: 72rem;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 4rem;
+    }
+
+    .nav-logo {
+      font-weight: 800;
+      font-size: 1.25rem;
+      color: var(--text-primary);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .nav-logo span { color: var(--accent); }
+
+    .nav-links {
+      display: flex;
+      gap: 0.25rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active {
+      color: var(--text-primary);
+      background: rgba(167, 139, 250, 0.1);
+    }
+
+    .nav-github {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: color 0.2s;
+    }
+    .nav-github:hover { color: var(--text-primary); }
+
+    /* === PAGES === */
+    .page {
+      display: none;
+      padding-top: 4rem;
+      min-height: 100vh;
+    }
+    .page.active { display: block; }
+
+    /* === PAGE 1: HOME === */
+    .hero {
+      text-align: center;
+      padding: 8rem 2rem 6rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 800px;
+      height: 800px;
+      background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.35rem 1rem;
+      border: 1px solid var(--border-accent);
+      border-radius: 100px;
+      font-size: 0.8rem;
+      color: var(--accent);
+      margin-bottom: 2rem;
+      background: rgba(124, 58, 237, 0.06);
+    }
+
+    .hero h1 {
+      font-size: clamp(2.5rem, 6vw, 4.5rem);
+      font-weight: 900;
+      line-height: 1.1;
+      margin-bottom: 1.5rem;
+      letter-spacing: -0.03em;
+      position: relative;
+    }
+
+    .hero h1 .gradient {
+      background: linear-gradient(135deg, var(--accent-bright), #818cf8, #6366f1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero p {
+      font-size: 1.25rem;
+      color: var(--text-secondary);
+      max-width: 42rem;
+      margin: 0 auto 3rem;
+      line-height: 1.8;
+    }
+
+    .hero-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      background: linear-gradient(135deg, var(--accent-dim), #6366f1);
+      color: white;
+      padding: 0.875rem 2rem;
+      border-radius: 0.75rem;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 1.05rem;
+      transition: all 0.3s;
+      box-shadow: 0 0 30px rgba(124, 58, 237, 0.3);
+    }
+    .hero-cta:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 50px rgba(124, 58, 237, 0.5);
+    }
+
+    .hero-command {
+      margin-top: 2rem;
+      display: inline-block;
+      background: var(--bg-code);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 1rem 2rem;
+      font-family: var(--font-mono);
+      font-size: 0.95rem;
+      color: var(--accent-bright);
+    }
+    .hero-command .dim { color: var(--text-muted); }
+
+    /* Pillars */
+    .pillars {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      max-width: 72rem;
+      margin: 0 auto;
+      padding: 4rem 2rem 8rem;
+    }
+
+    .pillar {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+      padding: 2rem;
+      transition: all 0.3s;
+    }
+    .pillar:hover {
+      border-color: var(--accent-dim);
+      transform: translateY(-4px);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+    }
+
+    .pillar-icon {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    .pillar h3 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .pillar p {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      line-height: 1.7;
+    }
+
+    /* === PAGE 2: GET STARTED === */
+    .docs-page {
+      max-width: 48rem;
+      margin: 0 auto;
+      padding: 6rem 2rem 8rem;
+    }
+
+    .docs-page h1 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+      letter-spacing: -0.02em;
+    }
+
+    .docs-page h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin: 3rem 0 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .docs-page h3 {
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin: 2rem 0 0.75rem;
+      color: var(--accent-bright);
+    }
+
+    .docs-page p {
+      color: var(--text-secondary);
+      margin-bottom: 1rem;
+    }
+
+    .docs-page a { color: var(--accent); text-decoration: none; }
+    .docs-page a:hover { text-decoration: underline; }
+
+    .docs-page ul, .docs-page ol {
+      margin: 0.5rem 0 1rem 1.5rem;
+      color: var(--text-secondary);
+    }
+    .docs-page li { margin-bottom: 0.35rem; }
+
+    /* Code blocks */
+    pre {
+      background: var(--bg-code);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 1.25rem 1.5rem;
+      overflow-x: auto;
+      margin: 1rem 0 1.5rem;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      line-height: 1.8;
+    }
+
+    code {
+      font-family: var(--font-mono);
+      font-size: 0.85em;
+    }
+
+    p code, li code {
+      background: var(--bg-code);
+      padding: 0.15rem 0.4rem;
+      border-radius: 0.3rem;
+      border: 1px solid var(--border);
+      font-size: 0.8em;
+    }
+
+    .code-title {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-bottom: none;
+      border-radius: 0.75rem 0.75rem 0 0;
+      padding: 0.5rem 1rem;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 1rem;
+    }
+    .code-title + pre {
+      margin-top: 0;
+      border-radius: 0 0 0.75rem 0.75rem;
+    }
+
+    /* Step blocks */
+    .step {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+      padding: 2rem;
+      margin: 2rem 0;
+    }
+
+    .step-number {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 2rem;
+      height: 2rem;
+      background: var(--accent-dim);
+      color: white;
+      border-radius: 50%;
+      font-weight: 700;
+      font-size: 0.85rem;
+      margin-right: 0.75rem;
+    }
+
+    .step h3 {
+      display: inline;
+      border: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Callout */
+    .callout {
+      background: rgba(124, 58, 237, 0.06);
+      border: 1px solid var(--border-accent);
+      border-radius: 0.75rem;
+      padding: 1.25rem 1.5rem;
+      margin: 1.5rem 0;
+    }
+
+    .callout-title {
+      font-weight: 600;
+      color: var(--accent);
+      margin-bottom: 0.25rem;
+    }
+
+    .callout p {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      margin: 0;
+    }
+
+    /* === PAGE 4: REFERENCE === */
+    .ref-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1rem;
+      margin: 1.5rem 0;
+    }
+
+    .ref-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 1.25rem;
+    }
+
+    .ref-card h4 {
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      color: var(--accent-bright);
+      margin-bottom: 0.5rem;
+    }
+
+    .ref-card p {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin: 0;
+    }
+
+    /* Architecture diagram */
+    .arch-diagram {
+      background: var(--bg-code);
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+      padding: 2rem;
+      margin: 2rem 0;
+      text-align: center;
+    }
+
+    .arch-layer {
+      display: inline-block;
+      padding: 0.75rem 2rem;
+      margin: 0.25rem;
+      border-radius: 0.5rem;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .layer-5 { background: rgba(99, 102, 241, 0.2); border: 1px solid rgba(99, 102, 241, 0.4); color: #818cf8; }
+    .layer-4 { background: rgba(139, 92, 246, 0.2); border: 1px solid rgba(139, 92, 246, 0.4); color: #a78bfa; }
+    .layer-3 { background: rgba(168, 85, 247, 0.2); border: 1px solid rgba(168, 85, 247, 0.4); color: #c084fc; }
+    .layer-2 { background: rgba(192, 132, 252, 0.2); border: 1px solid rgba(192, 132, 252, 0.4); color: #d8b4fe; }
+    .layer-1 { background: rgba(221, 214, 254, 0.2); border: 1px solid rgba(221, 214, 254, 0.4); color: #e9d5ff; }
+
+    .arch-arrow {
+      color: var(--text-muted);
+      font-size: 1.5rem;
+      margin: 0.25rem 0;
+    }
+
+    /* === WHY PAGE === */
+    .why-page {
+      max-width: 52rem;
+      margin: 0 auto;
+      padding: 6rem 2rem 8rem;
+    }
+
+    .why-hero {
+      text-align: center;
+      margin-bottom: 5rem;
+    }
+
+    .why-hero h1 {
+      font-size: clamp(2.2rem, 5vw, 3.5rem);
+      font-weight: 900;
+      line-height: 1.15;
+      letter-spacing: -0.03em;
+      margin-bottom: 1.5rem;
+    }
+
+    .why-hero h1 .gradient {
+      background: linear-gradient(135deg, var(--accent-bright), #818cf8, #6366f1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .why-hero .subtitle {
+      font-size: 1.25rem;
+      color: var(--text-secondary);
+      line-height: 1.8;
+      max-width: 38rem;
+      margin: 0 auto;
+    }
+
+    .why-section {
+      margin-bottom: 5rem;
+    }
+
+    .why-section-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--accent);
+      margin-bottom: 1.25rem;
+    }
+
+    .why-section h2 {
+      font-size: clamp(1.6rem, 3.5vw, 2.25rem);
+      font-weight: 800;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+      margin-bottom: 1.25rem;
+    }
+
+    .why-section p {
+      color: var(--text-secondary);
+      font-size: 1.1rem;
+      line-height: 1.9;
+      margin-bottom: 1.25rem;
+    }
+
+    .why-section p strong {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    .why-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin: 2.5rem 0;
+    }
+
+    .why-stat {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+      padding: 1.75rem;
+      text-align: center;
+      transition: all 0.3s;
+    }
+
+    .why-stat:hover {
+      border-color: var(--accent-dim);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+    }
+
+    .why-stat-number {
+      font-size: 2.25rem;
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--accent-bright), #818cf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.35rem;
+    }
+
+    .why-stat-label {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .why-divider {
+      border: none;
+      height: 1px;
+      background: var(--border);
+      margin: 4rem 0;
+    }
+
+    .why-cta {
+      text-align: center;
+      padding: 3rem 0 0;
+    }
+
+    .why-cta p {
+      color: var(--text-secondary);
+      font-size: 1.15rem;
+      margin-bottom: 2rem;
+    }
+
+    /* Comparison table */
+    .why-comparison {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      margin: 2rem 0;
+      font-size: 0.9rem;
+    }
+
+    .why-comparison th {
+      text-align: left;
+      padding: 0.85rem 1.25rem;
+      font-weight: 700;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .why-comparison th:first-child {
+      width: 40%;
+    }
+
+    .why-comparison th.col-typical {
+      color: var(--text-muted);
+    }
+
+    .why-comparison th.col-sigil {
+      color: var(--accent);
+    }
+
+    .why-comparison td {
+      padding: 0.85rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    .why-comparison td:first-child {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    .why-comparison td.typical {
+      color: var(--text-muted);
+    }
+
+    .why-comparison td.sigil {
+      color: var(--success);
+      font-weight: 600;
+    }
+
+    .why-comparison tr:last-child td {
+      border-bottom: none;
+    }
+
+    .why-comparison-wrap {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+      overflow: hidden;
+      margin: 2rem 0;
+    }
+
+    /* Highlight card */
+    .why-highlight {
+      background: rgba(124, 58, 237, 0.06);
+      border: 1px solid var(--border-accent);
+      border-radius: 1rem;
+      padding: 2rem;
+      margin: 2.5rem 0;
+    }
+
+    .why-highlight h3 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--accent-bright);
+      margin-bottom: 0.75rem;
+    }
+
+    .why-highlight p {
+      color: var(--text-secondary);
+      font-size: 1rem;
+      line-height: 1.8;
+      margin-bottom: 0.75rem;
+    }
+
+    .why-highlight p:last-child {
+      margin-bottom: 0;
+    }
+
+    .why-highlight p strong {
+      color: var(--text-primary);
+    }
+
+    .why-note {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-style: italic;
+      margin-top: 1.5rem;
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 3rem 2rem;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      .nav-links { display: none; }
+      .hero { padding: 6rem 1.5rem 4rem; }
+      .pillars { padding: 2rem 1.5rem 4rem; }
+      .docs-page { padding: 4rem 1.5rem 6rem; }
+      .why-page { padding: 4rem 1.5rem 6rem; }
+      pre { font-size: 0.75rem; padding: 1rem; }
+      .why-stats { grid-template-columns: 1fr; }
+    }
+
+    /* Syntax highlighting (minimal) */
+    .kw { color: #c084fc; }
+    .fn { color: #818cf8; }
+    .str { color: #34d399; }
+    .cmt { color: #475569; }
+    .num { color: #f59e0b; }
+    .mod { color: #38bdf8; }
+  </style>
+</head>
+<body>
+
+<!-- === NAVIGATION === -->
+<nav>
+  <div class="nav-inner">
+    <a href="#home" class="nav-logo" onclick="showPage('home')">⚡ <span>Sigil</span></a>
+    <ul class="nav-links">
+      <li><a href="#home" onclick="showPage('home')" id="nav-home" class="active">Home</a></li>
+      <li><a href="#why" onclick="showPage('why')" id="nav-why">Why Sigil</a></li>
+      <li><a href="#start" onclick="showPage('start')" id="nav-start">Get Started</a></li>
+      <li><a href="#tutorial" onclick="showPage('tutorial')" id="nav-tutorial">Tutorial</a></li>
+      <li><a href="#reference" onclick="showPage('reference')" id="nav-reference">Reference</a></li>
+      <li><a href="../doc/index.html" target="_blank">API Docs ↗</a></li>
+    </ul>
+    <a href="https://github.com/adambouchard/sigil" class="nav-github" target="_blank">GitHub →</a>
+  </div>
+</nav>
+
+<!-- ============================================ -->
+<!-- PAGE 1: HOME                                 -->
+<!-- ============================================ -->
+<div id="page-home" class="page active">
+
+  <section class="hero">
+    <div class="hero-badge">✨ v0.1 — Now with real-time Live views</div>
+    <h1>
+      The easiest way to build<br />
+      <span class="gradient">AI agents and web apps</span><br />
+      with Elixir
+    </h1>
+    <p>
+      Sigil is a full-stack framework that manages context windows,
+      checkpoints state, and supervises tool calls — so your agents
+      can run forever with the least energy demand.
+    </p>
+    <a href="#start" class="hero-cta" onclick="showPage('start')">
+      Get Started →
+    </a>
+    <div class="hero-command">
+      <span class="dim">$</span> mix sigil.new my_app
+    </div>
+  </section>
+
+  <section class="pillars">
+    <div class="pillar">
+      <div class="pillar-icon">🤖</div>
+      <h3>Agents That Run Forever</h3>
+      <p>
+        OTP-supervised agents with automatic checkpointing, context window
+        management, and progressive summarization. They crash? They restart
+        exactly where they left off.
+      </p>
+    </div>
+    <div class="pillar">
+      <div class="pillar-icon">⚡</div>
+      <h3>Real-Time Web UI</h3>
+      <p>
+        Server-rendered pages that update in real-time via WebSocket.
+        No JavaScript framework. No build step. Just Elixir.
+        The client runtime is ~2KB.
+      </p>
+    </div>
+    <div class="pillar">
+      <div class="pillar-icon">🔑</div>
+      <h3>Auth Built In</h3>
+      <p>
+        User registration, bcrypt passwords, cookie sessions, and
+        protected routes. One line in your router:
+        <code>live "/dashboard", DashboardLive, auth: true</code>
+      </p>
+    </div>
+    <div class="pillar">
+      <div class="pillar-icon">🧠</div>
+      <h3>AI Code Generation</h3>
+      <p>
+        Describe what you want in plain English.
+        <code>mix sigil.gen "blog with posts"</code> generates schemas,
+        migrations, views, and routes.
+      </p>
+    </div>
+    <div class="pillar">
+      <div class="pillar-icon">📦</div>
+      <h3>One Dependency</h3>
+      <p>
+        No Phoenix. No complex dependency trees. Just add
+        <code>{:sigil, "~> 0.1"}</code> to your mix.exs. Sigil pulls
+        in everything you need.
+      </p>
+    </div>
+    <div class="pillar">
+      <div class="pillar-icon">🚀</div>
+      <h3>Deploy Anywhere</h3>
+      <p>
+        Ships with a production Dockerfile for Render.com.
+        Your app is a single BEAM release. No Node.js required.
+      </p>
+    </div>
+  </section>
+
+</div>
+
+<!-- ============================================ -->
+<!-- PAGE: WHY SIGIL                              -->
+<!-- ============================================ -->
+<div id="page-why" class="page">
+  <div class="why-page">
+
+    <div class="why-hero">
+      <h1>An AI framework that<br /><span class="gradient">burns less energy</span></h1>
+      <p class="subtitle">
+        AI is consuming enormous resources. Sigil is built from the ground up
+        to experiment on long-running agents with less token and energy usage.
+      </p>
+    </div>
+
+    <!-- WHY -->
+    <section class="why-section">
+      <div class="why-section-label">🌍 Why</div>
+      <h2>AI has a resource problem</h2>
+      <p>
+        Every time an AI agent answers a question, writes code, or runs a task,
+        it spins up fresh infrastructure, loads context from scratch, and throws
+        everything away when it's done. <strong>It's like starting your car engine
+        from cold every time you want to drive a block.</strong>
+      </p>
+      <p>
+        At global scale, this adds up fast. Data centers are already
+        consuming record amounts of electricity. As AI agents become part of
+        daily life, the energy cost will only grow — unless we build
+        smarter foundations.
+      </p>
+      <p>
+        <strong>We believe the best agent framework should also be the most
+        efficient one.</strong> Not as an afterthought — efficiency should be
+        the starting point.
+      </p>
+    </section>
+
+    <hr class="why-divider" />
+
+    <!-- WHAT -->
+    <section class="why-section">
+      <div class="why-section-label">⚡ What</div>
+      <h2>A framework for agents that stay alive</h2>
+      <p>
+        Sigil is a framework for building AI agents and web applications
+        with <strong>Elixir</strong> — a language designed for systems that
+        never stop running. Instead of treating each AI interaction as a
+        one-time request, Sigil keeps agents alive as long-running processes.
+      </p>
+      <p>
+        That means your agent remembers its conversation, keeps its tools
+        ready, and picks up right where it left off — even after a crash.
+        No cold starts. No wasted context. <strong>Just continuous, efficient work.</strong>
+      </p>
+
+      <div class="why-stats">
+        <div class="why-stat">
+          <div class="why-stat-number">~2M</div>
+          <div class="why-stat-label">lightweight processes<br />per server</div>
+        </div>
+        <div class="why-stat">
+          <div class="why-stat-number">0</div>
+          <div class="why-stat-label">cold starts for<br />long-running agents</div>
+        </div>
+        <div class="why-stat">
+          <div class="why-stat-number">~2KB</div>
+          <div class="why-stat-label">client runtime for<br />real-time web UI</div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="why-divider" />
+
+    <!-- HOW -->
+    <section class="why-section">
+      <div class="why-section-label">🔧 How</div>
+      <h2>Built on the most battle-tested runtime in the world</h2>
+      <p>
+        Sigil runs on the <strong>BEAM</strong> — the same virtual machine that
+        powers phone networks carrying billions of calls with 99.9999999%
+        uptime. It was built for exactly this kind of problem: millions of
+        independent processes, running forever, supervised automatically.
+      </p>
+      <p>
+        When an agent crashes, the system restarts it from its last
+        checkpoint — no human intervention, no data loss. When traffic
+        spikes, new processes spin up in microseconds. When an agent
+        is idle, it consumes almost <strong>zero resources</strong>.
+      </p>
+      <p>
+        We combine this with <strong>intelligent memory management</strong>
+        — context windows that compress and summarize old conversations,
+        so your agents use the fewest tokens possible for each AI call.
+        Less tokens means less compute means less energy.
+      </p>
+    </section>
+
+    <hr class="why-divider" />
+
+    <!-- THE HYPOTHESIS -->
+    <section class="why-section">
+      <div class="why-section-label">📊 The Hypothesis</div>
+      <h2>What if agents didn't start from scratch every time?</h2>
+      <p>
+        Most AI frameworks today follow the same pattern: receive a request,
+        spin up a process, load all the context, call the model, return a
+        response, tear everything down. <strong>Every single interaction pays
+        the full cost.</strong>
+      </p>
+      <p>
+        Sigil takes a fundamentally different approach. Agents stay alive
+        between interactions. Context is managed intelligently. The runtime
+        is designed for millions of concurrent, idle-cheap processes.
+        Here's how we think this could play out:
+      </p>
+
+      <div class="why-comparison-wrap">
+        <table class="why-comparison">
+          <thead>
+            <tr>
+              <th></th>
+              <th class="col-typical">Typical approach</th>
+              <th class="col-sigil">Sigil on BEAM</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Agent lifecycle</td>
+              <td class="typical">Spun up per request, torn down after</td>
+              <td class="sigil">Long-running, stays alive between calls</td>
+            </tr>
+            <tr>
+              <td>Context loading</td>
+              <td class="typical">Full history reloaded every call</td>
+              <td class="sigil">Kept in-memory, summarized progressively</td>
+            </tr>
+            <tr>
+              <td>Tokens per interaction</td>
+              <td class="typical">Grows linearly with conversation length</td>
+              <td class="sigil">Stays bounded via context budgeting</td>
+            </tr>
+            <tr>
+              <td>Idle agent cost</td>
+              <td class="typical">Container / thread sitting idle</td>
+              <td class="sigil">~2KB suspended BEAM process</td>
+            </tr>
+            <tr>
+              <td>Crash recovery</td>
+              <td class="typical">Manual retry logic, lost state</td>
+              <td class="sigil">Auto-restart from last checkpoint</td>
+            </tr>
+            <tr>
+              <td>Concurrent agents</td>
+              <td class="typical">Hundreds per server (threads / containers)</td>
+              <td class="sigil">Millions per server (BEAM processes)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="why-highlight">
+        <h3>🧠 The memory strategy is the key</h3>
+        <p>
+          The biggest cost in running AI agents isn't compute — it's
+          <strong>tokens</strong>. Every token sent to the model costs money
+          and energy. Most frameworks send the entire conversation history
+          with every request. As conversations grow, so does the cost.
+        </p>
+        <p>
+          Sigil's memory layer uses <strong>progressive summarization</strong>
+          and <strong>token budgeting</strong> to keep context windows small.
+          Old messages are compressed into summaries. The system allocates a
+          fixed token budget across system prompt, history, and response —
+          so you never overflow and never overspend.
+        </p>
+        <p>
+          For a 50-message conversation, a typical framework might send
+          <strong>~25,000 tokens per call</strong>. Sigil's budget system
+          could keep that under <strong>~4,000 tokens</strong> — an estimated
+          <strong>80% reduction</strong> in token usage per interaction.
+        </p>
+      </div>
+
+      <p class="why-note">
+        These are hypothetical projections based on architectural analysis,
+        not benchmarks. We're building Sigil to test this thesis in practice.
+      </p>
+    </section>
+
+    <hr class="why-divider" />
+
+    <!-- CTA -->
+    <div class="why-cta">
+      <p>Ready to build something that lasts?</p>
+      <a href="#start" class="hero-cta" onclick="showPage('start')">
+        Get Started →
+      </a>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============================================ -->
+<!-- PAGE 2: GET STARTED                          -->
+<!-- ============================================ -->
+<div id="page-start" class="page">
+  <div class="docs-page">
+
+    <h1>Get Started</h1>
+    <p>Go from zero to a running app in under 5 minutes.</p>
+
+    <div class="step">
+      <span class="step-number">1</span>
+      <h3>Install Elixir</h3>
+      <p style="margin-top:1rem">If you don't have Elixir yet, install it with <a href="https://mise.jdx.dev">mise</a> (recommended) or <a href="https://github.com/asdf-vm/asdf">asdf</a>:</p>
+<pre><span class="dim">$</span> mise install elixir@1.18
+<span class="dim">$</span> mise install erlang@27</pre>
+    </div>
+
+    <div class="step">
+      <span class="step-number">2</span>
+      <h3>Install the Sigil generator</h3>
+<pre><span class="dim">$</span> mix archive.install hex sigil_new</pre>
+    </div>
+
+    <div class="step">
+      <span class="step-number">3</span>
+      <h3>Create your app</h3>
+<pre><span class="dim">$</span> mix sigil.new my_app
+<span class="dim">$</span> <span class="kw">cd</span> my_app
+<span class="dim">$</span> mix setup</pre>
+    </div>
+
+    <div class="step">
+      <span class="step-number">4</span>
+      <h3>Start the server</h3>
+<pre><span class="dim">$</span> mix sigil.server</pre>
+      <p style="margin-top:1rem">Visit <a href="http://localhost:4000">http://localhost:4000</a>. You should see your app's welcome page with a live counter.</p>
+    </div>
+
+    <div class="callout">
+      <div class="callout-title">🎉 That's it.</div>
+      <p>You have a running Sigil app with real-time updates, a database, and auth ready to go. Now <a href="#tutorial" onclick="showPage('tutorial')">build something</a>.</p>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============================================ -->
+<!-- PAGE 3: TUTORIAL                             -->
+<!-- ============================================ -->
+<div id="page-tutorial" class="page">
+  <div class="docs-page">
+
+    <h1>Build Something</h1>
+    <p>A progressive tutorial that takes you from a generated app to a personal site with a blog, auth, and AI agents. Each step builds on the last.</p>
+
+    <!-- Step 1 -->
+    <h2>1. Your Homepage</h2>
+    <p>Open <code>lib/my_app_web/pages/home_live.ex</code>. This is your homepage — a Sigil Live view. Edit the <code>render/1</code> function to show your name:</p>
+
+    <div class="code-title">lib/my_app_web/pages/home_live.ex</div>
+<pre><span class="kw">def</span> <span class="fn">render</span>(assigns) <span class="kw">do</span>
+  <span class="str">"""
+  &lt;div&gt;
+    &lt;h1&gt;Hi, I'm Ada 👋&lt;/h1&gt;
+    &lt;p&gt;I build things with Sigil.&lt;/p&gt;
+  &lt;/div&gt;
+  """</span>
+<span class="kw">end</span></pre>
+
+    <p>Save and refresh. Your server auto-recompiles.</p>
+
+    <div class="callout">
+      <div class="callout-title">💡 How it works</div>
+      <p>Sigil.Live views are server-rendered on first load, then updated in real-time via WebSocket. The <code>render/1</code> function returns HTML as a string. No templates, no JSX — just Elixir string interpolation.</p>
+    </div>
+
+    <!-- Step 2 -->
+    <h2>2. Add a Blog</h2>
+    <p>Use AI to generate the code:</p>
+<pre><span class="dim">$</span> mix sigil.gen <span class="str">"blog with posts that have a title, body, and published_at date"</span></pre>
+
+    <p>This calls your configured LLM, which generates:</p>
+    <ul>
+      <li>An Ecto schema (<code>Post</code>) with validations</li>
+      <li>A database migration</li>
+      <li>A context module with CRUD functions</li>
+      <li>Live views for listing and viewing posts</li>
+    </ul>
+
+    <p>Review the files, confirm, then run the migration:</p>
+<pre><span class="dim">$</span> mix ecto.migrate</pre>
+
+    <p>Add the routes to your router:</p>
+    <div class="code-title">lib/my_app/router.ex</div>
+<pre><span class="kw">defmodule</span> <span class="mod">MyApp.Router</span> <span class="kw">do</span>
+  <span class="kw">use</span> <span class="mod">Sigil.Router</span>
+
+  live <span class="str">"/"</span>, <span class="mod">MyAppWeb.HomeLive</span>
+  live <span class="str">"/blog"</span>, <span class="mod">MyAppWeb.BlogLive</span>
+  live <span class="str">"/blog/:slug"</span>, <span class="mod">MyAppWeb.PostLive</span>
+
+  sigil_routes()
+<span class="kw">end</span></pre>
+
+    <!-- Step 3 -->
+    <h2>3. Add Auth</h2>
+    <p>Sigil has auth built in. Create the users table:</p>
+<pre><span class="dim">$</span> mix ecto.migrate</pre>
+
+    <p>Protect any route by adding <code>auth: true</code>:</p>
+    <div class="code-title">lib/my_app/router.ex</div>
+<pre>live <span class="str">"/dashboard"</span>, <span class="mod">MyAppWeb.DashboardLive</span>, <span class="kw">auth:</span> <span class="num">true</span></pre>
+
+    <p>Unauthenticated users get redirected to <code>/login</code>. Registration, login, and session management are all built into the framework.</p>
+
+    <!-- Step 4 -->
+    <h2>4. Your First Agent</h2>
+    <p>Create a writing assistant that helps draft blog posts:</p>
+<pre><span class="dim">$</span> mix sigil.gen.agent WritingAssistant <span class="str">"helps write blog posts in a conversational tone"</span></pre>
+
+    <p>This generates two files:</p>
+    <ul>
+      <li><code>lib/my_app/agents/writing_assistant.ex</code> — The agent module</li>
+      <li><code>lib/my_app_web/pages/writing_assistant_live.ex</code> — A chat UI</li>
+    </ul>
+
+    <p>Add the route and set your API key:</p>
+<pre>live <span class="str">"/assistant"</span>, <span class="mod">MyAppWeb.WritingAssistantLive</span>
+
+<span class="cmt"># In config/dev.exs:</span>
+<span class="kw">config</span> <span class="str">:sigil</span>, <span class="str">:gen</span>,
+  <span class="kw">api_key:</span> System.get_env(<span class="str">"ANTHROPIC_API_KEY"</span>)</pre>
+
+    <div class="callout">
+      <div class="callout-title">💡 How agents work</div>
+      <p>Sigil agents are OTP GenServers. They maintain conversation history, manage context windows (so you never overflow the token limit), and checkpoint their state to the database. If they crash, the BEAM supervisor restarts them and they resume from the last checkpoint.</p>
+    </div>
+
+    <!-- Step 5 -->
+    <h2>5. Agent Dashboard</h2>
+    <p>Build a dashboard to manage multiple agents. Create a Live view that lists running agents and lets you chat with any of them:</p>
+
+    <div class="code-title">lib/my_app_web/pages/dashboard_live.ex</div>
+<pre><span class="kw">defmodule</span> <span class="mod">MyAppWeb.DashboardLive</span> <span class="kw">do</span>
+  <span class="kw">use</span> <span class="mod">Sigil.Live</span>
+
+  <span class="kw">def</span> <span class="fn">mount</span>(_params, socket) <span class="kw">do</span>
+    agents = DynamicSupervisor.which_children(<span class="mod">Sigil.Agent.Runner</span>)
+    {:ok, <span class="mod">Sigil.Live</span>.assign(socket, <span class="kw">agents:</span> agents)}
+  <span class="kw">end</span>
+
+  <span class="kw">def</span> <span class="fn">render</span>(assigns) <span class="kw">do</span>
+    <span class="str">"""
+    &lt;h1&gt;Agent Dashboard&lt;/h1&gt;
+    &lt;p&gt;#{length(assigns.agents)} agents running&lt;/p&gt;
+    """</span>
+  <span class="kw">end</span>
+<span class="kw">end</span></pre>
+
+    <p>Add it as a protected route:</p>
+<pre>live <span class="str">"/dashboard"</span>, <span class="mod">MyAppWeb.DashboardLive</span>, <span class="kw">auth:</span> <span class="num">true</span></pre>
+
+    <!-- Step 6 -->
+    <h2>6. Deploy</h2>
+    <p>Your app includes a production Dockerfile. Deploy to <a href="https://render.com">Render.com</a>:</p>
+
+    <ol>
+      <li>Push your code to GitHub</li>
+      <li>Create a new <strong>Web Service</strong> on Render</li>
+      <li>Set environment to <strong>Docker</strong></li>
+      <li>Add environment variables:</li>
+    </ol>
+
+<pre>DATABASE_URL=postgresql://...
+SECRET_KEY_BASE=<span class="dim"># run: openssl rand -base64 64</span>
+ANTHROPIC_API_KEY=sk-ant-...
+PORT=<span class="num">4000</span></pre>
+
+    <p>Render will build and deploy your app. That's it — you're live. 🚀</p>
+
+  </div>
+</div>
+
+<!-- ============================================ -->
+<!-- PAGE 4: REFERENCE                            -->
+<!-- ============================================ -->
+<div id="page-reference" class="page">
+  <div class="docs-page">
+
+    <h1>Reference</h1>
+    <p>Sigil is organized into five composable layers, from low-level to high-level.</p>
+
+    <div class="arch-diagram">
+      <div class="arch-layer layer-5">Layer 5 · Sigil.Live</div><br />
+      <div class="arch-arrow">↑</div>
+      <div class="arch-layer layer-4">Layer 4 · Sigil.Agent</div><br />
+      <div class="arch-arrow">↑</div>
+      <div class="arch-layer layer-3">Layer 3 · Sigil.Memory</div><br />
+      <div class="arch-arrow">↑</div>
+      <div class="arch-layer layer-2">Layer 2 · Sigil.Tool</div><br />
+      <div class="arch-arrow">↑</div>
+      <div class="arch-layer layer-1">Layer 1 · Sigil.LLM</div>
+    </div>
+
+    <!-- Layer 1 -->
+    <h2>Layer 1: Sigil.LLM</h2>
+    <p>Unified interface to AI models. Swap providers without changing code.</p>
+
+    <div class="ref-grid">
+      <div class="ref-card">
+        <h4>Sigil.LLM</h4>
+        <p>Behaviour defining <code>chat/2</code>, <code>stream/2</code>, <code>embed/2</code></p>
+      </div>
+      <div class="ref-card">
+        <h4>Sigil.LLM.Anthropic</h4>
+        <p>Claude adapter (Sonnet, Opus, Haiku)</p>
+      </div>
+      <div class="ref-card">
+        <h4>Sigil.LLM.OpenAI</h4>
+        <p>GPT adapter (GPT-4o, GPT-4, etc.)</p>
+      </div>
+    </div>
+
+    <!-- Layer 2 -->
+    <h2>Layer 2: Sigil.Tool</h2>
+    <p>Define actions agents can take, with permissions and timeouts.</p>
+
+    <div class="ref-grid">
+      <div class="ref-card">
+        <h4>Sigil.Tool</h4>
+        <p>Behaviour: <code>name/0</code>, <code>description/0</code>, <code>schema/0</code>, <code>call/2</code></p>
+      </div>
+      <div class="ref-card">
+        <h4>Sigil.Tools.HTTPRequest</h4>
+        <p>Built-in tool for HTTP API calls via Req</p>
+      </div>
+    </div>
+
+    <!-- Layer 3 -->
+    <h2>Layer 3: Sigil.Memory</h2>
+    <p>Context window management so agents never overflow token limits.</p>
+
+    <div class="ref-grid">
+      <div class="ref-card">
+        <h4>Sigil.Memory.Context</h4>
+        <p>Manages conversation history with token-aware truncation</p>
+      </div>
+      <div class="ref-card">
+        <h4>Sigil.Memory.Budget</h4>
+        <p>Allocates tokens across system, history, and response</p>
+      </div>
+      <div class="ref-card">
+        <h4>Sigil.Memory.Summarizer</h4>
+        <p>Progressive summarization of old messages</p>
+      </div>
+      <div class="ref-card">
+        <h4>Sigil.Memory.Store</h4>
+        <p>Persistent key-value store per agent</p>
+      </div>
+    </div>
+
+    <!-- Layer 4 -->
+    <h2>Layer 4: Sigil.Agent</h2>
+    <p>The orchestrator. A GenServer that runs the agent loop.</p>
+
+    <div class="ref-grid">
+      <div class="ref-card">
+        <h4>Sigil.Agent</h4>
+        <p>Core behaviour: <code>init_agent/1</code>. Provides <code>start/2</code>, <code>chat/2</code></p>
+      </div>
+      <div class="ref-card">
+        <h4>Sigil.Agent.Checkpoint</h4>
+        <p>Persists agent state to database for crash recovery</p>
+      </div>
+      <div class="ref-card">
+        <h4>Sigil.Agent.EventStore</h4>
+        <p>Append-only log of every agent action for replay</p>
+      </div>
+      <div class="ref-card">
+        <h4>Sigil.Agent.Observer</h4>
+        <p>Observability: token usage, decision history, drift detection</p>
+      </div>
+      <div class="ref-card">
+        <h4>Sigil.Agent.Guard</h4>
+        <p>Input sanitization and prompt injection heuristics</p>
+      </div>
+      <div class="ref-card">
+        <h4>Sigil.Agent.Team</h4>
+        <p>Multi-agent coordination with message routing</p>
+      </div>
+    </div>
+
+    <!-- Layer 5 -->
+    <h2>Layer 5: Sigil.Live</h2>
+    <p>Real-time web views over WebSocket. No JavaScript framework.</p>
+
+    <div class="ref-grid">
+      <div class="ref-card">
+        <h4>Sigil.Live</h4>
+        <p>Behaviour: <code>mount/2</code>, <code>render/1</code>, <code>handle_event/3</code></p>
+      </div>
+      <div class="ref-card">
+        <h4>Sigil.Router</h4>
+        <p>Routing DSL: <code>live/2</code>, <code>sigil_routes/0</code>, auth protection</p>
+      </div>
+      <div class="ref-card">
+        <h4>Sigil.Layout</h4>
+        <p>HTML layout system with default shell</p>
+      </div>
+      <div class="ref-card">
+        <h4>Sigil.Auth</h4>
+        <p>Register, login, sessions, protected routes</p>
+      </div>
+    </div>
+
+    <!-- Config -->
+    <h2>Configuration</h2>
+
+    <div class="code-title">config/dev.exs</div>
+<pre><span class="kw">config</span> <span class="str">:sigil</span>,
+  <span class="kw">port:</span> <span class="num">4000</span>,                        <span class="cmt"># HTTP port</span>
+  <span class="kw">router:</span> <span class="mod">MyApp.Router</span>,             <span class="cmt"># Your router module</span>
+  <span class="kw">secret_key_base:</span> <span class="str">"..."</span>           <span class="cmt"># For cookie encryption</span>
+
+<span class="kw">config</span> <span class="str">:sigil</span>, <span class="mod">Sigil.Repo</span>,
+  <span class="kw">database:</span> <span class="str">"my_app_dev"</span>,
+  <span class="kw">username:</span> <span class="str">"postgres"</span>,
+  <span class="kw">password:</span> <span class="str">"postgres"</span>,
+  <span class="kw">hostname:</span> <span class="str">"localhost"</span>
+
+<span class="kw">config</span> <span class="str">:sigil</span>, <span class="str">:gen</span>,
+  <span class="kw">adapter:</span> <span class="mod">Sigil.LLM.Anthropic</span>,
+  <span class="kw">model:</span> <span class="str">"claude-sonnet-4-20250514"</span>,
+  <span class="kw">api_key:</span> System.get_env(<span class="str">"ANTHROPIC_API_KEY"</span>)</pre>
+
+    <!-- CLI -->
+    <h2>CLI Commands</h2>
+
+<pre><span class="dim">$</span> mix sigil.new my_app               <span class="cmt"># Create a new Sigil app</span>
+<span class="dim">$</span> mix sigil.server                    <span class="cmt"># Start the dev server</span>
+<span class="dim">$</span> mix sigil.gen <span class="str">"description"</span>          <span class="cmt"># Generate code from a prompt</span>
+<span class="dim">$</span> mix sigil.gen.agent Name <span class="str">"desc"</span>    <span class="cmt"># Scaffold a new agent</span>
+<span class="dim">$</span> mix sigil.tailwind install          <span class="cmt"># Install Tailwind CSS</span>
+<span class="dim">$</span> mix sigil.tailwind watch            <span class="cmt"># Watch for CSS changes</span></pre>
+
+  </div>
+</div>
+
+<!-- === FOOTER === -->
+<footer>
+  <p>Sigil Framework — Built with ❤️ on the BEAM</p>
+</footer>
+
+<!-- === NAVIGATION SCRIPT === -->
+<script>
+function showPage(name) {
+  // Hide all pages
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+
+  // Show target
+  document.getElementById('page-' + name).classList.add('active');
+  document.getElementById('nav-' + name).classList.add('active');
+
+  // Scroll to top
+  window.scrollTo(0, 0);
+
+  // Update URL hash
+  history.pushState(null, '', '#' + name);
+}
+
+// Handle hash on load
+window.addEventListener('load', function() {
+  var hash = location.hash.replace('#', '') || 'home';
+  if (document.getElementById('page-' + hash)) {
+    showPage(hash);
+  }
+});
+
+// Handle back/forward
+window.addEventListener('popstate', function() {
+  var hash = location.hash.replace('#', '') || 'home';
+  if (document.getElementById('page-' + hash)) {
+    showPage(hash);
+  }
+});
+</script>
+
+</body>
+</html>
