@@ -23,3 +23,5 @@ sigil-*.tar
 /tmp/
 .env
 test_agent.exs
+sigil-*.tar
+sigil-*/
