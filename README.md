@@ -2,7 +2,7 @@
 
 **Ship AI products, not agent scripts.** One framework — agents, memory, real-time UI, and admin — in 3,000 lines of Elixir.
 
-Docs (todo)· [Discord](https://discord.com/channels/1487814726950981674/1487814838066483221) · [GitHub](https://github.com/sigilframework/sigil)
+[Docs](https://hexdocs.pm/sigil/0.1.0) · [Discord](https://discord.com/channels/1487814726950981674/1487814838066483221) · [GitHub](https://github.com/sigilframework/sigil)
 
 ---
 
