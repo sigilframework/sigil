@@ -3,6 +3,9 @@ defmodule Journal.Components.SideNav do
   import Sigil.HTML, only: [escape: 1]
 
   def render(assigns) do
+    site_name = Journal.Settings.get("site_name")
+    site_tagline = Journal.Settings.get("site_tagline")
+
     tags_html =
       Enum.map_join(assigns[:tags] || [], "", fn tag ->
         "<span class=\"inline-flex items-center rounded-full border border-stone-300 dark:border-stone-700 bg-stone-100 dark:bg-stone-900 px-3 py-1 text-sm text-stone-600 dark:text-stone-400 hover:border-stone-400 dark:hover:border-stone-600 transition-colors cursor-default\">#{escape(tag)}</span>"
@@ -31,8 +34,8 @@ defmodule Journal.Components.SideNav do
             <a href="/" class="flex items-center gap-x-5">
               <img src="https://images.unsplash.com/photo-1519244703995-f4e0f30006d5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="" class="size-14 rounded-full ring-2 ring-stone-300 dark:ring-stone-700" />
               <div>
-                <h3 class="text-base font-semibold tracking-tight text-stone-900 dark:text-stone-100">Adam's Journal</h3>
-                <p class="text-sm text-stone-500">Notes on strategy, systems, work, and life</p>
+                <h3 class="text-base font-semibold tracking-tight text-stone-900 dark:text-stone-100">#{escape(site_name)}</h3>
+                <p class="text-sm text-stone-500">#{escape(site_tagline)}</p>
               </div>
             </a>
           </header>

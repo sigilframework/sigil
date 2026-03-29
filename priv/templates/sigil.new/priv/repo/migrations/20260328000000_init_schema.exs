@@ -102,5 +102,16 @@ defmodule Journal.Repo.Migrations.InitSchema do
     end
 
     create index(:context_snapshots, [:run_id])
+
+    # --- Site Settings ---
+
+    create table(:site_settings, primary_key: false) do
+      add :id, :binary_id, primary_key: true, default: fragment("gen_random_uuid()")
+      add :key, :string, null: false
+      add :value, :text
+      timestamps()
+    end
+
+    create unique_index(:site_settings, [:key])
   end
 end

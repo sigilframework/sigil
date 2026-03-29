@@ -159,6 +159,7 @@ defmodule Mix.Tasks.Sigil.New do
       {"lib/#{b.app_name}/schemas/agent_config.ex", schema_agent_config_ex(b)},
       {"lib/#{b.app_name}/schemas/conversation.ex", schema_conversation_ex(b)},
       {"lib/#{b.app_name}/schemas/message.ex", schema_message_ex(b)},
+      {"lib/#{b.app_name}/schemas/site_setting.ex", schema_site_setting_ex(b)},
       {"lib/#{b.app_name}/tools/check_calendar.ex", tool_check_calendar_ex(b)},
       {"lib/#{b.app_name}/tools/book_meeting.ex", tool_book_meeting_ex(b)},
       {"lib/#{b.app_name}/live/home_live.ex", live_home_ex(b)},
@@ -170,6 +171,8 @@ defmodule Mix.Tasks.Sigil.New do
       {"lib/#{b.app_name}/live/admin/agents_live.ex", live_admin_agents_ex(b)},
       {"lib/#{b.app_name}/live/admin/conversations_live.ex", live_admin_conversations_ex(b)},
       {"lib/#{b.app_name}/live/admin/tools_live.ex", live_admin_tools_ex(b)},
+      {"lib/#{b.app_name}/live/admin/settings_live.ex", live_admin_settings_ex(b)},
+      {"lib/#{b.app_name}/settings.ex", settings_ex(b)},
       {"lib/#{b.app_name}/components/side_nav.ex", component_side_nav_ex(b)},
       {"priv/repo/migrations/20260328000000_init_schema.exs", migration_ex(b)},
       {"priv/repo/seeds.exs", seeds_ex(b)},
@@ -372,6 +375,7 @@ defmodule Mix.Tasks.Sigil.New do
   defp schema_agent_config_ex(b), do: from_journal("schemas/agent_config.ex", b)
   defp schema_conversation_ex(b), do: from_journal("schemas/conversation.ex", b)
   defp schema_message_ex(b), do: from_journal("schemas/message.ex", b)
+  defp schema_site_setting_ex(b), do: from_journal("schemas/site_setting.ex", b)
   defp tool_check_calendar_ex(b), do: from_journal("tools/check_calendar.ex", b)
   defp tool_book_meeting_ex(b), do: from_journal("tools/book_meeting.ex", b)
   defp live_home_ex(b), do: from_journal("live/home_live.ex", b)
@@ -383,6 +387,8 @@ defmodule Mix.Tasks.Sigil.New do
   defp live_admin_agents_ex(b), do: from_journal("live/admin/agents_live.ex", b)
   defp live_admin_conversations_ex(b), do: from_journal("live/admin/conversations_live.ex", b)
   defp live_admin_tools_ex(b), do: from_journal("live/admin/tools_live.ex", b)
+  defp live_admin_settings_ex(b), do: from_journal("live/admin/settings_live.ex", b)
+  defp settings_ex(b), do: from_journal("settings.ex", b)
   defp component_side_nav_ex(b), do: from_journal("components/side_nav.ex", b)
 
   defp migration_ex(b) do

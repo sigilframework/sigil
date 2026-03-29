@@ -125,6 +125,7 @@ defmodule Journal.Layout do
               <a href="/admin/posts" class="text-sm text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 transition-colors">Posts</a>
               <a href="/admin/agents" class="text-sm text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 transition-colors">Agents</a>
               <a href="/admin/tools" class="text-sm text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 transition-colors">Tools</a>
+              <a href="/admin/settings" class="text-sm text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 transition-colors">Settings</a>
               <a href="/" target="_blank" class="text-sm text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 transition-colors">View Site ↗</a>
               <form method="post" action="/auth/logout" class="inline">
                 <button type="submit" class="text-sm text-stone-500 hover:text-stone-700 dark:hover:text-stone-300 border border-stone-300 dark:border-stone-700 rounded-lg px-3 py-1 transition-colors">Logout</button>

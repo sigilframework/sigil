@@ -39,5 +39,7 @@ defmodule Journal.Router do
 
   live "/admin/tools", Journal.Admin.ToolsLive, auth: true, layout: {Journal.Layout, :admin}
 
+  live "/admin/settings", Journal.Admin.SettingsLive, auth: true, layout: {Journal.Layout, :admin}
+
   sigil_routes()
 end
