@@ -508,7 +508,7 @@ defmodule Mix.Tasks.Sigil.New do
           - key: DATABASE_URL
             fromDatabase:
               name: #{String.replace(b.app_name, "_", "-")}-db
-              property: connectionURI
+              property: connectionString
 
     databases:
       - name: #{String.replace(b.app_name, "_", "-")}-db
