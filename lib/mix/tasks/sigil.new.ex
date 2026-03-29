@@ -178,6 +178,8 @@ defmodule Mix.Tasks.Sigil.New do
       {"config/test.exs", config_test_exs(b)},
       {"Dockerfile", dockerfile(b)},
       {"render.yaml", render_yaml(b)},
+      {"entrypoint.sh", entrypoint_sh(b)},
+      {"lib/#{b.app_name}/release.ex", release_ex(b)},
       {".gitignore", gitignore()},
       {".formatter.exs", formatter()},
       {"README.md", readme(b)}
@@ -287,8 +289,7 @@ defmodule Mix.Tasks.Sigil.New do
       config :#{b.app_name}, #{b.app_module}.Repo,
         url: database_url,
         pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10"),
-        ssl: true,
-        ssl_opts: [verify: :verify_none]
+        ssl: [verify: :verify_none]
 
       secret_key_base =
         System.get_env("SECRET_KEY_BASE") ||
@@ -481,11 +482,75 @@ defmodule Mix.Tasks.Sigil.New do
     WORKDIR /app
 
     COPY --from=build /app/_build/prod/rel/#{b.app_name} ./
+    COPY entrypoint.sh ./
 
     ENV PORT=4000
     EXPOSE 4000
 
-    CMD ["bin/#{b.app_name}", "start"]
+    CMD ["sh", "entrypoint.sh"]
+    """
+  end
+
+  defp entrypoint_sh(b) do
+    """
+    #!/bin/sh
+    set -e
+
+    echo "Running migrations..."
+    bin/#{b.app_name} eval "#{b.app_module}.Release.migrate()"
+
+    echo "Running seeds..."
+    bin/#{b.app_name} eval "#{b.app_module}.Release.seed()"
+
+    echo "Starting server..."
+    exec bin/#{b.app_name} start
+    """
+  end
+
+  defp release_ex(b) do
+    """
+    defmodule #{b.app_module}.Release do
+      @moduledoc \"\"\"
+      Release tasks for production (migrations, seeds).
+      Called from entrypoint.sh before the app starts.
+      \"\"\"
+
+      @app :#{b.app_name}
+
+      def migrate do
+        load_app()
+
+        for repo <- repos() do
+          {:ok, _, _} =
+            Ecto.Migrator.with_repo(repo, &Ecto.Migrator.run(&1, :up, all: true))
+        end
+      end
+
+      def seed do
+        load_app()
+
+        for repo <- repos() do
+          {:ok, _, _} =
+            Ecto.Migrator.with_repo(repo, fn _repo ->
+              seed_file = priv_path_for(repo, "seeds.exs")
+              if File.exists?(seed_file), do: Code.eval_file(seed_file)
+            end)
+        end
+      end
+
+      defp repos do
+        Application.fetch_env!(@app, :ecto_repos)
+      end
+
+      defp load_app do
+        Application.load(@app)
+      end
+
+      defp priv_path_for(repo, filename) do
+        app = Keyword.get(repo.config(), :otp_app)
+        Application.app_dir(app, ["priv", "repo", filename])
+      end
+    end
     """
   end
 
