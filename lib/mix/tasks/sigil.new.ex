@@ -496,11 +496,25 @@ defmodule Mix.Tasks.Sigil.New do
     #!/bin/sh
     set -e
 
-    echo "Running migrations..."
-    bin/#{b.app_name} eval "#{b.app_module}.Release.migrate()"
+    # Wait for database to be ready (retries up to 30 seconds)
+    echo "Waiting for database..."
+    attempts=0
+    max_attempts=6
+    until bin/#{b.app_name} eval "#{b.app_module}.Release.migrate()" 2>/dev/null; do
+      attempts=$((attempts + 1))
+      if [ $attempts -ge $max_attempts ]; then
+        echo "Database not available after ${max_attempts} attempts, trying migration anyway..."
+        bin/#{b.app_name} eval "#{b.app_module}.Release.migrate()"
+        break
+      fi
+      echo "Database not ready, retrying in 5s... (attempt $attempts/$max_attempts)"
+      sleep 5
+    done
+    echo "Migrations complete."
 
     echo "Running seeds..."
     bin/#{b.app_name} eval "#{b.app_module}.Release.seed()"
+    echo "Seeds complete."
 
     echo "Starting server..."
     exec bin/#{b.app_name} start
