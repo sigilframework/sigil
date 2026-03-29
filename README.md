@@ -63,6 +63,8 @@ Open `localhost:4000`. You have:
 
 **The example app is a blog. Yours can be anything.** A coaching app, a customer support bot, a SaaS dashboard — the framework supports whatever you need.
 
+> **New to Elixir?** See the [full setup walkthrough](#getting-started) below — it covers installing Elixir, PostgreSQL, and everything you need.
+
 ---
 
 ## What `mix sigil.new` generates
@@ -122,23 +124,51 @@ Each agent, each chat, each user gets its own lightweight process (~2KB). One se
 | Long conversations | Manual token counting | Progressive memory compression, automatic |
 | Hosting cost | $50-200/mo across services | $0-50/mo (one server + one database) |
 
-**New to Elixir?** That's fine. The [Getting Started guide](https://elixir-lang.org/getting-started/introduction.html) takes an afternoon.
-
 ---
 
-## Installation
+## Getting Started
 
-### Prerequisites
+### 1. Install prerequisites
 
-- [Elixir](https://elixir-lang.org/install.html) 1.18+
-- [PostgreSQL](https://www.postgresql.org/download/) 14+
-- An [Anthropic API key](https://console.anthropic.com/) (for AI chat)
+You need three things installed before using Sigil:
 
-### Full app (recommended)
+- **Elixir 1.18+** (includes `mix`, the build tool used in all commands below)
+- **Erlang/OTP 27+** (installed automatically with most Elixir installers)
+- **PostgreSQL 14+** (the database — must be running locally)
+
+The fastest way to install Elixir and Erlang:
+
+```bash
+# macOS with Homebrew
+brew install elixir
+```
+
+```bash
+# Or with mise (recommended for version management)
+mise install elixir@1.18 erlang@27
+```
+
+For other platforms, see the [Elixir install guide](https://elixir-lang.org/install.html). For PostgreSQL, see the [PostgreSQL downloads](https://www.postgresql.org/download/).
+
+You'll also need an [Anthropic API key](https://console.anthropic.com/) for AI chat.
+
+### 2. Install the Sigil generator
+
+```bash
+mix archive.install hex sigil
+```
+
+This installs the `mix sigil.new` command globally. You only need to do this once.
+
+### 3. Create your app
 
 ```bash
 mix sigil.new my_app
 ```
+
+The generator will ask for your Anthropic API key and save it to `.env`.
+
+### 4. Set up and run
 
 ```bash
 cd my_app
@@ -148,18 +178,15 @@ cd my_app
 mix setup
 ```
 
+This installs dependencies, creates the PostgreSQL database, runs migrations, and seeds sample data. **PostgreSQL must be running** for this step.
+
 ```bash
 mix sigil.server
 ```
 
-The generator will ask for your Anthropic API key and save it to `.env`. If you skip it, add it later:
+Open [localhost:4000](http://localhost:4000). You're running.
 
-```bash
-# .env (auto-loaded by mix sigil.server)
-ANTHROPIC_API_KEY=sk-ant-your-key-here
-```
-
-Default admin login: `admin@example.com` / `admin123`
+**Admin login:** `admin@example.com` / `admin123`
 
 ### Add to an existing Elixir project
 

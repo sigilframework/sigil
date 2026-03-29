@@ -523,27 +523,47 @@
         <span class="text-2xl">💻</span>
         <h2 class="text-xl font-bold text-gray-900">Run it locally</h2>
       </div>
-      <p class="text-gray-600 mb-6">When you're ready to build your own, three commands get you running:</p>
 
-      <pre class="bg-gray-900 text-gray-300 rounded-xl px-5 py-4 text-sm overflow-x-auto leading-loose"><span class="cmt"># Generate your app</span>
+      <!-- Step 1: Prerequisites -->
+      <div class="rounded-xl border border-gray-200 p-6 mb-4">
+        <h3 class="text-sm font-semibold text-gray-900 mb-3">Step 1 — Install prerequisites</h3>
+        <p class="text-sm text-gray-600 mb-4">You need three things before using Sigil:</p>
+        <ul class="text-sm text-gray-600 space-y-2 mb-4">
+          <li>• <strong class="text-gray-900">Elixir 1.18+</strong> — includes <code class="text-xs bg-gray-100 px-1 py-0.5 rounded">mix</code>, the build tool used in all commands below</li>
+          <li>• <strong class="text-gray-900">Erlang/OTP 27+</strong> — installed automatically with most Elixir installers</li>
+          <li>• <strong class="text-gray-900">PostgreSQL 14+</strong> — the database (must be running locally)</li>
+        </ul>
+        <p class="text-sm text-gray-500 mb-3">Install Elixir and Erlang with <a href="https://mise.jdx.dev" class="text-brand-600 hover:underline">mise</a> (recommended):</p>
+        <pre class="bg-gray-900 text-gray-300 rounded-lg px-4 py-3 text-sm overflow-x-auto"><span class="dim">$</span> mise install elixir@1.18 erlang@27</pre>
+        <p class="text-xs text-gray-400 mt-3">Or use <a href="https://elixir-lang.org/install.html" class="text-brand-600 hover:underline">Homebrew</a>, <a href="https://github.com/asdf-vm/asdf" class="text-brand-600 hover:underline">asdf</a>, or any package manager. For PostgreSQL, see the <a href="https://www.postgresql.org/download/" class="text-brand-600 hover:underline">official downloads</a>.</p>
+      </div>
+
+      <!-- Step 2: Install generator -->
+      <div class="rounded-xl border border-gray-200 p-6 mb-4">
+        <h3 class="text-sm font-semibold text-gray-900 mb-3">Step 2 — Install the Sigil generator</h3>
+        <pre class="bg-gray-900 text-gray-300 rounded-lg px-4 py-3 text-sm overflow-x-auto"><span class="dim">$</span> mix archive.install hex sigil</pre>
+        <p class="text-xs text-gray-400 mt-3">This installs the <code class="text-xs bg-gray-100 px-1 py-0.5 rounded">mix sigil.new</code> command globally. You only need to do this once.</p>
+      </div>
+
+      <!-- Step 3: Create & Run -->
+      <div class="rounded-xl border border-gray-200 p-6 mb-4">
+        <h3 class="text-sm font-semibold text-gray-900 mb-3">Step 3 — Create your app and run it</h3>
+        <pre class="bg-gray-900 text-gray-300 rounded-xl px-5 py-4 text-sm overflow-x-auto leading-loose"><span class="cmt"># Generate your app (prompts for your Anthropic API key)</span>
 <span class="dim">$</span> mix sigil.new my_app && <span class="kw">cd</span> my_app
 
-<span class="cmt"># Set up database and dependencies</span>
+<span class="cmt"># Install deps, create database, seed data (PostgreSQL must be running)</span>
 <span class="dim">$</span> mix setup
 
 <span class="cmt"># Start the server</span>
 <span class="dim">$</span> mix sigil.server</pre>
+      </div>
 
       <p class="text-sm text-gray-500 mt-4">Visit <a href="http://localhost:4000" class="text-brand-600 hover:underline">localhost:4000</a>. You'll see the same app as the live demo, running on your machine.</p>
-
-      <details class="mt-6 rounded-xl border border-gray-200 overflow-hidden">
-        <summary class="px-5 py-3 cursor-pointer text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">New to Elixir? Install it first ↓</summary>
-        <div class="px-5 py-4 bg-gray-50 border-t border-gray-200">
-          <p class="text-sm text-gray-600 mb-3">Install Elixir and Erlang with <a href="https://mise.jdx.dev" class="text-brand-600 hover:underline">mise</a> (recommended):</p>
-          <pre class="bg-gray-900 text-gray-300 rounded-lg px-4 py-3 text-sm overflow-x-auto"><span class="dim">$</span> mise install elixir@1.18 erlang@27</pre>
-          <p class="text-xs text-gray-400 mt-3">You'll also need <a href="https://www.postgresql.org/download/" class="text-brand-600 hover:underline">PostgreSQL</a> running locally for the database.</p>
-        </div>
-      </details>
+      <div class="mt-3 flex gap-6 text-sm text-gray-500">
+        <div><strong class="text-gray-700">Email:</strong> admin@example.com</div>
+        <div><strong class="text-gray-700">Password:</strong> admin123</div>
+      </div>
+      <p class="text-xs text-gray-400 mt-3">You'll need an <a href="https://console.anthropic.com/" class="text-brand-600 hover:underline">Anthropic API key</a> for AI chat. The generator will prompt you for it, or you can add it to <code class="text-xs bg-gray-100 px-1 py-0.5 rounded">.env</code> later.</p>
     </div>
 
   </div>
