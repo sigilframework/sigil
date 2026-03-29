@@ -445,7 +445,7 @@ defmodule Mix.Tasks.Sigil.New do
     # Build stage
     FROM elixir:1.17-slim AS build
 
-    RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
+    RUN apt-get update && apt-get install -y git build-essential && rm -rf /var/lib/apt/lists/*
 
     WORKDIR /app
 
