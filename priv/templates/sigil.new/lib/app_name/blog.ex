@@ -1,8 +1,8 @@
-defmodule Journal.Blog do
+defmodule MyApp.Blog do
   @moduledoc "Context for managing blog posts."
 
   import Ecto.Query
-  alias Journal.{Repo, Post}
+  alias MyApp.{Repo, Post}
 
   def list_posts do
     from(p in Post, order_by: [desc: p.inserted_at])

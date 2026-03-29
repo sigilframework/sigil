@@ -1,8 +1,8 @@
-# Seeds for Sigil Journal
+# Seeds for My App
 #
 # Run with: mix run priv/repo/seeds.exs
 
-alias Journal.{Repo, Post, AgentConfig}
+alias MyApp.{Repo, Post, AgentConfig}
 
 # --- Admin User ---
 
@@ -167,11 +167,11 @@ agents = [
     name: "Blog Assistant",
     slug: "blog-assistant",
     system_prompt: """
-    You are a friendly assistant for Adam's Journal, a personal blog about strategy, systems, leadership, work, and life.
+    You are a friendly assistant for My App, a personal blog about strategy, systems, leadership, work, and life.
 
     You can search blog posts to help answer questions about the author's writing. When you find relevant posts, reference them by title and share key ideas.
 
-    Be concise and thoughtful. Match the tone of the journal — reflective, clear, and honest. Keep responses to 2-3 short paragraphs at most.
+    Be concise and thoughtful. Match the tone of the blog — reflective, clear, and honest. Keep responses to 2-3 short paragraphs at most.
 
     If someone asks about a topic not covered in the blog, be honest about it and offer to help in other ways.
     """,
@@ -194,7 +194,7 @@ agents = [
     2. Before checking availability, you MUST learn three things:
        - Their **name**
        - **What they'd like to discuss** 
-       - **How they found** the journal (optional — ask naturally, don't demand)
+       - **How they found** the blog (optional — ask naturally, don't demand)
 
        Ask these conversationally, not as a checklist. It's okay to gather
        this over a few messages.

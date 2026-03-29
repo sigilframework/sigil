@@ -428,29 +428,24 @@ defmodule Mix.Tasks.Sigil.New do
       |> String.replace(~r/([a-z])([A-Z])/, "\\1 \\2")
 
     File.read!(path)
-    # Branding — must run BEFORE module replacements because
-    # "Adam's Journal," would otherwise match "Journal," first
-    |> String.replace("Adam's Journal", app_title)
-    |> String.replace("Adam's journal", String.downcase(app_title))
-    |> String.replace("Adam's calendar", "the calendar")
-    |> String.replace("Adam's scheduling assistant", "the scheduling assistant")
-    |> String.replace("connect with Adam", "connect")
-    |> String.replace("with Adam", "")
-    |> String.replace("Adam isn't", "We aren't")
-    |> String.replace("You represent Adam — be welcoming", "Be welcoming")
+    # Branding — must run BEFORE module replacements
+    |> String.replace("My App", app_title)
+    |> String.replace("my app", String.downcase(app_title))
     |> String.replace("adam@example.com", "admin@example.com")
     |> String.replace("password123", "admin123")
-    |> String.replace("Back to journal", "Back")
     # Module names
-    |> String.replace("Journal.", b.app_module <> ".")
-    |> String.replace("Journal do", b.app_module <> " do")
-    |> String.replace("Journal,", b.app_module <> ",")
+    |> String.replace("MyApp.", b.app_module <> ".")
+    |> String.replace("MyApp do", b.app_module <> " do")
+    |> String.replace("MyApp,", b.app_module <> ",")
     # Atom names
-    |> String.replace(":journal,", ":" <> b.app_name <> ",")
-    |> String.replace(":journal)", ":" <> b.app_name <> ")")
+    |> String.replace(":my_app_", ":" <> b.app_name <> "_")
+    |> String.replace(":my_app,", ":" <> b.app_name <> ",")
+    |> String.replace(":my_app)", ":" <> b.app_name <> ")")
+    # String atom names (e.g., :"my_app_team_123")
+    |> String.replace(":\"my_app_", ":\"" <> b.app_name <> "_")
     # Database names
-    |> String.replace("journal_dev", b.app_name <> "_dev")
-    |> String.replace("journal_test", b.app_name <> "_test")
+    |> String.replace("my_app_dev", b.app_name <> "_dev")
+    |> String.replace("my_app_test", b.app_name <> "_test")
   end
 
   # --- Deployment templates ---

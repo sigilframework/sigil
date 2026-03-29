@@ -1,4 +1,4 @@
-defmodule Journal.Schemas.SiteSetting do
+defmodule MyApp.Schemas.SiteSetting do
   use Ecto.Schema
   import Ecto.Changeset
 

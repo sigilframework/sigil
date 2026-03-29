@@ -1,15 +1,15 @@
-defmodule Journal.Admin.DashboardLive do
+defmodule MyApp.Admin.DashboardLive do
   use Sigil.Live
   import Sigil.HTML, only: [escape: 1]
 
   @impl true
   def mount(_params, socket) do
-    posts = Journal.Blog.list_posts()
-    conversations = Journal.Conversations.list_conversations(limit: 5)
+    posts = MyApp.Blog.list_posts()
+    conversations = MyApp.Conversations.list_conversations(limit: 5)
 
     published_count = Enum.count(posts, & &1.published)
     draft_count = Enum.count(posts, &(!&1.published))
-    active_count = Journal.Conversations.count_active()
+    active_count = MyApp.Conversations.count_active()
 
     {:ok,
      Sigil.Live.assign(socket,

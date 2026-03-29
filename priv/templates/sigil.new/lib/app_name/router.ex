@@ -1,45 +1,45 @@
-defmodule Journal.Router do
+defmodule MyApp.Router do
   use Sigil.Router
 
   # Public
-  live "/", Journal.HomeLive, layout: {Journal.Layout, :app}
-  live "/entry/:id", Journal.EntryLive, layout: {Journal.Layout, :app}
-  live "/chat", Journal.ChatLive, layout: {Journal.Layout, :app}
-  live "/chat/:slug", Journal.ChatLive, layout: {Journal.Layout, :app}
+  live "/", MyApp.HomeLive, layout: {MyApp.Layout, :app}
+  live "/entry/:id", MyApp.EntryLive, layout: {MyApp.Layout, :app}
+  live "/chat", MyApp.ChatLive, layout: {MyApp.Layout, :app}
+  live "/chat/:slug", MyApp.ChatLive, layout: {MyApp.Layout, :app}
 
   # Auth
-  live "/login", Journal.LoginLive, layout: {Journal.Layout, :app}
+  live "/login", MyApp.LoginLive, layout: {MyApp.Layout, :app}
 
   post "/auth/login" do
-    Journal.AuthController.login(conn, [])
+    MyApp.AuthController.login(conn, [])
   end
 
   post "/auth/logout" do
-    Journal.AuthController.logout(conn, [])
+    MyApp.AuthController.logout(conn, [])
   end
 
   # Uploads
   post "/admin/uploads" do
-    Journal.UploadController.upload(conn, [])
+    MyApp.UploadController.upload(conn, [])
   end
 
   # Admin (protected)
-  live "/admin", Journal.Admin.DashboardLive, auth: true, layout: {Journal.Layout, :admin}
+  live "/admin", MyApp.Admin.DashboardLive, auth: true, layout: {MyApp.Layout, :admin}
 
-  live "/admin/conversations", Journal.Admin.ConversationsLive, auth: true, layout: {Journal.Layout, :admin}
-  live "/admin/conversations/:id", Journal.Admin.ConversationsLive, auth: true, layout: {Journal.Layout, :admin}
+  live "/admin/conversations", MyApp.Admin.ConversationsLive, auth: true, layout: {MyApp.Layout, :admin}
+  live "/admin/conversations/:id", MyApp.Admin.ConversationsLive, auth: true, layout: {MyApp.Layout, :admin}
 
-  live "/admin/posts", Journal.Admin.PostsLive, auth: true, layout: {Journal.Layout, :admin}
-  live "/admin/posts/new", Journal.Admin.PostsLive, auth: true, layout: {Journal.Layout, :admin}
-  live "/admin/posts/:id/edit", Journal.Admin.PostsLive, auth: true, layout: {Journal.Layout, :admin}
+  live "/admin/posts", MyApp.Admin.PostsLive, auth: true, layout: {MyApp.Layout, :admin}
+  live "/admin/posts/new", MyApp.Admin.PostsLive, auth: true, layout: {MyApp.Layout, :admin}
+  live "/admin/posts/:id/edit", MyApp.Admin.PostsLive, auth: true, layout: {MyApp.Layout, :admin}
 
-  live "/admin/agents", Journal.Admin.AgentsLive, auth: true, layout: {Journal.Layout, :admin}
-  live "/admin/agents/new", Journal.Admin.AgentsLive, auth: true, layout: {Journal.Layout, :admin}
-  live "/admin/agents/:id/edit", Journal.Admin.AgentsLive, auth: true, layout: {Journal.Layout, :admin}
+  live "/admin/agents", MyApp.Admin.AgentsLive, auth: true, layout: {MyApp.Layout, :admin}
+  live "/admin/agents/new", MyApp.Admin.AgentsLive, auth: true, layout: {MyApp.Layout, :admin}
+  live "/admin/agents/:id/edit", MyApp.Admin.AgentsLive, auth: true, layout: {MyApp.Layout, :admin}
 
-  live "/admin/tools", Journal.Admin.ToolsLive, auth: true, layout: {Journal.Layout, :admin}
+  live "/admin/tools", MyApp.Admin.ToolsLive, auth: true, layout: {MyApp.Layout, :admin}
 
-  live "/admin/settings", Journal.Admin.SettingsLive, auth: true, layout: {Journal.Layout, :admin}
+  live "/admin/settings", MyApp.Admin.SettingsLive, auth: true, layout: {MyApp.Layout, :admin}
 
   sigil_routes()
 end

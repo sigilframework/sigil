@@ -1,4 +1,4 @@
-defmodule Journal.Conversations do
+defmodule MyApp.Conversations do
   @moduledoc """
   Context for managing chat conversations and messages.
 
@@ -8,7 +8,7 @@ defmodule Journal.Conversations do
   """
 
   import Ecto.Query
-  alias Journal.{Repo, Conversation, Message}
+  alias MyApp.{Repo, Conversation, Message}
 
   # --- Conversations ---
 

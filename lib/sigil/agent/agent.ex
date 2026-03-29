@@ -246,6 +246,11 @@ defmodule Sigil.Agent do
     GenServer.call(pid, :run_id)
   end
 
+  @doc "Get cumulative token usage for the agent's current run."
+  def usage(pid) do
+    GenServer.call(pid, :usage)
+  end
+
   @doc "Stop the agent."
   def stop(pid) do
     GenServer.stop(pid, :normal)
@@ -322,6 +327,10 @@ defmodule Sigil.Agent do
     {:reply, state.run_id, state}
   end
 
+  def handle_call(:usage, _from, state) do
+    {:reply, state.token_usage, state}
+  end
+
   @impl true
   def handle_cast({:stream, message, caller_pid}, state) do
     user_message = %{role: "user", content: message}
@@ -334,10 +343,13 @@ defmodule Sigil.Agent do
       })
 
     # Run in a task to not block the GenServer
+    agent_pid = self()
+
     Task.start(fn ->
       case run_loop(messages, state, caller_pid) do
-        {:ok, response, _new_state} ->
+        {:ok, response, new_state} ->
           send(caller_pid, {:sigil_complete, response})
+          send(agent_pid, {:sigil_state_sync, new_state})
 
         {:error, reason, _new_state} ->
           send(caller_pid, {:sigil_error, reason})
@@ -368,6 +380,16 @@ defmodule Sigil.Agent do
     end
   end
 
+  def handle_info({:sigil_state_sync, new_state}, state) do
+    {:noreply, %{state |
+      messages: new_state.messages,
+      token_usage: new_state.token_usage,
+      summaries_cache: new_state.summaries_cache,
+      event_sequence: new_state.event_sequence,
+      status: :ready
+    }}
+  end
+
   def handle_info(_msg, state) do
     {:noreply, state}
   end
@@ -379,7 +401,7 @@ defmodule Sigil.Agent do
     tools = state.config[:tools] || []
     system = state.config[:system]
     max_turns = state.config[:max_turns] || 10
-    memory_strategy = state.config[:memory] || :sliding_window
+    memory_strategy = state.config[:memory] || :progressive
 
     # Update budget with current system prompt and tools
     budget =
@@ -455,10 +477,17 @@ defmodule Sigil.Agent do
       model
     )
 
-    # Call the LLM with retry
+    # Call the LLM — stream when we have a listener, chat otherwise
     llm_start = System.monotonic_time(:millisecond)
 
-    case llm_call_with_retry(adapter, messages, call_opts) do
+    llm_result =
+      if stream_to do
+        llm_stream_with_chunks(adapter, messages, call_opts, stream_to)
+      else
+        llm_call_with_retry(adapter, messages, call_opts)
+      end
+
+    case llm_result do
       {:ok, response} ->
         llm_duration = System.monotonic_time(:millisecond) - llm_start
 
@@ -485,6 +514,9 @@ defmodule Sigil.Agent do
           output_tokens: response.usage.output_tokens,
           duration_ms: llm_duration
         })
+
+        # Accumulate token usage on agent state
+        state = accumulate_usage(state, response.usage)
 
         # Build assistant message — include tool_use blocks when present
         assistant_content =
@@ -524,13 +556,13 @@ defmodule Sigil.Agent do
             emit_event(state, :agent_complete, %{
               final_response: truncate_for_event(final_response.content),
               total_turns: state.turn_count,
-              total_tokens: EventStore.token_usage(state.run_id)
+              total_tokens: state.token_usage.total_tokens
             })
 
           # Telemetry
           Telemetry.emit_complete(state.run_id, %{
             total_turns: state.turn_count,
-            total_tokens: 0
+            total_tokens: state.token_usage.total_tokens
           })
 
           # Final checkpoint
@@ -835,6 +867,69 @@ defmodule Sigil.Agent do
     end
   end
 
+  # Streaming LLM call — consumes adapter.stream() and forwards chunks to caller
+  defp llm_stream_with_chunks(adapter, messages, opts, stream_to) do
+    case Sigil.LLM.stream(adapter, messages, opts) do
+      {:ok, stream} ->
+        # Consume the stream, forwarding text chunks and accumulating the response
+        {text_acc, tool_calls, usage_acc} =
+          Enum.reduce(stream, {"", [], %{input_tokens: 0, output_tokens: 0}}, fn
+            {:chunk, text}, {text_acc, tools, usage} ->
+              send(stream_to, {:sigil_chunk, text})
+              {text_acc <> text, tools, usage}
+
+            {:usage, new_usage}, {text_acc, tools, usage} ->
+              merged = %{
+                input_tokens: usage.input_tokens + (new_usage[:input_tokens] || 0),
+                output_tokens: usage.output_tokens + (new_usage[:output_tokens] || 0)
+              }
+              {text_acc, tools, merged}
+
+            {:tool_call_start, tool_info}, {text_acc, tools, usage} ->
+              {text_acc, tools ++ [%{id: tool_info.id, name: tool_info.name, input_json: ""}], usage}
+
+            {:tool_call_delta, json_fragment}, {text_acc, tools, usage} ->
+              case List.last(tools) do
+                nil -> {text_acc, tools, usage}
+                last ->
+                  updated = %{last | input_json: last.input_json <> json_fragment}
+                  {text_acc, List.replace_at(tools, -1, updated), usage}
+              end
+
+            :done, acc -> acc
+            _, acc -> acc
+          end)
+
+        # Parse accumulated tool call JSON
+        tool_calls =
+          Enum.map(tool_calls, fn tc ->
+            input = case Jason.decode(tc.input_json) do
+              {:ok, parsed} -> parsed
+              _ -> %{}
+            end
+            %{id: tc.id, name: tc.name, input: input}
+          end)
+
+        total = usage_acc.input_tokens + usage_acc.output_tokens
+
+        # Build a response struct matching what chat() returns
+        response = %{
+          role: "assistant",
+          content: text_acc,
+          tool_calls: tool_calls,
+          stop_reason: if(tool_calls != [], do: "tool_use", else: "end_turn"),
+          token_count: total,
+          usage: usage_acc
+        }
+
+        {:ok, response}
+
+      {:error, _reason} ->
+        # Fall back to non-streaming on error
+        llm_call_with_retry(adapter, messages, opts)
+    end
+  end
+
   # Budget helpers
 
   defp build_budget(config) do
@@ -842,6 +937,18 @@ defmodule Sigil.Agent do
     model = Keyword.get(llm_opts, :model, "claude-sonnet-4-20250514")
     Budget.new(model: model)
   end
+
+  defp accumulate_usage(state, %{input_tokens: inp, output_tokens: out}) do
+    current = state.token_usage
+    updated = %{
+      input_tokens: current.input_tokens + inp,
+      output_tokens: current.output_tokens + out,
+      total_tokens: current.total_tokens + inp + out
+    }
+    %{state | token_usage: updated}
+  end
+
+  defp accumulate_usage(state, _), do: state
 
   defp resolve_api_key(state) do
     Keyword.get(state.opts, :api_key) ||

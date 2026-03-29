@@ -1,4 +1,4 @@
-defmodule Journal.LoginLive do
+defmodule MyApp.LoginLive do
   use Sigil.Live
 
   @impl true
@@ -23,7 +23,7 @@ defmodule Journal.LoginLive do
     """
     <div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
       <div class="sm:mx-auto sm:w-full sm:max-w-sm">
-        <h1 class="text-center font-serif text-3xl font-semibold tracking-tight text-stone-900 dark:text-stone-100">Adam's Journal</h1>
+        <h1 class="text-center font-serif text-3xl font-semibold tracking-tight text-stone-900 dark:text-stone-100">My App</h1>
         <h2 class="mt-6 text-center text-2xl/9 font-bold tracking-tight text-stone-900 dark:text-stone-100">Sign in to your account</h2>
         <p class="mt-2 text-center text-sm text-stone-500">Admin access to manage posts and agents</p>
       </div>

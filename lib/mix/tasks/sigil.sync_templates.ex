@@ -7,7 +7,7 @@ defmodule Mix.Tasks.Sigil.SyncTemplates do
       mix sigil.sync_templates ../test_app
 
   This reverses the module name substitution that `mix sigil.new` performed,
-  converting the app's module names back to `Journal.*` and copying the files
+  converting the app's module names back to `MyApp.*` and copying the files
   into `priv/templates/sigil.new/`.
 
   ## What gets synced
@@ -183,21 +183,22 @@ defmodule Mix.Tasks.Sigil.SyncTemplates do
   # Order matters — more specific replacements first.
   defp reverse_substitute(content, app_name, app_module, app_title) do
     content
-    # Module names → Journal
-    |> String.replace(app_module <> ".", "Journal.")
-    |> String.replace(app_module <> " do", "Journal do")
-    |> String.replace(app_module <> ",", "Journal,")
-    # Atom names → :journal
-    |> String.replace(":" <> app_name <> ",", ":journal,")
-    |> String.replace(":" <> app_name <> ")", ":journal)")
+    # Module names → MyApp
+    |> String.replace(app_module <> ".", "MyApp.")
+    |> String.replace(app_module <> " do", "MyApp do")
+    |> String.replace(app_module <> ",", "MyApp,")
+    # Atom names → :my_app
+    |> String.replace(":" <> app_name <> "_", ":my_app_")
+    |> String.replace(":" <> app_name <> ",", ":my_app,")
+    |> String.replace(":" <> app_name <> ")", ":my_app)")
+    # String atom names
+    |> String.replace(":\"" <> app_name <> "_", ":\"my_app_")
     # Database names
-    |> String.replace(app_name <> "_dev", "journal_dev")
-    |> String.replace(app_name <> "_test", "journal_test")
-    |> String.replace(app_name <> "_prod", "journal_prod")
-    # Branding → Journal defaults
-    # (Only reverse the generic substitutions from sigil.new.
-    #  Adam-specific branding stays if the user kept it.)
-    |> String.replace(app_title, "Adam's Journal")
-    |> String.replace(String.downcase(app_title), "Adam's journal")
+    |> String.replace(app_name <> "_dev", "my_app_dev")
+    |> String.replace(app_name <> "_test", "my_app_test")
+    |> String.replace(app_name <> "_prod", "my_app_prod")
+    # Branding → MyApp defaults
+    |> String.replace(app_title, "My App")
+    |> String.replace(String.downcase(app_title), "my app")
   end
 end

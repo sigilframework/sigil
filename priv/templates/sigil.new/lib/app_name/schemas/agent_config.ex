@@ -1,4 +1,4 @@
-defmodule Journal.AgentConfig do
+defmodule MyApp.AgentConfig do
   use Ecto.Schema
   import Ecto.Changeset
 

@@ -1,4 +1,4 @@
-defmodule Journal.AuthController do
+defmodule MyApp.AuthController do
   import Plug.Conn
 
   def login(conn, _opts) do

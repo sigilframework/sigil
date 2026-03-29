@@ -1,4 +1,4 @@
-defmodule Journal.ToolRegistry do
+defmodule MyApp.ToolRegistry do
   @moduledoc """
   Maps tool slugs to their modules. This is the single source of truth
   for what tools exist in the application.
@@ -8,8 +8,8 @@ defmodule Journal.ToolRegistry do
   """
 
   @tools %{
-    "check_calendar" => Journal.Tools.CheckCalendar,
-    "book_meeting" => Journal.Tools.BookMeeting
+    "check_calendar" => MyApp.Tools.CheckCalendar,
+    "book_meeting" => MyApp.Tools.BookMeeting
   }
 
   @doc "All available tools as a map of slug => module."
@@ -46,8 +46,8 @@ defmodule Journal.ToolRegistry do
   end
 
   # Per-tool metadata (category, config requirements)
-  defp config_for("check_calendar"), do: [category: :integration, config_key: {:journal, :google_calendar}]
-  defp config_for("book_meeting"), do: [category: :integration, config_key: {:journal, :google_calendar}]
+  defp config_for("check_calendar"), do: [category: :integration, config_key: {:my_app, :google_calendar}]
+  defp config_for("book_meeting"), do: [category: :integration, config_key: {:my_app, :google_calendar}]
   defp config_for(_), do: [category: :built_in, config_key: nil]
 
   defp check_status(nil), do: :active

@@ -1,13 +1,13 @@
-defmodule Journal.Admin.ToolsLive do
+defmodule MyApp.Admin.ToolsLive do
   @moduledoc "Read-only dashboard showing registered tools and their configuration status."
   use Sigil.Live
 
   @impl true
   def mount(_params, socket) do
-    tools = Journal.ToolRegistry.all_with_info()
+    tools = MyApp.ToolRegistry.all_with_info()
 
     # Look up which agents use each tool from the DB
-    agents = Journal.Agents.list_agents()
+    agents = MyApp.Agents.list_agents()
 
     tools_with_agents =
       Enum.map(tools, fn tool ->

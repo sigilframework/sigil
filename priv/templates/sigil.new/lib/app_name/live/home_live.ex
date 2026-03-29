@@ -1,11 +1,11 @@
-defmodule Journal.HomeLive do
+defmodule MyApp.HomeLive do
   use Sigil.Live
   import Sigil.HTML, only: [escape: 1]
 
   @impl true
   def mount(_params, socket) do
-    posts = Journal.Blog.list_published_posts()
-    tags = Journal.Blog.list_tags()
+    posts = MyApp.Blog.list_published_posts()
+    tags = MyApp.Blog.list_tags()
 
     {:ok,
      Sigil.Live.assign(socket,
@@ -41,7 +41,7 @@ defmodule Journal.HomeLive do
       end)
 
     sidebar =
-      Journal.Components.SideNav.render(%{
+      MyApp.Components.SideNav.render(%{
         tags: assigns.tags,
         recent_posts: Enum.take(assigns.posts, 3),
         current_user: assigns[:current_user]

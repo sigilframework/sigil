@@ -1,14 +1,14 @@
-defmodule Journal.Settings do
+defmodule MyApp.Settings do
   @moduledoc """
   Context for managing site settings and user account updates.
   """
 
   import Ecto.Query
-  alias Journal.Repo
-  alias Journal.Schemas.SiteSetting
+  alias MyApp.Repo
+  alias MyApp.Schemas.SiteSetting
 
   @defaults %{
-    "site_name" => "Adam's Journal",
+    "site_name" => "My App",
     "site_tagline" => "Notes on strategy, systems, work, and life"
   }
 

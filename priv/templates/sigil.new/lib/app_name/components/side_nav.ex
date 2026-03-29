@@ -1,10 +1,10 @@
-defmodule Journal.Components.SideNav do
+defmodule MyApp.Components.SideNav do
   @moduledoc "Shared sidebar navigation component used by HomeLive and ChatLive."
   import Sigil.HTML, only: [escape: 1]
 
   def render(assigns) do
-    site_name = Journal.Settings.get("site_name")
-    site_tagline = Journal.Settings.get("site_tagline")
+    site_name = MyApp.Settings.get("site_name")
+    site_tagline = MyApp.Settings.get("site_tagline")
 
     tags_html =
       Enum.map_join(assigns[:tags] || [], "", fn tag ->

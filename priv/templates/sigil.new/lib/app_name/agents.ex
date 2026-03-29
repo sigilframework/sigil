@@ -1,8 +1,8 @@
-defmodule Journal.Agents do
+defmodule MyApp.Agents do
   @moduledoc "Context for managing agent configurations."
 
   import Ecto.Query
-  alias Journal.{Repo, AgentConfig}
+  alias MyApp.{Repo, AgentConfig}
 
   def list_agents do
     from(a in AgentConfig, order_by: [asc: a.name])

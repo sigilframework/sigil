@@ -79,9 +79,47 @@ if Code.ensure_loaded?(WebSock) do
       else
         case Sigil.Live.SessionStore.get(session_id) do
           nil ->
-            Logger.debug("[Sigil.Live] Stale session: #{session_id} — asking client to reload")
-            reply = Jason.encode!(%{type: "error", reason: "unknown_session", action: "reload"})
-            {:reply, :ok, {:text, reply}, state}
+            # Stale session — try to recover by fresh-mounting the view
+            view_name = Map.get(payload, "view", "")
+            path = Map.get(payload, "path", "/")
+
+            case resolve_view_module(view_name) do
+              {:ok, view} ->
+                Logger.debug("[Sigil.Live] Recovering stale session #{session_id} — fresh mount of #{inspect(view)}")
+
+                # Build minimal params from the path
+                params = parse_path_params(path)
+                socket = %{assigns: %{}, id: session_id, connected?: true}
+                {:ok, socket} = view.mount(params, socket)
+
+                # Store the fresh session so future reconnects work
+                Sigil.Live.SessionStore.put(session_id, %{
+                  view: view,
+                  assigns: socket.assigns,
+                  params: params
+                })
+
+                html = view.render(socket.assigns)
+
+                state = %{
+                  state
+                  | view: view,
+                    assigns: socket.assigns,
+                    session_id: session_id,
+                    last_html: html,
+                    csrf_token: csrf_token
+                }
+
+                # Send joined + full HTML patch to rehydrate the client
+                reply = Jason.encode!(%{type: "joined", session: session_id})
+                patch = Jason.encode!(%{type: "patch", patches: [%{op: "replace_inner", html: html}]})
+                {:push, [{:text, reply}, {:text, patch}], state}
+
+              :error ->
+                Logger.debug("[Sigil.Live] Stale session #{session_id}, no view to recover — reload")
+                reply = Jason.encode!(%{type: "error", reason: "unknown_session", action: "reload"})
+                {:reply, :ok, {:text, reply}, state}
+            end
 
           %{view: view, assigns: assigns, params: params} ->
             # Rehydrate — remount as connected
@@ -151,5 +189,49 @@ if Code.ensure_loaded?(WebSock) do
         {:ok, state}
       end
     end
+
+    # --- View resolution for stale session recovery ---
+
+    defp resolve_view_module(view_name) when is_binary(view_name) and view_name != "" do
+      # view_name comes from data-sigil-view, e.g. "Elixir.SigilDemo.ChatLive"
+      # Strip "Elixir." prefix if present since Module.concat handles it
+      clean_name =
+        view_name
+        |> String.trim()
+        |> String.replace_prefix("Elixir.", "")
+
+      try do
+        module = String.to_existing_atom("Elixir." <> clean_name)
+
+        if Code.ensure_loaded?(module) and function_exported?(module, :mount, 2) do
+          {:ok, module}
+        else
+          :error
+        end
+      rescue
+        ArgumentError -> :error
+      end
+    end
+
+    defp resolve_view_module(_), do: :error
+
+    defp parse_path_params(path) when is_binary(path) do
+      segments =
+        path
+        |> String.trim_leading("/")
+        |> String.split("/")
+        |> Enum.reject(&(&1 == ""))
+
+      # Build params from path segments using the router convention:
+      # /resource/:slug → %{"slug" => value}
+      # /resource/:id/action → %{"id" => value}
+      case segments do
+        [_, param] -> %{"slug" => param, "id" => param, "_path" => path}
+        [_, param, _action] -> %{"id" => param, "_path" => path}
+        _ -> %{"_path" => path}
+      end
+    end
+
+    defp parse_path_params(_), do: %{}
   end
 end

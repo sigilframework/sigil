@@ -1,10 +1,10 @@
-defmodule Journal.ChatLive do
+defmodule MyApp.ChatLive do
   @moduledoc """
   Chat UI backed by a `Sigil.Agent.Team`.
 
   A team of agents handles user messages:
   - **Dispatch** classifies intent (fast Haiku call)
-  - **Blog Assistant** searches and discusses journal content
+  - **Blog Assistant** searches and discusses blog content
   - **Scheduler** pre-screens users and books meetings
 
   The user sees a single seamless conversation. Routing is invisible.
@@ -19,31 +19,33 @@ defmodule Journal.ChatLive do
 
     agent_config =
       case params do
-        %{"slug" => slug} -> Journal.Agents.get_agent_by_slug!(slug)
-        _ -> List.first(Journal.Agents.list_active_agents())
+        %{"slug" => slug} -> MyApp.Agents.get_agent_by_slug!(slug)
+        _ -> List.first(MyApp.Agents.list_active_agents())
       end
 
     slug = if agent_config, do: agent_config.slug, else: "default"
-    tags = Journal.Blog.list_tags()
-    recent_posts = Journal.Blog.list_published_posts() |> Enum.take(3)
+    tags = MyApp.Blog.list_tags()
+    recent_posts = MyApp.Blog.list_published_posts() |> Enum.take(3)
 
     # Load ALL active agent configs from DB — team is fully DB-driven
-    agent_configs = Journal.Agents.list_active_agents()
+    agent_configs = MyApp.Agents.list_active_agents()
 
-    # Only start conversations and teams if AI is available
+    # Only create conversations on the WebSocket mount (connected? = true)
+    # to avoid double-creation (HTTP mount + WS mount both call mount/2)
     {conversation, messages, team, session_writes} =
-      if ai_available do
+      if ai_available and socket.connected? do
         session = params["_session"] || %{}
         session_key = "conv_#{slug}"
         existing_conv_id = session[session_key]
 
         {conv, msgs} = resume_or_create_conversation(existing_conv_id, agent_config)
         t = start_team(agent_configs, conv)
-        Journal.ConversationPubSub.subscribe(conv.id)
+        MyApp.ConversationPubSub.subscribe(conv.id)
         sw = Map.put(%{}, session_key, conv.id)
         {conv, msgs, t, sw}
       else
-        {nil, [], nil, %{}}
+        welcome = if agent_config, do: [%{role: "ai", content: welcome_message(agent_config)}], else: []
+        {nil, welcome, nil, %{}}
       end
 
     {:ok,
@@ -100,7 +102,7 @@ defmodule Journal.ChatLive do
       if assigns.agent_config, do: escape(assigns.agent_config.name), else: "Assistant"
 
     sidebar =
-      Journal.Components.SideNav.render(%{
+      MyApp.Components.SideNav.render(%{
         tags: assigns[:tags] || [],
         recent_posts: assigns[:recent_posts] || [],
         current_user: assigns[:current_user]
@@ -120,7 +122,7 @@ defmodule Journal.ChatLive do
             </div>
             <div>
               <h1 class="font-medium text-sm text-stone-900 dark:text-stone-100">#{agent_name}</h1>
-              <p class="text-xs text-stone-500">Ask me anything about the journal</p>
+              <p class="text-xs text-stone-500">Ask me anything about the blog</p>
             </div>
           </div>
         </div>
@@ -135,7 +137,7 @@ defmodule Journal.ChatLive do
         <!-- Input -->
         <div class="border-t border-stone-200 dark:border-stone-800 flex-shrink-0">
           <div class="max-w-3xl mx-auto px-6 py-4">
-            <form class="relative" sigil-submit="send_message">
+            <form class="relative" sigil-submit="send_message" data-sigil-clear>
               <input type="text" name="message" placeholder="#{if assigns.ai_available, do: "Message #{agent_name}...", else: "AI chat is not configured"}" 
                 autocomplete="off" #{unless assigns.ai_available, do: "disabled", else: ""}
                 class="w-full rounded-xl border border-stone-300 dark:border-stone-700 bg-white dark:bg-stone-900 pl-4 pr-12 py-3 text-sm text-stone-900 dark:text-stone-100 placeholder-stone-400 dark:placeholder-stone-500 outline-none focus:border-stone-400 dark:focus:border-stone-600 focus:ring-1 focus:ring-stone-400/30 dark:focus:ring-stone-600/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" />
@@ -157,13 +159,13 @@ defmodule Journal.ChatLive do
     conv_id = socket.assigns.conversation_id
 
     # Persist user message to DB (for admin visibility)
-    Journal.Conversations.add_message(conv_id, "user", message)
-    Journal.ConversationPubSub.broadcast(conv_id, {:new_message, %{role: "user", content: message}})
+    MyApp.Conversations.add_message(conv_id, "user", message)
+    MyApp.ConversationPubSub.broadcast(conv_id, {:new_message, %{role: "user", content: message}})
 
     # Auto-title from first user message
     if length(socket.assigns.messages) <= 1 do
-      case Journal.Conversations.get_conversation!(conv_id) do
-        conv -> Journal.Conversations.maybe_set_title(conv, message)
+      case MyApp.Conversations.get_conversation!(conv_id) do
+        conv -> MyApp.Conversations.maybe_set_title(conv, message)
       end
     end
 
@@ -184,6 +186,21 @@ defmodule Journal.ChatLive do
   # --- Agent process messages ---
 
   @impl true
+  def handle_info({:sigil_chunk, text}, socket) do
+    messages = socket.assigns.messages
+    last = List.last(messages)
+
+    messages =
+      if last && last.role == "ai" do
+        updated_content = (last.content || "") <> text
+        List.replace_at(messages, -1, %{role: "ai", content: updated_content})
+      else
+        messages ++ [%{role: "ai", content: text}]
+      end
+
+    {:noreply, Sigil.Live.assign(socket, messages: messages, loading: false)}
+  end
+
   def handle_info({:sigil_complete, response}, socket) do
     content = extract_response_text(response)
 
@@ -197,6 +214,7 @@ defmodule Journal.ChatLive do
         messages ++ [%{role: "ai", content: content}]
       end
 
+    # Note: DB persistence is handled by GenericAgent.on_complete/2
     {:noreply, Sigil.Live.assign(socket, messages: messages, loading: false)}
   end
 
@@ -270,7 +288,7 @@ defmodule Journal.ChatLive do
 
     Task.start(fn ->
       # Classify intent — returns a slug string
-      target_slug = Journal.Dispatch.classify(message, recent_context, agent_configs)
+      target_slug = MyApp.Dispatch.classify(message, recent_context, agent_configs)
 
       # Get the agent PID from the team (slugs are used as atom keys)
       agent_key = String.to_atom(target_slug)
@@ -291,7 +309,7 @@ defmodule Journal.ChatLive do
   defp start_team(agent_configs, conversation) do
     conv_id = if conversation, do: conversation.id, else: nil
     api_key = Application.get_env(:sigil, :anthropic_api_key)
-    team_name = :"journal_#{conv_id || System.unique_integer([:positive])}"
+    team_name = :"my_app_#{conv_id || System.unique_integer([:positive])}"
 
     # Check if team already exists (for reconnection)
     case Sigil.Agent.Team.lookup(team_name) do
@@ -310,7 +328,7 @@ defmodule Journal.ChatLive do
               tools: config.tools || []
             ]
 
-            {String.to_atom(config.slug), Journal.GenericAgent, opts}
+            {String.to_atom(config.slug), MyApp.GenericAgent, opts}
           end)
 
         {:ok, team} =
@@ -342,13 +360,13 @@ defmodule Journal.ChatLive do
   defp extract_text(other), do: to_string(other)
 
   defp welcome_message(nil), do: "Welcome! No assistant is currently configured."
-  defp welcome_message(config), do: "Hi! I'm #{config.name}. Ask me anything about the journal, or let me know if you'd like to connect."
+  defp welcome_message(config), do: "Hi! I'm #{config.name}. Ask me anything about the blog, or let me know if you'd like to connect."
 
   defp resume_or_create_conversation(existing_conv_id, agent_config) do
     conversation =
       if existing_conv_id do
         try do
-          conv = Journal.Conversations.get_conversation!(existing_conv_id)
+          conv = MyApp.Conversations.get_conversation!(existing_conv_id)
           if conv.status == "active", do: conv, else: nil
         rescue
           Ecto.NoResultsError -> nil
@@ -363,7 +381,7 @@ defmodule Journal.ChatLive do
       agent_id = if agent_config, do: agent_config.id, else: nil
 
       {:ok, conv} =
-        Journal.Conversations.create_conversation(%{
+        MyApp.Conversations.create_conversation(%{
           agent_config_id: agent_id,
           status: "active"
         })

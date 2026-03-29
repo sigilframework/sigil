@@ -1,4 +1,4 @@
-defmodule Journal.ConversationPubSub do
+defmodule MyApp.ConversationPubSub do
   @moduledoc """
   Lightweight real-time sync for conversations using OTP's :pg.
 
@@ -7,7 +7,7 @@ defmodule Journal.ConversationPubSub do
   to all group members.
   """
 
-  @scope :journal_conversations
+  @scope :my_app_conversations
 
   @doc "Subscribe the calling process to conversation updates."
   def subscribe(conversation_id) do

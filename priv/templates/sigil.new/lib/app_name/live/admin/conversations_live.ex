@@ -1,10 +1,10 @@
-defmodule Journal.Admin.ConversationsLive do
+defmodule MyApp.Admin.ConversationsLive do
   use Sigil.Live
   import Sigil.HTML, only: [escape: 1]
 
   @impl true
   def mount(params, socket) do
-    conversations = Journal.Conversations.list_conversations(limit: 50)
+    conversations = MyApp.Conversations.list_conversations(limit: 50)
     selected_id = params["id"]
 
     {selected, messages, agent_name} =
@@ -15,7 +15,7 @@ defmodule Journal.Admin.ConversationsLive do
       end
 
     # Subscribe to real-time updates if viewing a conversation
-    if selected_id, do: Journal.ConversationPubSub.subscribe(selected_id)
+    if selected_id, do: MyApp.ConversationPubSub.subscribe(selected_id)
 
     {:ok,
      Sigil.Live.assign(socket,
@@ -148,8 +148,8 @@ defmodule Journal.Admin.ConversationsLive do
   @impl true
   def handle_event("admin_send", %{"message" => message}, socket) when message != "" do
     conv_id = socket.assigns.selected_id
-    Journal.Conversations.add_message(conv_id, "admin", message)
-    Journal.ConversationPubSub.broadcast(conv_id, {:new_message, %{role: "admin", content: message}})
+    MyApp.Conversations.add_message(conv_id, "admin", message)
+    MyApp.ConversationPubSub.broadcast(conv_id, {:new_message, %{role: "admin", content: message}})
     messages = socket.assigns.messages ++ [%{role: "admin", content: message}]
     {:noreply, Sigil.Live.assign(socket, messages: messages)}
   end
@@ -184,7 +184,7 @@ defmodule Journal.Admin.ConversationsLive do
   # --- Helpers ---
 
   defp load_conversation(id) do
-    conv = Journal.Conversations.get_conversation!(id)
+    conv = MyApp.Conversations.get_conversation!(id)
     messages = Enum.map(conv.messages, &%{role: &1.role, content: &1.content})
     agent_name = if conv.agent_config, do: conv.agent_config.name, else: "Unknown"
     {conv, messages, agent_name}

@@ -1,4 +1,4 @@
-defmodule Journal.GenericAgent do
+defmodule MyApp.GenericAgent do
   @moduledoc """
   A single agent module that drives ALL agent configs from the database.
 
@@ -15,7 +15,7 @@ defmodule Journal.GenericAgent do
   def init_agent(opts) do
     # Resolve tool slugs from DB into actual tool modules
     tool_slugs = opts[:tools] || []
-    tool_modules = Journal.ToolRegistry.resolve(tool_slugs)
+    tool_modules = MyApp.ToolRegistry.resolve(tool_slugs)
 
     # Build system prompt: admin-editable base + blog content as context
     base_prompt = opts[:system_prompt] || "You are a helpful assistant."
@@ -32,7 +32,7 @@ defmodule Journal.GenericAgent do
 
   # Inject published blog posts as context — the agent just *knows*
   defp blog_context do
-    posts = Journal.Blog.list_published_posts()
+    posts = MyApp.Blog.list_published_posts()
 
     if posts == [] do
       ""
@@ -44,9 +44,9 @@ defmodule Journal.GenericAgent do
         end)
 
       """
-      ## Journal Content
+      ## Blog Content
 
-      Below are the published entries from Adam's journal. Reference these naturally when relevant.
+      Below are the published entries from my app. Reference these naturally when relevant.
 
       #{post_content}
       """
@@ -59,8 +59,8 @@ defmodule Journal.GenericAgent do
 
     if conv_id do
       content = extract_text(response.content)
-      Journal.Conversations.add_message(conv_id, "ai", content)
-      Journal.ConversationPubSub.broadcast(conv_id, {:new_message, %{role: "ai", content: content}})
+      MyApp.Conversations.add_message(conv_id, "ai", content)
+      MyApp.ConversationPubSub.broadcast(conv_id, {:new_message, %{role: "ai", content: content}})
     end
 
     {:ok, response, state}

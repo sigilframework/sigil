@@ -25,10 +25,6 @@ defmodule Sigil.Live do
           {:noreply, assign(socket, count: socket.assigns.count + 1)}
         end
       end
-
-  > **Note:** Full Live implementation (WebSocket transport, DOM diffing,
-  > client JS) will be built in a later phase. This module defines the
-  > target behaviour and basic socket structure.
   """
 
   @type socket :: %{

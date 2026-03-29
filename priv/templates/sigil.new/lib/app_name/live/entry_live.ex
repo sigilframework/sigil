@@ -1,11 +1,11 @@
-defmodule Journal.EntryLive do
+defmodule MyApp.EntryLive do
   use Sigil.Live
   import Sigil.HTML, only: [escape: 1]
 
   @impl true
   def mount(params, socket) do
-    post = Journal.Blog.get_post!(params["id"])
-    {prev_post, next_post} = Journal.Blog.adjacent_posts(post)
+    post = MyApp.Blog.get_post!(params["id"])
+    {prev_post, next_post} = MyApp.Blog.adjacent_posts(post)
     {:ok, Sigil.Live.assign(socket, post: post, prev_post: prev_post, next_post: next_post)}
   end
 
@@ -33,7 +33,7 @@ defmodule Journal.EntryLive do
       <header class="flex flex-col items-center gap-2 mb-10 pb-8 border-b border-stone-200 dark:border-stone-800">
         <a href="/" class="group flex flex-col items-center gap-2.5">
           <img src="https://images.unsplash.com/photo-1519244703995-f4e0f30006d5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="" class="size-10 rounded-full ring-2 ring-stone-200 dark:ring-stone-700 group-hover:ring-stone-400 dark:group-hover:ring-stone-500 transition-all" />
-          <span class="font-serif text-lg font-medium tracking-tight text-stone-500 dark:text-stone-400 group-hover:text-stone-900 dark:group-hover:text-stone-100 transition-colors">Adam's Journal</span>
+          <span class="font-serif text-lg font-medium tracking-tight text-stone-500 dark:text-stone-400 group-hover:text-stone-900 dark:group-hover:text-stone-100 transition-colors">My App</span>
         </a>
       </header>
 

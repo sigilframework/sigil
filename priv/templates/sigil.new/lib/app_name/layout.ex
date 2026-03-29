@@ -1,5 +1,5 @@
-defmodule Journal.Layout do
-  @moduledoc "Layout module for Sigil Journal using Tailwind CSS with dark/light mode."
+defmodule MyApp.Layout do
+  @moduledoc "Layout module for My App using Tailwind CSS with dark/light mode."
 
   def app(_assigns, inner_content) do
     """
@@ -8,7 +8,7 @@ defmodule Journal.Layout do
     <head>
       <meta charset="UTF-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <title>Adam's Journal</title>
+      <title>My App</title>
       <link rel="preconnect" href="https://fonts.googleapis.com">
       <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
       <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -72,7 +72,7 @@ defmodule Journal.Layout do
     <head>
       <meta charset="UTF-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <title>Admin — Adam's Journal</title>
+      <title>Admin — My App</title>
       <link rel="preconnect" href="https://fonts.googleapis.com">
       <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
       <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -118,7 +118,7 @@ defmodule Journal.Layout do
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div class="flex h-14 items-center justify-between">
             <a href="/admin" class="text-sm font-semibold text-stone-900 dark:text-stone-100 flex items-center gap-2">
-              <span class="text-amber-500">⚡</span> Journal Admin
+              <span class="text-amber-500">⚡</span> Admin
             </a>
             <div class="flex items-center gap-6">
               <a href="/admin/conversations" class="text-sm text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 transition-colors">Conversations</a>

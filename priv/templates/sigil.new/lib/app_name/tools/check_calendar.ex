@@ -1,4 +1,4 @@
-defmodule Journal.Tools.CheckCalendar do
+defmodule MyApp.Tools.CheckCalendar do
   @moduledoc """
   Sigil.Tool that checks Google Calendar for available meeting slots.
 
@@ -8,7 +8,7 @@ defmodule Journal.Tools.CheckCalendar do
 
   Set the Google Calendar OAuth credentials in config:
 
-      config :journal, :google_calendar,
+      config :my_app, :google_calendar,
         calendar_id: "admin@example.com",
         credentials: "/path/to/service-account.json"
 
@@ -41,7 +41,7 @@ defmodule Journal.Tools.CheckCalendar do
 
   @impl true
   def call(%{"reason" => _reason}, _context) do
-    config = Application.get_env(:journal, :google_calendar)
+    config = Application.get_env(:my_app, :google_calendar)
 
     if config && config[:credentials] do
       check_live_calendar(config)

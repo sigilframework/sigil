@@ -206,6 +206,12 @@ defmodule Sigil.LLM.Anthropic do
         {:ok, %{"type" => "content_block_delta", "delta" => %{"text" => text}}} ->
           [{:chunk, text}]
 
+        {:ok, %{"type" => "message_start", "message" => %{"usage" => usage}}} ->
+          [{:usage, %{input_tokens: usage["input_tokens"] || 0, output_tokens: 0}}]
+
+        {:ok, %{"type" => "message_delta", "usage" => usage}} ->
+          [{:usage, %{input_tokens: 0, output_tokens: usage["output_tokens"] || 0}}]
+
         {:ok, %{"type" => "message_stop"}} ->
           [:done]
 

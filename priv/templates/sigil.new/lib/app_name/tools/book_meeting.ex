@@ -1,4 +1,4 @@
-defmodule Journal.Tools.BookMeeting do
+defmodule MyApp.Tools.BookMeeting do
   @moduledoc """
   Sigil.Tool that creates a Google Calendar event and sends an invite.
 
@@ -45,7 +45,7 @@ defmodule Journal.Tools.BookMeeting do
 
   @impl true
   def call(params, _context) do
-    config = Application.get_env(:journal, :google_calendar)
+    config = Application.get_env(:my_app, :google_calendar)
 
     if config && config[:credentials] do
       create_live_event(params, config)
@@ -63,7 +63,7 @@ defmodule Journal.Tools.BookMeeting do
 
     event = %{
       "summary" => "Meeting with #{params["guest_name"]}: #{params["topic"]}",
-      "description" => "Topic: #{params["topic"]}\nBooked via Adam's Journal",
+      "description" => "Topic: #{params["topic"]}\nBooked via My App",
       "start" => %{"dateTime" => DateTime.to_iso8601(start_dt), "timeZone" => "America/New_York"},
       "end" => %{"dateTime" => DateTime.to_iso8601(end_dt), "timeZone" => "America/New_York"},
       "attendees" => [

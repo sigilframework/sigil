@@ -1,4 +1,4 @@
-defmodule Journal.Conversation do
+defmodule MyApp.Conversation do
   use Ecto.Schema
   import Ecto.Changeset
 
@@ -8,8 +8,8 @@ defmodule Journal.Conversation do
     field :status, :string, default: "active"
     field :title, :string
 
-    belongs_to :agent_config, Journal.AgentConfig, type: :binary_id
-    has_many :messages, Journal.Message, preload_order: [asc: :inserted_at]
+    belongs_to :agent_config, MyApp.AgentConfig, type: :binary_id
+    has_many :messages, MyApp.Message, preload_order: [asc: :inserted_at]
 
     timestamps()
   end

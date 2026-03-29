@@ -1,4 +1,4 @@
-defmodule Journal.Post do
+defmodule MyApp.Post do
   use Ecto.Schema
   import Ecto.Changeset
 

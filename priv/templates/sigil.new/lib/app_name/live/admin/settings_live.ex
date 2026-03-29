@@ -1,10 +1,10 @@
-defmodule Journal.Admin.SettingsLive do
+defmodule MyApp.Admin.SettingsLive do
   use Sigil.Live
   import Sigil.HTML, only: [escape: 1]
 
   @impl true
   def mount(_params, socket) do
-    settings = Journal.Settings.all()
+    settings = MyApp.Settings.all()
     user = socket.assigns[:current_user]
 
     {:ok,
@@ -113,8 +113,8 @@ defmodule Journal.Admin.SettingsLive do
 
   @impl true
   def handle_event("save_site", params, socket) do
-    Journal.Settings.put("site_name", params["site_name"] || "")
-    Journal.Settings.put("site_tagline", params["site_tagline"] || "")
+    MyApp.Settings.put("site_name", params["site_name"] || "")
+    MyApp.Settings.put("site_tagline", params["site_tagline"] || "")
 
     {:noreply,
      Sigil.Live.assign(socket,
@@ -129,7 +129,7 @@ defmodule Journal.Admin.SettingsLive do
     user = socket.assigns[:current_user]
     new_email = String.trim(params["email"] || "")
 
-    case Journal.Settings.update_email(user, new_email) do
+    case MyApp.Settings.update_email(user, new_email) do
       {:ok, updated_user} ->
         {:noreply,
          Sigil.Live.assign(socket,
@@ -161,7 +161,7 @@ defmodule Journal.Admin.SettingsLive do
         {:noreply, Sigil.Live.assign(socket, flash: "Passwords do not match.", flash_type: :error)}
 
       true ->
-        case Journal.Settings.update_password(user, new_pw) do
+        case MyApp.Settings.update_password(user, new_pw) do
           {:ok, _} ->
             {:noreply, Sigil.Live.assign(socket, flash: "Password updated.", flash_type: :success)}
 

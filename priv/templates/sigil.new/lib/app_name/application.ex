@@ -1,17 +1,17 @@
-defmodule Journal.Application do
+defmodule MyApp.Application do
   use Application
 
   @impl true
   def start(_type, _args) do
     # Start :pg scope for conversation real-time sync
-    :pg.start_link(:journal_conversations)
+    :pg.start_link(:my_app_conversations)
 
     children = [
-      Journal.Repo,
-      {Bandit, plug: Journal.Router, port: 4000}
+      MyApp.Repo,
+      {Bandit, plug: MyApp.Router, port: 4000}
     ]
 
-    opts = [strategy: :one_for_one, name: Journal.Supervisor]
+    opts = [strategy: :one_for_one, name: MyApp.Supervisor]
     Supervisor.start_link(children, opts)
   end
 end

@@ -26,7 +26,11 @@
     ws.onopen = function() {
       retries = 0;
       ws.send(JSON.stringify({
-        type: "join", session: sessionId, csrf: csrfToken
+        type: "join",
+        session: sessionId,
+        csrf: csrfToken,
+        view: root.dataset.sigilView || "",
+        path: location.pathname
       }));
     };
 
@@ -77,10 +81,12 @@
       var eventName = form.getAttribute("sigil-submit") || form.getAttribute("sigil-event");
       var data = Object.fromEntries(new FormData(form));
       send(eventName, data);
-      // Clear inputs after submit (chat UX)
-      form.querySelectorAll('input[type="text"], input:not([type]), textarea').forEach(function(el) {
-        el.value = "";
-      });
+      // Only clear inputs on forms that opt in (e.g., chat input)
+      if (form.hasAttribute("data-sigil-clear")) {
+        form.querySelectorAll('input[type="text"], input:not([type]), textarea').forEach(function(el) {
+          el.value = "";
+        });
+      }
     }
   });
 

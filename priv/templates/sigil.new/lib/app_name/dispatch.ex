@@ -1,4 +1,4 @@
-defmodule Journal.Dispatch do
+defmodule MyApp.Dispatch do
   @moduledoc """
   Lightweight intent classifier that routes user messages to the
   appropriate agent based on what's configured in the database.

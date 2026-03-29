@@ -1,4 +1,4 @@
-defmodule Journal.UploadController do
+defmodule MyApp.UploadController do
   @moduledoc "Handles image uploads for the rich text editor."
   import Plug.Conn
 

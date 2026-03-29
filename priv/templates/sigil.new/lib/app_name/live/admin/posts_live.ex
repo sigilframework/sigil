@@ -1,14 +1,14 @@
-defmodule Journal.Admin.PostsLive do
+defmodule MyApp.Admin.PostsLive do
   use Sigil.Live
   import Sigil.HTML, only: [escape: 1, escape_attr: 1]
 
   @impl true
   def mount(params, socket) do
-    posts = Journal.Blog.list_posts()
+    posts = MyApp.Blog.list_posts()
 
     {post, editing, show_form} =
       case params do
-        %{"id" => id} -> {Journal.Blog.get_post!(id), true, true}
+        %{"id" => id} -> {MyApp.Blog.get_post!(id), true, true}
         _ -> {nil, nil, false}
       end
 
@@ -202,9 +202,9 @@ defmodule Journal.Admin.PostsLive do
 
     result =
       if socket.assigns.editing do
-        Journal.Blog.update_post(socket.assigns.selected_post, attrs)
+        MyApp.Blog.update_post(socket.assigns.selected_post, attrs)
       else
-        Journal.Blog.create_post(attrs)
+        MyApp.Blog.create_post(attrs)
       end
 
     case result do
@@ -223,8 +223,8 @@ defmodule Journal.Admin.PostsLive do
   # Removed dead `save_post` handler — auto_save replaces it
 
   def handle_event("delete_post", _params, socket) do
-    if socket.assigns.selected_post, do: Journal.Blog.delete_post(socket.assigns.selected_post)
-    posts = Journal.Blog.list_posts()
+    if socket.assigns.selected_post, do: MyApp.Blog.delete_post(socket.assigns.selected_post)
+    posts = MyApp.Blog.list_posts()
 
     {:noreply,
      Sigil.Live.assign(socket,
@@ -241,7 +241,7 @@ defmodule Journal.Admin.PostsLive do
 
     # Persist toggle state to DB immediately
     if socket.assigns.selected_post do
-      Journal.Blog.update_post(socket.assigns.selected_post, %{published: new_published})
+      MyApp.Blog.update_post(socket.assigns.selected_post, %{published: new_published})
     end
 
     {:noreply, Sigil.Live.assign(socket, form: %{form | published: new_published})}

@@ -1,4 +1,4 @@
-defmodule Journal.Repo.Migrations.InitSchema do
+defmodule MyApp.Repo.Migrations.InitSchema do
   use Ecto.Migration
 
   def change do
@@ -64,45 +64,6 @@ defmodule Journal.Repo.Migrations.InitSchema do
 
     create index(:messages, [:conversation_id])
 
-    # --- Sigil Event Store ---
-
-    create table(:agent_events) do
-      add :run_id, :binary_id, null: false
-      add :agent_module, :string, default: ""
-      add :event_type, :string, null: false
-      add :sequence, :integer, null: false, default: 0
-      add :payload, :map, default: %{}
-      add :token_count, :integer, default: 0
-      timestamps(type: :utc_datetime, updated_at: false)
-    end
-
-    create index(:agent_events, [:run_id, :sequence])
-    create index(:agent_events, [:run_id, :event_type])
-
-    create table(:agent_checkpoints, primary_key: false) do
-      add :id, :binary_id, primary_key: true
-      add :run_id, :binary_id, null: false
-      add :sequence, :integer, null: false
-      add :state, :map
-      add :messages, :map
-      add :config, :map
-      timestamps(type: :utc_datetime, updated_at: false)
-    end
-
-    create index(:agent_checkpoints, [:run_id, :sequence])
-
-    create table(:context_snapshots, primary_key: false) do
-      add :id, :binary_id, primary_key: true
-      add :run_id, :binary_id, null: false
-      add :event_id, :integer
-      add :messages, :map
-      add :token_count, :integer
-      add :model, :string
-      timestamps(type: :utc_datetime, updated_at: false)
-    end
-
-    create index(:context_snapshots, [:run_id])
-
     # --- Site Settings ---
 
     create table(:site_settings, primary_key: false) do
@@ -113,5 +74,33 @@ defmodule Journal.Repo.Migrations.InitSchema do
     end
 
     create unique_index(:site_settings, [:key])
+
+    # --- Agent Events (event sourcing) ---
+
+    create table(:agent_events, primary_key: false) do
+      add :id, :binary_id, primary_key: true, default: fragment("gen_random_uuid()")
+      add :run_id, :binary_id, null: false
+      add :sequence, :integer, null: false
+      add :event_type, :string, null: false
+      add :payload, :map, default: %{}
+      add :agent_module, :string
+      timestamps(updated_at: false)
+    end
+
+    create index(:agent_events, [:run_id, :sequence])
+
+    # --- Agent Checkpoints (crash recovery) ---
+
+    create table(:agent_checkpoints, primary_key: false) do
+      add :id, :binary_id, primary_key: true, default: fragment("gen_random_uuid()")
+      add :run_id, :binary_id, null: false
+      add :sequence, :integer, null: false
+      add :state, :map, default: %{}
+      add :messages, :map, default: %{}
+      add :config, :map, default: %{}
+      timestamps(updated_at: false)
+    end
+
+    create index(:agent_checkpoints, [:run_id, :sequence])
   end
 end

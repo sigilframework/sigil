@@ -1,14 +1,14 @@
-defmodule Journal.Admin.AgentsLive do
+defmodule MyApp.Admin.AgentsLive do
   use Sigil.Live
   import Sigil.HTML, only: [escape: 1]
 
   @impl true
   def mount(params, socket) do
-    agents = Journal.Agents.list_agents()
+    agents = MyApp.Agents.list_agents()
 
     {agent, editing, show_form} =
       case params do
-        %{"id" => id} -> {Journal.Agents.get_agent!(id), true, true}
+        %{"id" => id} -> {MyApp.Agents.get_agent!(id), true, true}
         _ -> {nil, nil, false}
       end
 
@@ -182,7 +182,7 @@ defmodule Journal.Admin.AgentsLive do
   def handle_event("save_agent", params, socket) do
     # Collect checked tools from form params
     selected_tools =
-      Journal.ToolRegistry.all()
+      MyApp.ToolRegistry.all()
       |> Map.keys()
       |> Enum.filter(fn slug -> params["tool_#{slug}"] == "true" end)
 
@@ -197,9 +197,9 @@ defmodule Journal.Admin.AgentsLive do
 
     result =
       if socket.assigns.editing do
-        Journal.Agents.update_agent(socket.assigns.selected_agent, attrs)
+        MyApp.Agents.update_agent(socket.assigns.selected_agent, attrs)
       else
-        Journal.Agents.create_agent(attrs)
+        MyApp.Agents.create_agent(attrs)
       end
 
     case result do
@@ -212,8 +212,8 @@ defmodule Journal.Admin.AgentsLive do
   end
 
   def handle_event("delete_agent", _params, socket) do
-    if socket.assigns.selected_agent, do: Journal.Agents.delete_agent(socket.assigns.selected_agent)
-    agents = Journal.Agents.list_agents()
+    if socket.assigns.selected_agent, do: MyApp.Agents.delete_agent(socket.assigns.selected_agent)
+    agents = MyApp.Agents.list_agents()
     {:noreply, Sigil.Live.assign(socket, agents: agents, selected_agent: nil, editing: nil, form: nil, saved: false, error: nil)}
   end
 
@@ -237,7 +237,7 @@ defmodule Journal.Admin.AgentsLive do
   end
 
   defp render_tool_checkboxes(selected_tools) do
-    Journal.ToolRegistry.all_with_info()
+    MyApp.ToolRegistry.all_with_info()
     |> Enum.sort_by(& &1.slug)
     |> Enum.map_join("\n", fn tool ->
       checked = if tool.slug in selected_tools, do: "checked", else: ""
