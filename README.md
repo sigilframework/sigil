@@ -8,14 +8,15 @@
 
 **Ship AI products, not agent scripts.** One framework — agents, memory, real-time UI, and admin — in Elixir.
 
-[Docs](https://hexdocs.pm/sigil) · [Discord](https://discord.com/channels/1487814726950981674/1487814838066483221) · [GitHub](https://github.com/sigilframework/sigil)
+*Sigil is for developers who want to ship an AI-powered product this week, not spend months on infrastructure.*
+
+[Docs](https://hexdocs.pm/sigil) · [GitHub](https://github.com/sigilframework/sigil)
 
 ---
 
 ## One command to a running AI product
 
 ```bash
-mix archive.install hex sigil    # install the generator (once)
 mix sigil.new my_app && cd my_app && mix setup && mix sigil.server
 ```
 
@@ -30,6 +31,16 @@ That's it. Open `localhost:4000`. You have:
 - ✅ Dockerfile + Render config — deploy in 5 minutes
 
 **Zero agent code.** Agents are configured in the database. Change a system prompt, swap a model, assign tools — all from the admin UI. No restart required.
+
+### What you get
+
+<p>
+  <img src="docs/screenshots/blog.png" width="32%" alt="Blog with AI chat" />
+  <img src="docs/screenshots/chat.png" width="32%" alt="AI chat assistant" />
+  <img src="docs/screenshots/admin.png" width="32%" alt="Admin dashboard" />
+</p>
+
+<sub>Blog with integrated AI chat · Streaming chat assistant · Admin dashboard</sub>
 
 ---
 
@@ -49,6 +60,44 @@ Sigil gives you the full stack:
 | **Sigil.Auth** | Users, login, sessions, protected routes — built in |
 
 Use any layer independently, or all of them together.
+
+### How Sigil compares
+
+| | LangChain / CrewAI | Phoenix + custom | **Sigil** |
+|-|-------------------|-----------------|-----------|
+| **Language** | Python / TS | Elixir | Elixir |
+| **Agent runtime** | Short-lived scripts | Build your own | Long-lived GenServer with crash recovery |
+| **UI** | Bring your own (React, etc.) | LiveView (separate dep) | Built-in Sigil.Live (~2KB client) |
+| **Admin** | None | Build your own | Included — agents, tools, posts, conversations |
+| **Memory** | Manual / vector DB | Build your own | Progressive compression + token budgets |
+| **Auth** | None | Separate library | Built in |
+| **Generator** | None | `mix phx.new` (no AI) | `mix sigil.new` — full AI app in 60 seconds |
+| **Concurrency** | Threads / async | BEAM processes | BEAM processes |
+
+---
+
+## What `mix sigil.new` generates
+
+```
+my_app/
+├── lib/my_app/
+│   ├── live/                  # Chat, blog, admin views
+│   │   ├── chat_live.ex       # Streaming AI chat
+│   │   ├── home_live.ex       # Blog homepage
+│   │   └── admin/             # Dashboard, agents, posts, settings
+│   ├── schemas/               # Ecto schemas (posts, conversations, etc.)
+│   ├── tools/                 # Agent tools (calendar, booking)
+│   ├── generic_agent.ex       # One module powers all agents
+│   ├── router.ex              # Routes with auth guards
+│   └── layout.ex              # Full HTML layout with dark mode
+├── priv/
+│   ├── repo/migrations/       # DB schema (one migration)
+│   ├── repo/seeds.exs         # Sample data + agent configs
+│   └── static/css/            # Design system
+├── config/                    # Dev, test, prod, runtime
+├── Dockerfile                 # Production-ready container
+└── render.yaml                # One-click deploy to Render
+```
 
 ---
 
@@ -137,7 +186,7 @@ Sigil runs on Elixir and the Erlang VM — the same runtime that powers WhatsApp
 | Agent crashes mid-conversation | Data lost, manual restart | Supervisor restarts from last checkpoint |
 | Real-time streaming | SSE hacks, polling | Native WebSocket, built in |
 | Long conversations | Manual token counting | Progressive memory compression, automatic |
-| Hosting cost | $50-200/mo across services | $0-7/mo (one server) |
+| Hosting cost | $50-200/mo across services | $0-50/mo (one server + one database) |
 
 **New to Elixir?** That's fine. The [Getting Started guide](https://elixir-lang.org/getting-started/introduction.html) takes an afternoon.
 
@@ -203,16 +252,16 @@ config :sigil,
 - ✅ Admin dashboard (agents, tools, conversations)
 - ✅ `mix sigil.new` app generator
 - ✅ Token usage tracking and telemetry
-- ⚪ Plugin ecosystem on Hex
-- ⚪ OpenAI provider
+- ✅ Plugin ecosystem on Hex
+- ⚪ Build out more robust demo
 - ⚪ Agent templates (support bot, content writer)
-- ⚪ Sigil Cloud (hosted deployment)
+- ⚪ OpenAI provider
+- ⚪ Hosted deployments
 
 ---
 
 ## Community
 
-- [Discord](https://discord.com/channels/1487814726950981674/1487814838066483221) — get help, share what you're building
 - [GitHub Discussions](https://github.com/sigilframework/sigil/discussions) — ideas, RFCs, questions
 
 ## License
