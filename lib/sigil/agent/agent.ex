@@ -222,8 +222,8 @@ defmodule Sigil.Agent do
   end
 
   @doc "Send a message and stream chunks back to the caller."
-  def stream(pid, message) do
-    GenServer.cast(pid, {:stream, message, self()})
+  def stream(pid, message, caller_pid \\ nil) do
+    GenServer.cast(pid, {:stream, message, caller_pid || self()})
   end
 
   @doc "Get the current agent state."

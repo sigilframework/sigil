@@ -277,7 +277,7 @@ defmodule Journal.ChatLive do
       agent_pid = Sigil.Agent.Team.get_agent(team, agent_key)
 
       if agent_pid && Process.alive?(agent_pid) do
-        Sigil.Agent.stream(agent_pid, message)
+        Sigil.Agent.stream(agent_pid, message, live_pid)
       else
         send(live_pid, {:sigil_error, :agent_not_available})
       end
