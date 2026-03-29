@@ -11,7 +11,7 @@ defmodule Journal.Message do
     belongs_to :conversation, Journal.Conversation, type: :binary_id
 
     # Only inserted_at — messages are immutable
-    field :inserted_at, :utc_datetime, read_after_writes: true
+    timestamps(updated_at: false)
   end
 
   def changeset(message, attrs) do
