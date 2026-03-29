@@ -298,6 +298,14 @@ defmodule Mix.Tasks.Sigil.New do
         System.get_env("SECRET_KEY_BASE") ||
           raise "SECRET_KEY_BASE not set"
 
+      # Plug requires at least 64 bytes — Render's generateValue may be shorter
+      secret_key_base =
+        if byte_size(secret_key_base) < 64 do
+          :crypto.hash(:sha512, secret_key_base) |> Base.encode64(padding: false)
+        else
+          secret_key_base
+        end
+
       config :sigil,
         secret_key_base: secret_key_base
     end
