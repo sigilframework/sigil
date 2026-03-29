@@ -1,0 +1,46 @@
+# Sigil Demo
+# Try a full AI-powered app in 30 seconds.
+#
+# Usage:
+#   docker compose up
+#
+# Then open http://localhost:4000
+# Admin login: admin@example.com / admin123
+#
+# To enable AI chat, add your Anthropic API key:
+#   ANTHROPIC_API_KEY=sk-ant-your-key docker compose up
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: sigil_demo
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 2s
+      timeout: 5s
+      retries: 10
+
+  app:
+    image: ghcr.io/sigilframework/demo:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "4000:4000"
+    environment:
+      DATABASE_URL: ecto://postgres:postgres@db/sigil_demo
+      SECRET_KEY_BASE: sigil-demo-local-key-not-for-production-aaaaaaaaaaaaaaaaaaaaa
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      PHX_HOST: localhost
+      PORT: "4000"
+
+volumes:
+  pgdata:

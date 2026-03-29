@@ -22,6 +22,22 @@
 
 ---
 
+## Try it now (Docker)
+
+See a full AI-powered app in 30 seconds. No Elixir required.
+
+```bash
+git clone https://github.com/sigilframework/sigil.git --depth 1 && cd sigil/demo && docker compose up
+```
+
+Open [localhost:4000](http://localhost:4000). Blog, AI chat, admin dashboard — all running.
+
+**Admin login:** `admin@example.com` / `admin123`
+
+> **Ready to build your own?** See [Getting Started](#getting-started) below to install Elixir and create a fully customizable app.
+
+---
+
 ## Sigil is two things
 
 ### 1. A framework — the building blocks
