@@ -19,7 +19,7 @@ defmodule Sigil.MixProject do
         "Full-stack framework for AI products — agents, memory, real-time UI, and admin in Elixir",
       package: package(),
       source_url: @source_url,
-      homepage_url: @source_url,
+      homepage_url: "https://sigilframework.github.io/sigil",
 
       # Docs
       name: "Sigil",
@@ -93,9 +93,13 @@ defmodule Sigil.MixProject do
       name: "sigil",
       licenses: ["MIT"],
       links: %{
-        "GitHub" => @source_url
+        "GitHub" => @source_url,
+        "Discord" => "https://discord.com/channels/1487814726950981674/1487814838066483221"
       },
-      files: ~w(lib priv .formatter.exs mix.exs README.md LICENSE CHANGELOG.md)
+      files: ~w(
+        lib priv/static priv/templates
+        .formatter.exs mix.exs README.md LICENSE CHANGELOG.md
+      )
     ]
   end
 
