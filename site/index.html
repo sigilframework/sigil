@@ -75,6 +75,38 @@
     .dim {
       color: #6b7280;
     }
+
+    .copy-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      padding: 2px 10px;
+      font-size: 11px;
+      font-weight: 500;
+      color: #9ca3af;
+      background: rgba(55, 65, 81, 0.8);
+      border: 1px solid rgba(107, 114, 128, 0.3);
+      border-radius: 6px;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 0.15s, background 0.15s;
+    }
+
+    .group:hover .copy-btn,
+    .relative:hover > .copy-btn {
+      opacity: 1;
+    }
+
+    .copy-btn:hover {
+      background: rgba(75, 85, 99, 0.9);
+      color: #e5e7eb;
+    }
+
+    .copy-btn.copied {
+      color: #34d399;
+      border-color: rgba(52, 211, 153, 0.3);
+      opacity: 1;
+    }
   </style>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
 </head>
@@ -690,8 +722,9 @@
             <span class="flex-shrink-0 w-6 h-6 rounded-full bg-brand-100 text-brand-600 text-xs font-bold flex items-center justify-center mt-0.5">1</span>
             <div>
               <h3 class="text-sm font-semibold text-gray-900">Paste this into your AI coding tool</h3>
-              <div class="mt-3 rounded-lg bg-gray-900 px-4 py-3">
-                <p class="text-sm text-gray-300 leading-relaxed italic">"Check if Elixir and PostgreSQL are installed. If not, install them for my operating system. Then install the Sigil AI framework generator: mix archive.install hex sigil --force. Create a new app: mix sigil.new support_bot. Then cd support_bot &amp;&amp; mix setup &amp;&amp; mix sigil.server. The app will be at localhost:4000. Docs: https://hexdocs.pm/sigil — GitHub: https://github.com/sigilframework/sigil"</p>
+              <div class="mt-3 rounded-lg bg-gray-900 px-4 py-3 relative group cursor-pointer" onclick="copyText(this)">
+                <p class="text-sm text-gray-300 leading-relaxed" id="ai-prompt-1">Check if Elixir and PostgreSQL are installed. If not, install them for my operating system. Then install the Sigil AI framework generator: mix archive.install hex sigil --force. Create a new app: mix sigil.new support_bot. Then cd support_bot &amp;&amp; mix setup &amp;&amp; mix sigil.server. The app will be at localhost:4000. Docs: https://hexdocs.pm/sigil — GitHub: https://github.com/sigilframework/sigil</p>
+                <span class="copy-btn">Copy</span>
               </div>
               <p class="text-xs text-gray-400 mt-2">Works on Mac, Windows, and Linux. Your AI detects your OS, installs what's missing, and gets the app running at <strong class="text-gray-500">localhost:4000</strong>.</p>
             </div>
@@ -704,10 +737,9 @@
             <span class="flex-shrink-0 w-6 h-6 rounded-full bg-brand-100 text-brand-600 text-xs font-bold flex items-center justify-center mt-0.5">2</span>
             <div>
               <h3 class="text-sm font-semibold text-gray-900">Describe what you want</h3>
-              <div class="mt-3 rounded-lg bg-gray-900 px-4 py-3">
-                <p class="text-sm text-gray-300 leading-relaxed italic">"Change the agent to be a customer support bot for an e-commerce store.
-                  It should know our pricing: Starter $29/mo, Pro $99/mo, Enterprise custom.
-                  Add a tool that looks up order status from our API."</p>
+              <div class="mt-3 rounded-lg bg-gray-900 px-4 py-3 relative group cursor-pointer" onclick="copyText(this)">
+                <p class="text-sm text-gray-300 leading-relaxed">Change the agent to be a customer support bot for an e-commerce store. It should know our pricing: Starter $29/mo, Pro $99/mo, Enterprise custom. Add a tool that looks up order status from our API.</p>
+                <span class="copy-btn">Copy</span>
               </div>
               <p class="text-xs text-gray-400 mt-2">Your AI edits the agent's system prompt, creates a new tool using Sigil's <code class="text-xs bg-gray-100 px-1 py-0.5 rounded">Sigil.Tool</code> contract, and restarts the server. The structure is already there — your AI just fills in the details.</p>
             </div>
@@ -741,9 +773,12 @@
         </div>
         <p class="text-gray-600 mb-5">Run a full Sigil app in 30 seconds. No Elixir, no PostgreSQL — just Docker.</p>
 
-        <pre class="bg-gray-900 text-gray-300 rounded-xl px-5 py-4 text-sm overflow-x-auto leading-loose"><span class="dim">$</span> git clone https://github.com/sigilframework/sigil.git --depth 1
+        <div class="relative group">
+          <pre class="bg-gray-900 text-gray-300 rounded-xl px-5 py-4 text-sm overflow-x-auto leading-loose cursor-pointer" onclick="copyText(this)"><span class="dim">$</span> git clone https://github.com/sigilframework/sigil.git --depth 1
 <span class="dim">$</span> <span class="kw">cd</span> sigil/demo
 <span class="dim">$</span> docker compose up</pre>
+          <span class="copy-btn" onclick="copyText(this.previousElementSibling)">Copy</span>
+        </div>
 
         <p class="text-sm text-gray-500 mt-4">Open <a href="http://localhost:4000" class="text-brand-600 hover:underline">localhost:4000</a>. Blog, AI chat, admin dashboard — all running.</p>
         <div class="mt-3 flex gap-6 text-sm text-gray-500">
@@ -1256,6 +1291,21 @@
     document.addEventListener('keydown', function (e) {
       if (e.key === 'Escape') hideComingSoon();
     });
+
+    function copyText(el) {
+      var text = el.querySelector('p, code');
+      var content = text ? text.textContent : el.textContent;
+      // Strip $ prompts and extra whitespace for clean copy
+      content = content.replace(/^\$\s*/gm, '').replace(/\n\s*\n/g, '\n').trim();
+      navigator.clipboard.writeText(content).then(function() {
+        var btn = el.querySelector('.copy-btn') || el.nextElementSibling;
+        if (btn && btn.classList.contains('copy-btn')) {
+          btn.textContent = 'Copied!';
+          btn.classList.add('copied');
+          setTimeout(function() { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+        }
+      });
+    }
   </script>
 
   <!-- Coming Soon Modal -->
