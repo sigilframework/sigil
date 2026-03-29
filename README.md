@@ -1,183 +1,204 @@
 # Sigil
 
-**AI agent framework for Elixir** — long-running, fault-tolerant agents on the BEAM.
+**Ship AI products, not agent scripts.** One framework — agents, memory, real-time UI, and admin — in 3,000 lines of Elixir.
 
-## Why Sigil?
+[Docs](https://sigil.dev/docs) · [Discord](https://discord.com/channels/1487814726950981674/1487814838066483221) · [GitHub](https://github.com/sigilframework/sigil)
 
-Most AI agent frameworks are built on Python or TypeScript. They all hit the same wall: long-running agents are fundamentally at odds with request-response runtimes. Sigil is built on the BEAM — the runtime designed for systems that never stop.
+---
 
-| Problem | Python/TS Frameworks | Sigil on BEAM |
-|---|---|---|
-| Agent running for hours | Redis queues, Celery, external orchestration | GenServer just runs. It's a process. |
-| 10,000 concurrent agents | Kubernetes pod scaling, message brokers | BEAM handles millions of lightweight processes |
-| Agent crashes mid-run | Data lost, manual restart logic | Supervisor restarts it. OTP was built for this. |
-| Real-time streaming to UI | SSE hacks, polling | WebSocket — native to Elixir |
-
-## Five Layers
+## One command to a running AI product
 
 ```
-┌─────┐ ┌──────┐ ┌──────┐ ┌─────┐ ┌────┐
-│ LLM │ │ Tool │ │Memory│ │Agent│ │Live│
-└─────┘ └──────┘ └──────┘ └─────┘ └────┘
+mix sigil.new my_app && cd my_app && mix setup && mix sigil.server
 ```
 
-1. **`Sigil.LLM`** — Unified interface to AI models (Anthropic, OpenAI)
-2. **`Sigil.Tool`** — Actions agents can take, with permissions and timeouts
-3. **`Sigil.Memory`** — Context window management, token budgeting, progressive summarization
-4. **`Sigil.Agent`** — GenServer orchestrator with event sourcing, checkpointing, and resume
-5. **`Sigil.Live`** — Real-time web views over WebSocket with server-side DOM diffing
+That's it. Open `localhost:4000`. You have:
 
-## Quick Start
+- ✅ A personal blog with rich text editor
+- ✅ AI chat assistant with streaming responses over WebSocket
+- ✅ Multi-agent routing — add agents from the admin, not code
+- ✅ Calendar tools — your agents book meetings, check availability
+- ✅ Full admin dashboard — manage agents, tools, posts, conversations
+- ✅ Auth, sessions, protected routes
+- ✅ Dockerfile + Render config — deploy in 5 minutes
+
+**Zero agent code.** Agents are configured in the database. Change a system prompt, swap a model, assign tools — all from the admin UI. No restart required.
+
+---
+
+## Why Sigil exists
+
+Most AI frameworks give you an LLM wrapper and wish you luck. You still need to build auth, admin, UI, memory, deployment — five libraries stitched together with duct tape.
+
+Sigil gives you the full stack:
+
+| Layer | What it does |
+|-------|-------------|
+| **Sigil.LLM** | Unified interface to Claude, GPT — swap models without changing code |
+| **Sigil.Tool** | Define actions agents can take (book meetings, query DBs, call APIs) |
+| **Sigil.Memory** | Progressive context compression — 80% fewer tokens on long conversations |
+| **Sigil.Agent** | Long-running agents with event sourcing, checkpointing, crash recovery |
+| **Sigil.Live** | Real-time UI over WebSocket — server-rendered, ~2KB client, no React |
+| **Sigil.Auth** | Users, login, sessions, protected routes — built in |
+
+Use any layer independently, or all of them together.
+
+---
+
+## Define an agent in 10 lines
 
 ```elixir
-# Define an agent
-defmodule MyAgent do
+defmodule MyApp.GenericAgent do
   use Sigil.Agent
 
-  def init_agent(_opts) do
+  def init_agent(opts) do
     %{
-      llm: {Sigil.LLM.Anthropic, model: "claude-sonnet-4-20250514"},
-      tools: [MyApp.Tools.Search],
-      system: "You are a helpful assistant.",
+      llm: {Sigil.LLM.Anthropic, model: opts[:model] || "claude-sonnet-4-20250514"},
+      tools: MyApp.ToolRegistry.resolve(opts[:tools] || []),
+      system: opts[:system_prompt] || "You are a helpful assistant.",
       memory: :progressive,
-      max_turns: 10
+      max_turns: 15
     }
   end
 end
-
-# Start and chat
-{:ok, pid} = Sigil.Agent.start(MyAgent, api_key: System.get_env("ANTHROPIC_API_KEY"))
-{:ok, response} = Sigil.Agent.chat(pid, "What's on Hacker News today?")
-IO.puts(response.content)
 ```
 
-## Define a Tool
+That's a **generic agent** — one module that powers every agent in your app. The system prompt, model, and tools come from the database. Add a new agent? Add a row. No code.
+
+## Define a tool
 
 ```elixir
-defmodule MyApp.Tools.SendEmail do
+defmodule MyApp.Tools.BookMeeting do
   use Sigil.Tool
 
-  def name, do: "send_email"
-  def description, do: "Send an email to a recipient"
+  def name, do: "book_meeting"
+  def description, do: "Book a meeting on the calendar"
 
   def params do
     %{
       "type" => "object",
       "properties" => %{
-        "to" => %{"type" => "string", "description" => "Recipient email"},
-        "subject" => %{"type" => "string"},
-        "body" => %{"type" => "string"}
+        "title" => %{"type" => "string"},
+        "time" => %{"type" => "string", "description" => "ISO 8601 datetime"},
+        "email" => %{"type" => "string"}
       },
-      "required" => ["to", "subject", "body"]
+      "required" => ["title", "time", "email"]
     }
   end
 
-  # Require human approval before sending
-  def permission, do: :human_approval
-
-  def call(%{"to" => to, "subject" => _subject, "body" => _body}, _context) do
-    # Your email sending logic here
-    {:ok, "Email sent to #{to}"}
+  def call(%{"title" => title, "time" => time, "email" => email}, _ctx) do
+    {:ok, "Booked: #{title} at #{time} with #{email}"}
   end
 end
 ```
 
-## Long-Running Agents
+## Real-time UI (no React, no build step)
 
-Sigil's context window management keeps agents coherent over long conversations:
+Sigil.Live renders HTML on the server and patches the DOM over WebSocket:
 
 ```elixir
-def init_agent(_opts) do
-  %{
-    llm: {Sigil.LLM.Anthropic, model: "claude-sonnet-4-20250514"},
-    system: "You are a research assistant.",
-    memory: :progressive,  # Tiered compression: recent=verbatim, old=summarized
-    max_turns: 50
-  }
+defmodule MyApp.ChatLive do
+  use Sigil.Live
+
+  def mount(_params, socket) do
+    {:ok, Sigil.Live.assign(socket, messages: [], loading: false)}
+  end
+
+  def render(assigns) do
+    """
+    <div id="chat">
+      #{render_messages(assigns.messages)}
+      <form sigil-event="send">
+        <input type="text" name="message" placeholder="Ask anything..." />
+      </form>
+    </div>
+    """
+  end
 end
 ```
 
-**Progressive compression** divides conversation history into zones:
-- **Zone 1** (most recent): Full messages, no compression
-- **Zone 2** (medium age): LLM-summarized
-- **Zone 3** (oldest): Key facts only
+---
 
-Token budgets are managed automatically — the framework guarantees messages fit within the model's context window.
+## Built on the BEAM
 
-## Durable Agents (requires Postgres)
+Sigil runs on Elixir and the Erlang VM — the same runtime that powers WhatsApp (2B users) and Discord.
 
-Agents can survive restarts via event sourcing and checkpointing:
+| Problem | Python/TS | Sigil |
+|---------|-----------|-------|
+| Agent running for hours | Redis queues, Celery, workers | It's a process. It just runs. |
+| 10,000 concurrent users | Kubernetes, message brokers | BEAM handles millions of lightweight processes |
+| Agent crashes mid-conversation | Data lost, manual restart | Supervisor restarts from last checkpoint |
+| Real-time streaming | SSE hacks, polling | Native WebSocket, built in |
+| Long conversations | Manual token counting | Progressive memory compression, automatic |
+| Hosting cost | $50-200/mo across services | $0-7/mo (one server) |
 
-```elixir
-# Agent automatically checkpoints every 5 turns and after tool calls
-{:ok, pid} = Sigil.Agent.start(MyAgent, api_key: System.get_env("ANTHROPIC_API_KEY"))
-run_id = Sigil.Agent.run_id(pid)
+**New to Elixir?** That's fine. The [Getting Started guide](https://elixir-lang.org/getting-started/introduction.html) takes an afternoon.
 
-# ... later, after a restart ...
-{:ok, pid} = Sigil.Agent.resume(run_id, agent_module: MyAgent)
-
-# Inspect what happened
-{:ok, timeline} = Sigil.Agent.Observer.timeline(run_id)
-{:ok, context} = Sigil.Agent.Observer.context_at(run_id, sequence: 15)
-```
-
-## Multi-Agent Teams
-
-```elixir
-{:ok, team} = Sigil.Agent.Team.start(%{
-  name: :research_team,
-  agents: [
-    {:researcher, ResearchAgent, [topic: "market analysis"]},
-    {:analyst, AnalysisAgent, []},
-    {:writer, ReportAgent, []}
-  ],
-  shared_memory: true
-})
-
-Sigil.Agent.Team.send_message(team, :researcher, "Find Q4 revenue data")
-```
+---
 
 ## Installation
+
+### Full app (recommended)
+
+```bash
+mix sigil.new my_app    # prompts for your Anthropic API key
+cd my_app
+mix setup               # install deps, create DB, seed
+mix sigil.server        # running at localhost:4000
+```
+
+The generator will ask for your [Anthropic API key](https://console.anthropic.com/) and save it to `.env`. If you skip it, add it later:
+
+```bash
+# .env (auto-loaded by mix sigil.server)
+ANTHROPIC_API_KEY=sk-ant-your-key-here
+```
+
+### Add to an existing Elixir project
 
 ```elixir
 # mix.exs
 def deps do
-  [{:sigil, "~> 0.1.0"}]
+  [
+    {:sigil, "~> 0.1.0"},
+
+    # Optional — add only what you need:
+    {:bandit, "~> 1.6"},           # Web server (for Sigil.Live)
+    {:ecto_sql, "~> 3.12"},       # Database (for persistence)
+    {:postgrex, "~> 0.19"},       # PostgreSQL
+  ]
 end
 ```
 
-Only the core agent framework is required. Web layer and database are optional:
-
 ```elixir
-# Add these only if you need them:
-{:sigil, "~> 0.1.0"},
-{:bandit, "~> 1.6"},           # Web server (for Sigil.Live)
-{:plug, "~> 1.16"},            # Routing
-{:websock_adapter, "~> 0.5"},  # WebSocket
-{:ecto_sql, "~> 3.12"},       # Database (for event sourcing)
-{:postgrex, "~> 0.19"},       # PostgreSQL driver
-{:bcrypt_elixir, "~> 3.0"},   # Auth (for Sigil.Auth)
+# config/runtime.exs
+config :sigil,
+  anthropic_api_key: System.get_env("ANTHROPIC_API_KEY")
 ```
 
-## Configuration
+---
 
-```elixir
-# config/config.exs
-config :sigil,
-  secret_key_base: "generate-a-64-byte-secret-here"
+## Roadmap
 
-# config/runtime.exs — set API keys from environment
-config :sigil,
-  anthropic_api_key: System.get_env("ANTHROPIC_API_KEY"),
-  openai_api_key: System.get_env("OPENAI_API_KEY")
+- ✅ Multi-agent teams with shared memory
+- ✅ Progressive context compression
+- ✅ Event sourcing and checkpointing
+- ✅ Real-time UI (Sigil.Live)
+- ✅ DB-driven agent configuration
+- ✅ Admin dashboard (agents, tools, conversations)
+- ✅ `mix sigil.new` app generator
+- ⚪ Plugin ecosystem on Hex
+- ⚪ OpenAI provider
+- ⚪ Agent templates (support bot, content writer, scheduler)
+- ⚪ Sigil Cloud (hosted deployment)
 
-# Optional: PostgreSQL for event sourcing
-config :sigil, Sigil.Repo,
-  database: "my_app_dev",
-  username: "postgres",
-  password: "postgres",
-  hostname: "localhost"
-```
+---
+
+## Community
+
+- [Discord](https://discord.com/channels/1487814726950981674/1487814838066483221) — get help, share what you're building
+- [GitHub Discussions](https://github.com/sigilframework/sigil/discussions) — ideas, RFCs, questions
+- [Contributing](CONTRIBUTING.md) — we welcome PRs
 
 ## License
 

@@ -2,7 +2,7 @@ defmodule Sigil.MixProject do
   use Mix.Project
 
   @version "0.1.0"
-  @source_url "https://github.com/adambouchard/sigil"
+  @source_url "https://github.com/sigilframework/sigil"
 
   def project do
     [
@@ -16,7 +16,7 @@ defmodule Sigil.MixProject do
 
       # Hex
       description:
-        "AI agent framework for Elixir — long-running, fault-tolerant agents on the BEAM",
+        "Full-stack framework for AI products — agents, memory, real-time UI, and admin in Elixir",
       package: package(),
       source_url: @source_url,
       homepage_url: @source_url,
@@ -126,9 +126,12 @@ defmodule Sigil.MixProject do
 
       {:bcrypt_elixir, "~> 3.0", optional: true},
 
+      # --- Optional: Dev tools ---
+
+      {:file_system, "~> 1.0", optional: true},
+
       # --- Dev/Test ---
 
-      {:file_system, "~> 1.0", only: :dev},
       {:ex_doc, "~> 0.35", only: :dev, runtime: false}
     ]
   end

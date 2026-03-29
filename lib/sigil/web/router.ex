@@ -32,7 +32,15 @@ if Code.ensure_loaded?(Plug) do
 
         import Sigil.Router, only: [live: 2, live: 3, sigil_routes: 0]
 
-        plug(Plug.Parsers, parsers: [:urlencoded, :json], pass: ["*/*"], json_decoder: Jason)
+        plug(Plug.Parsers,
+          parsers: [:urlencoded, :multipart, :json],
+          pass: ["*/*"],
+          json_decoder: Jason
+        )
+
+        # Session + auth — runs on ALL routes (GET, POST, etc.)
+        plug(Sigil.Auth.SessionPlug)
+
         plug(:match)
         plug(:dispatch)
       end
@@ -50,12 +58,10 @@ if Code.ensure_loaded?(Plug) do
       if Keyword.get(opts, :auth, false) do
         quote do
           get unquote(path) do
-            conn = Sigil.Auth.SessionPlug.call(var!(conn), [])
-
-            if conn.assigns[:current_user] do
-              Sigil.Live.Handler.handle_http(conn, unquote(view_module), unquote(opts))
+            if var!(conn).assigns[:current_user] do
+              Sigil.Live.Handler.handle_http(var!(conn), unquote(view_module), unquote(opts))
             else
-              conn
+              var!(conn)
               |> Plug.Conn.put_resp_header("location", "/login")
               |> Plug.Conn.send_resp(302, "")
               |> Plug.Conn.halt()
@@ -91,6 +97,9 @@ if Code.ensure_loaded?(Plug) do
           case var!(conn).path_info do
             ["assets" | file_parts] ->
               Sigil.Web.Static.serve(var!(conn), file_parts)
+
+            ["uploads" | file_parts] ->
+              Sigil.Web.Static.serve(var!(conn), ["uploads" | file_parts])
 
             _ ->
               send_resp(var!(conn), 404, "Not Found")

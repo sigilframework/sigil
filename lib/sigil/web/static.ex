@@ -27,9 +27,16 @@ if Code.ensure_loaded?(Plug) do
         if full_path && File.exists?(full_path) do
           content_type = MIME.from_path(full_path)
 
+          cache_control =
+            if Application.get_env(:sigil, :env) == :prod do
+              "public, max-age=3600"
+            else
+              "no-cache, no-store, must-revalidate"
+            end
+
           conn
           |> put_resp_content_type(content_type)
-          |> put_resp_header("cache-control", "public, max-age=3600")
+          |> put_resp_header("cache-control", cache_control)
           |> send_resp(200, File.read!(full_path))
         else
           send_resp(conn, 404, "Not Found")

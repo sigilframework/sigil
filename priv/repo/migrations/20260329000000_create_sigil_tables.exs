@@ -1,7 +1,21 @@
-defmodule Relay.Repo.Migrations.CreateAgentEventsAndCheckpoints do
+defmodule Sigil.Repo.Migrations.CreateSigilTables do
   use Ecto.Migration
 
   def change do
+    # --- Auth ---
+
+    execute "CREATE EXTENSION IF NOT EXISTS citext", "DROP EXTENSION IF EXISTS citext"
+
+    create table(:users) do
+      add :email, :citext, null: false
+      add :password_hash, :string, null: false
+      timestamps()
+    end
+
+    create unique_index(:users, [:email])
+
+    # --- Agent Event Sourcing ---
+
     # Append-only event log — every meaningful thing an agent does
     create table(:agent_events, primary_key: false) do
       add :id, :bigserial, primary_key: true
@@ -46,5 +60,22 @@ defmodule Relay.Repo.Migrations.CreateAgentEventsAndCheckpoints do
     end
 
     create index(:context_snapshots, [:run_id])
+
+    # --- Conversations (memory persistence) ---
+
+    create table(:conversations, primary_key: false) do
+      add :id, :binary_id, primary_key: true
+      add :session_id, :string, null: false
+      add :role, :string, null: false
+      add :content, :text, null: false
+      add :metadata, :map, default: %{}
+      add :sequence, :integer, null: false
+      add :token_count, :integer, default: 0
+
+      timestamps(type: :utc_datetime, updated_at: false)
+    end
+
+    create index(:conversations, [:session_id, :sequence])
+    create index(:conversations, [:session_id])
   end
 end

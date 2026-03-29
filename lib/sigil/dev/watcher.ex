@@ -51,15 +51,13 @@ defmodule Sigil.Dev.Watcher do
   def handle_info(:recompile, state) do
     Logger.info("[Sigil.Dev] File changed — recompiling...")
 
-    case IEx.Helpers.recompile() do
-      {:ok, modules} ->
-        Logger.info("[Sigil.Dev] Recompiled #{length(modules)} module(s)")
-
-      {:error, _} ->
-        Logger.warning("[Sigil.Dev] Recompilation failed — check for errors")
-
-      :noop ->
-        :ok
+    try do
+      Mix.Task.reenable("compile.elixir")
+      Mix.Task.run("compile.elixir", [])
+      Logger.info("[Sigil.Dev] Recompilation complete")
+    rescue
+      e ->
+        Logger.warning("[Sigil.Dev] Recompilation failed: #{inspect(e)}")
     end
 
     {:noreply, %{state | timer: nil}}

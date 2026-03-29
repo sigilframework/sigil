@@ -1,718 +1,59 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Sigil — The Easiest Way to Build AI Agents and Web Apps with Elixir</title>
-  <meta name="description" content="Sigil is a full-stack Elixir framework for building fault-tolerant AI agents and real-time web apps. One command to start. No Phoenix required." />
+  <title>Sigil — Ship AI Products, Not Agent Scripts</title>
+  <meta name="description" content="Full-stack Elixir framework for solo developers building AI-powered products. Agents, memory, real-time UI, and admin — 3,000 lines to a running product." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
+          colors: {
+            brand: { 50: '#eef2ff', 100: '#e0e7ff', 200: '#c7d2fe', 300: '#a5b4fc', 400: '#818cf8', 500: '#6366f1', 600: '#4f46e5', 700: '#4338ca', 800: '#3730a3', 900: '#312e81' }
+          }
+        }
+      }
+    }
+  </script>
   <style>
-    /* === DESIGN SYSTEM === */
-    :root {
-      --bg-primary: #030712;
-      --bg-secondary: #0a0f1e;
-      --bg-card: #111827;
-      --bg-code: #0d1117;
-      --border: #1e293b;
-      --border-accent: #7c3aed33;
-      --text-primary: #f1f5f9;
-      --text-secondary: #94a3b8;
-      --text-muted: #64748b;
-      --accent: #a78bfa;
-      --accent-bright: #c4b5fd;
-      --accent-dim: #7c3aed;
-      --accent-glow: #a78bfa22;
-      --success: #34d399;
-      --font-sans: 'Inter', -apple-system, system-ui, sans-serif;
-      --font-mono: 'JetBrains Mono', 'SF Mono', monospace;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; }
-
-    body {
-      font-family: var(--font-sans);
-      background: var(--bg-primary);
-      color: var(--text-primary);
-      line-height: 1.7;
-      -webkit-font-smoothing: antialiased;
-    }
-
-    /* === NAVIGATION === */
-    nav {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 100;
-      background: rgba(3, 7, 18, 0.85);
-      backdrop-filter: blur(20px);
-      border-bottom: 1px solid var(--border);
-      padding: 0 2rem;
-    }
-
-    .nav-inner {
-      max-width: 72rem;
-      margin: 0 auto;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      height: 4rem;
-    }
-
-    .nav-logo {
-      font-weight: 800;
-      font-size: 1.25rem;
-      color: var(--text-primary);
-      text-decoration: none;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .nav-logo span { color: var(--accent); }
-
-    .nav-links {
-      display: flex;
-      gap: 0.25rem;
-      list-style: none;
-    }
-
-    .nav-links a {
-      color: var(--text-secondary);
-      text-decoration: none;
-      padding: 0.5rem 1rem;
-      border-radius: 0.5rem;
-      font-size: 0.9rem;
-      font-weight: 500;
-      transition: all 0.2s;
-    }
-
-    .nav-links a:hover,
-    .nav-links a.active {
-      color: var(--text-primary);
-      background: rgba(167, 139, 250, 0.1);
-    }
-
-    .nav-github {
-      color: var(--text-secondary);
-      text-decoration: none;
-      font-size: 0.85rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      transition: color 0.2s;
-    }
-    .nav-github:hover { color: var(--text-primary); }
-
-    /* === PAGES === */
-    .page {
-      display: none;
-      padding-top: 4rem;
-      min-height: 100vh;
-    }
+    .page { display: none; }
     .page.active { display: block; }
-
-    /* === PAGE 1: HOME === */
-    .hero {
-      text-align: center;
-      padding: 8rem 2rem 6rem;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .hero::before {
-      content: '';
-      position: absolute;
-      top: -50%;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 800px;
-      height: 800px;
-      background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
-      pointer-events: none;
-    }
-
-    .hero-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.35rem 1rem;
-      border: 1px solid var(--border-accent);
-      border-radius: 100px;
-      font-size: 0.8rem;
-      color: var(--accent);
-      margin-bottom: 2rem;
-      background: rgba(124, 58, 237, 0.06);
-    }
-
-    .hero h1 {
-      font-size: clamp(2.5rem, 6vw, 4.5rem);
-      font-weight: 900;
-      line-height: 1.1;
-      margin-bottom: 1.5rem;
-      letter-spacing: -0.03em;
-      position: relative;
-    }
-
-    .hero h1 .gradient {
-      background: linear-gradient(135deg, var(--accent-bright), #818cf8, #6366f1);
+    .gradient-text {
+      background: linear-gradient(135deg, #818cf8, #6366f1, #4f46e5);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
-
-    .hero p {
-      font-size: 1.25rem;
-      color: var(--text-secondary);
-      max-width: 42rem;
-      margin: 0 auto 3rem;
-      line-height: 1.8;
-    }
-
-    .hero-cta {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.75rem;
-      background: linear-gradient(135deg, var(--accent-dim), #6366f1);
-      color: white;
-      padding: 0.875rem 2rem;
-      border-radius: 0.75rem;
-      text-decoration: none;
-      font-weight: 600;
-      font-size: 1.05rem;
-      transition: all 0.3s;
-      box-shadow: 0 0 30px rgba(124, 58, 237, 0.3);
-    }
-    .hero-cta:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 0 50px rgba(124, 58, 237, 0.5);
-    }
-
-    .hero-command {
-      margin-top: 2rem;
-      display: inline-block;
-      background: var(--bg-code);
-      border: 1px solid var(--border);
-      border-radius: 0.75rem;
-      padding: 1rem 2rem;
-      font-family: var(--font-mono);
-      font-size: 0.95rem;
-      color: var(--accent-bright);
-    }
-    .hero-command .dim { color: var(--text-muted); }
-
-    /* Pillars */
-    .pillars {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 1.5rem;
-      max-width: 72rem;
-      margin: 0 auto;
-      padding: 4rem 2rem 8rem;
-    }
-
-    .pillar {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 1rem;
-      padding: 2rem;
-      transition: all 0.3s;
-    }
-    .pillar:hover {
-      border-color: var(--accent-dim);
-      transform: translateY(-4px);
-      box-shadow: 0 8px 30px rgba(0,0,0,0.3);
-    }
-
-    .pillar-icon {
-      font-size: 2rem;
-      margin-bottom: 1rem;
-    }
-
-    .pillar h3 {
-      font-size: 1.15rem;
-      font-weight: 700;
-      margin-bottom: 0.5rem;
-    }
-
-    .pillar p {
-      color: var(--text-secondary);
-      font-size: 0.9rem;
-      line-height: 1.7;
-    }
-
-    /* === PAGE 2: GET STARTED === */
-    .docs-page {
-      max-width: 48rem;
-      margin: 0 auto;
-      padding: 6rem 2rem 8rem;
-    }
-
-    .docs-page h1 {
-      font-size: 2.5rem;
-      font-weight: 800;
-      margin-bottom: 1rem;
-      letter-spacing: -0.02em;
-    }
-
-    .docs-page h2 {
-      font-size: 1.5rem;
-      font-weight: 700;
-      margin: 3rem 0 1rem;
-      padding-top: 1rem;
-      border-top: 1px solid var(--border);
-    }
-
-    .docs-page h3 {
-      font-size: 1.15rem;
-      font-weight: 600;
-      margin: 2rem 0 0.75rem;
-      color: var(--accent-bright);
-    }
-
-    .docs-page p {
-      color: var(--text-secondary);
-      margin-bottom: 1rem;
-    }
-
-    .docs-page a { color: var(--accent); text-decoration: none; }
-    .docs-page a:hover { text-decoration: underline; }
-
-    .docs-page ul, .docs-page ol {
-      margin: 0.5rem 0 1rem 1.5rem;
-      color: var(--text-secondary);
-    }
-    .docs-page li { margin-bottom: 0.35rem; }
-
-    /* Code blocks */
-    pre {
-      background: var(--bg-code);
-      border: 1px solid var(--border);
-      border-radius: 0.75rem;
-      padding: 1.25rem 1.5rem;
-      overflow-x: auto;
-      margin: 1rem 0 1.5rem;
-      font-family: var(--font-mono);
-      font-size: 0.85rem;
-      line-height: 1.8;
-    }
-
-    code {
-      font-family: var(--font-mono);
-      font-size: 0.85em;
-    }
-
-    p code, li code {
-      background: var(--bg-code);
-      padding: 0.15rem 0.4rem;
-      border-radius: 0.3rem;
-      border: 1px solid var(--border);
-      font-size: 0.8em;
-    }
-
-    .code-title {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-bottom: none;
-      border-radius: 0.75rem 0.75rem 0 0;
-      padding: 0.5rem 1rem;
-      font-family: var(--font-mono);
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      margin-top: 1rem;
-    }
-    .code-title + pre {
-      margin-top: 0;
-      border-radius: 0 0 0.75rem 0.75rem;
-    }
-
-    /* Step blocks */
-    .step {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 1rem;
-      padding: 2rem;
-      margin: 2rem 0;
-    }
-
-    .step-number {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 2rem;
-      height: 2rem;
-      background: var(--accent-dim);
-      color: white;
-      border-radius: 50%;
-      font-weight: 700;
-      font-size: 0.85rem;
-      margin-right: 0.75rem;
-    }
-
-    .step h3 {
-      display: inline;
-      border: none;
-      margin: 0;
-      padding: 0;
-    }
-
-    /* Callout */
-    .callout {
-      background: rgba(124, 58, 237, 0.06);
-      border: 1px solid var(--border-accent);
-      border-radius: 0.75rem;
-      padding: 1.25rem 1.5rem;
-      margin: 1.5rem 0;
-    }
-
-    .callout-title {
-      font-weight: 600;
-      color: var(--accent);
-      margin-bottom: 0.25rem;
-    }
-
-    .callout p {
-      color: var(--text-secondary);
-      font-size: 0.9rem;
-      margin: 0;
-    }
-
-    /* === PAGE 4: REFERENCE === */
-    .ref-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 1rem;
-      margin: 1.5rem 0;
-    }
-
-    .ref-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 0.75rem;
-      padding: 1.25rem;
-    }
-
-    .ref-card h4 {
-      font-family: var(--font-mono);
-      font-size: 0.9rem;
-      color: var(--accent-bright);
-      margin-bottom: 0.5rem;
-    }
-
-    .ref-card p {
-      font-size: 0.85rem;
-      color: var(--text-secondary);
-      margin: 0;
-    }
-
-    /* Architecture diagram */
-    .arch-diagram {
-      background: var(--bg-code);
-      border: 1px solid var(--border);
-      border-radius: 1rem;
-      padding: 2rem;
-      margin: 2rem 0;
-      text-align: center;
-    }
-
-    .arch-layer {
-      display: inline-block;
-      padding: 0.75rem 2rem;
-      margin: 0.25rem;
-      border-radius: 0.5rem;
-      font-family: var(--font-mono);
-      font-size: 0.85rem;
-      font-weight: 600;
-    }
-
-    .layer-5 { background: rgba(99, 102, 241, 0.2); border: 1px solid rgba(99, 102, 241, 0.4); color: #818cf8; }
-    .layer-4 { background: rgba(139, 92, 246, 0.2); border: 1px solid rgba(139, 92, 246, 0.4); color: #a78bfa; }
-    .layer-3 { background: rgba(168, 85, 247, 0.2); border: 1px solid rgba(168, 85, 247, 0.4); color: #c084fc; }
-    .layer-2 { background: rgba(192, 132, 252, 0.2); border: 1px solid rgba(192, 132, 252, 0.4); color: #d8b4fe; }
-    .layer-1 { background: rgba(221, 214, 254, 0.2); border: 1px solid rgba(221, 214, 254, 0.4); color: #e9d5ff; }
-
-    .arch-arrow {
-      color: var(--text-muted);
-      font-size: 1.5rem;
-      margin: 0.25rem 0;
-    }
-
-    /* === WHY PAGE === */
-    .why-page {
-      max-width: 52rem;
-      margin: 0 auto;
-      padding: 6rem 2rem 8rem;
-    }
-
-    .why-hero {
-      text-align: center;
-      margin-bottom: 5rem;
-    }
-
-    .why-hero h1 {
-      font-size: clamp(2.2rem, 5vw, 3.5rem);
-      font-weight: 900;
-      line-height: 1.15;
-      letter-spacing: -0.03em;
-      margin-bottom: 1.5rem;
-    }
-
-    .why-hero h1 .gradient {
-      background: linear-gradient(135deg, var(--accent-bright), #818cf8, #6366f1);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .why-hero .subtitle {
-      font-size: 1.25rem;
-      color: var(--text-secondary);
-      line-height: 1.8;
-      max-width: 38rem;
-      margin: 0 auto;
-    }
-
-    .why-section {
-      margin-bottom: 5rem;
-    }
-
-    .why-section-label {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-size: 0.8rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      color: var(--accent);
-      margin-bottom: 1.25rem;
-    }
-
-    .why-section h2 {
-      font-size: clamp(1.6rem, 3.5vw, 2.25rem);
-      font-weight: 800;
-      line-height: 1.2;
-      letter-spacing: -0.02em;
-      margin-bottom: 1.25rem;
-    }
-
-    .why-section p {
-      color: var(--text-secondary);
-      font-size: 1.1rem;
-      line-height: 1.9;
-      margin-bottom: 1.25rem;
-    }
-
-    .why-section p strong {
-      color: var(--text-primary);
-      font-weight: 600;
-    }
-
-    .why-stats {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1.5rem;
-      margin: 2.5rem 0;
-    }
-
-    .why-stat {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 1rem;
-      padding: 1.75rem;
-      text-align: center;
-      transition: all 0.3s;
-    }
-
-    .why-stat:hover {
-      border-color: var(--accent-dim);
-      transform: translateY(-3px);
-      box-shadow: 0 8px 30px rgba(0,0,0,0.3);
-    }
-
-    .why-stat-number {
-      font-size: 2.25rem;
-      font-weight: 900;
-      background: linear-gradient(135deg, var(--accent-bright), #818cf8);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      margin-bottom: 0.35rem;
-    }
-
-    .why-stat-label {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      line-height: 1.4;
-    }
-
-    .why-divider {
-      border: none;
-      height: 1px;
-      background: var(--border);
-      margin: 4rem 0;
-    }
-
-    .why-cta {
-      text-align: center;
-      padding: 3rem 0 0;
-    }
-
-    .why-cta p {
-      color: var(--text-secondary);
-      font-size: 1.15rem;
-      margin-bottom: 2rem;
-    }
-
-    /* Comparison table */
-    .why-comparison {
-      width: 100%;
-      border-collapse: separate;
-      border-spacing: 0;
-      margin: 2rem 0;
-      font-size: 0.9rem;
-    }
-
-    .why-comparison th {
-      text-align: left;
-      padding: 0.85rem 1.25rem;
-      font-weight: 700;
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: var(--text-muted);
-      border-bottom: 1px solid var(--border);
-    }
-
-    .why-comparison th:first-child {
-      width: 40%;
-    }
-
-    .why-comparison th.col-typical {
-      color: var(--text-muted);
-    }
-
-    .why-comparison th.col-sigil {
-      color: var(--accent);
-    }
-
-    .why-comparison td {
-      padding: 0.85rem 1.25rem;
-      border-bottom: 1px solid var(--border);
-      color: var(--text-secondary);
-      line-height: 1.5;
-    }
-
-    .why-comparison td:first-child {
-      color: var(--text-primary);
-      font-weight: 600;
-    }
-
-    .why-comparison td.typical {
-      color: var(--text-muted);
-    }
-
-    .why-comparison td.sigil {
-      color: var(--success);
-      font-weight: 600;
-    }
-
-    .why-comparison tr:last-child td {
-      border-bottom: none;
-    }
-
-    .why-comparison-wrap {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 1rem;
-      overflow: hidden;
-      margin: 2rem 0;
-    }
-
-    /* Highlight card */
-    .why-highlight {
-      background: rgba(124, 58, 237, 0.06);
-      border: 1px solid var(--border-accent);
-      border-radius: 1rem;
-      padding: 2rem;
-      margin: 2.5rem 0;
-    }
-
-    .why-highlight h3 {
-      font-size: 1.15rem;
-      font-weight: 700;
-      color: var(--accent-bright);
-      margin-bottom: 0.75rem;
-    }
-
-    .why-highlight p {
-      color: var(--text-secondary);
-      font-size: 1rem;
-      line-height: 1.8;
-      margin-bottom: 0.75rem;
-    }
-
-    .why-highlight p:last-child {
-      margin-bottom: 0;
-    }
-
-    .why-highlight p strong {
-      color: var(--text-primary);
-    }
-
-    .why-note {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      font-style: italic;
-      margin-top: 1.5rem;
-    }
-
-    /* Footer */
-    footer {
-      border-top: 1px solid var(--border);
-      padding: 3rem 2rem;
-      text-align: center;
-      color: var(--text-muted);
-      font-size: 0.85rem;
-    }
-
-    /* Responsive */
-    @media (max-width: 640px) {
-      .nav-links { display: none; }
-      .hero { padding: 6rem 1.5rem 4rem; }
-      .pillars { padding: 2rem 1.5rem 4rem; }
-      .docs-page { padding: 4rem 1.5rem 6rem; }
-      .why-page { padding: 4rem 1.5rem 6rem; }
-      pre { font-size: 0.75rem; padding: 1rem; }
-      .why-stats { grid-template-columns: 1fr; }
-    }
-
-    /* Syntax highlighting (minimal) */
-    .kw { color: #c084fc; }
-    .fn { color: #818cf8; }
-    .str { color: #34d399; }
-    .cmt { color: #475569; }
-    .num { color: #f59e0b; }
-    .mod { color: #38bdf8; }
+    code { font-family: 'JetBrains Mono', 'SF Mono', ui-monospace, monospace; }
+    pre { font-family: 'JetBrains Mono', 'SF Mono', ui-monospace, monospace; }
+    .kw { color: #c084fc; } .fn { color: #818cf8; } .str { color: #34d399; }
+    .cmt { color: #6b7280; } .num { color: #f59e0b; } .mod { color: #38bdf8; }
+    .dim { color: #6b7280; }
   </style>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
 </head>
-<body>
+<body class="bg-white text-gray-900 antialiased font-sans">
 
 <!-- === NAVIGATION === -->
-<nav>
-  <div class="nav-inner">
-    <a href="#home" class="nav-logo" onclick="showPage('home')">⚡ <span>Sigil</span></a>
-    <ul class="nav-links">
-      <li><a href="#home" onclick="showPage('home')" id="nav-home" class="active">Home</a></li>
-      <li><a href="#why" onclick="showPage('why')" id="nav-why">Why Sigil</a></li>
-      <li><a href="#start" onclick="showPage('start')" id="nav-start">Get Started</a></li>
-      <li><a href="#tutorial" onclick="showPage('tutorial')" id="nav-tutorial">Tutorial</a></li>
-      <li><a href="#reference" onclick="showPage('reference')" id="nav-reference">Reference</a></li>
-      <li><a href="../doc/index.html" target="_blank">API Docs ↗</a></li>
-    </ul>
-    <a href="https://github.com/adambouchard/sigil" class="nav-github" target="_blank">GitHub →</a>
+<nav class="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-lg border-b border-gray-200">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
+    <a href="#home" onclick="showPage('home')" class="flex items-center gap-2 text-lg font-bold text-gray-900">
+      <span class="text-brand-500">⚡</span> Sigil
+    </a>
+    <div class="hidden md:flex items-center gap-1">
+      <a href="#home" onclick="showPage('home')" id="nav-home" class="nav-link active px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors">Home</a>
+      <a href="#why" onclick="showPage('why')" id="nav-why" class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors">Why Sigil</a>
+      <a href="#start" onclick="showPage('start')" id="nav-start" class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors">Get Started</a>
+      <a href="#tutorial" onclick="showPage('tutorial')" id="nav-tutorial" class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors">What You Get</a>
+      <a href="#reference" onclick="showPage('reference')" id="nav-reference" class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors">Reference</a>
+    </div>
+    <a href="https://github.com/sigilframework/sigil" target="_blank" class="text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors">GitHub →</a>
   </div>
 </nav>
 
@@ -721,79 +62,309 @@
 <!-- ============================================ -->
 <div id="page-home" class="page active">
 
-  <section class="hero">
-    <div class="hero-badge">✨ v0.1 — Now with real-time Live views</div>
-    <h1>
-      The easiest way to build<br />
-      <span class="gradient">AI agents and web apps</span><br />
-      with Elixir
-    </h1>
-    <p>
-      Sigil is a full-stack framework that manages context windows,
-      checkpoints state, and supervises tool calls — so your agents
-      can run forever with the least energy demand.
-    </p>
-    <a href="#start" class="hero-cta" onclick="showPage('start')">
-      Get Started →
-    </a>
-    <div class="hero-command">
-      <span class="dim">$</span> mix sigil.new my_app
+  <!-- Hero -->
+  <section class="relative isolate pt-32 pb-12 sm:pt-40 sm:pb-16">
+    <div class="absolute inset-x-0 top-0 -z-10 transform-gpu overflow-hidden blur-3xl" aria-hidden="true">
+      <div class="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-brand-200 to-brand-400 opacity-20 sm:left-[calc(50%-30rem)] sm:w-[72rem]"></div>
+    </div>
+
+    <div class="mx-auto max-w-3xl px-6 text-center lg:px-8">
+      <div class="inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-medium text-brand-600 ring-1 ring-brand-200 bg-brand-50 mb-8">
+        ⚡ Open source · Self-hosted · You own the code
+      </div>
+
+      <h1 class="text-5xl sm:text-7xl font-black tracking-tight leading-[1.08]">
+        Ship AI products,<br />
+        <span class="gradient-text">not agent scripts</span>
+      </h1>
+
+      <p class="mt-6 text-lg sm:text-xl text-gray-500 leading-relaxed max-w-2xl mx-auto">
+        Sigil is a framework for building AI-powered web apps.
+        It gives you the foundation — agents, memory, tools, auth, real-time UI — so you
+        (or an AI like Claude) can build your product on top. <strong class="text-gray-700">You own every line of code.</strong>
+      </p>
+
+      <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+        <a href="https://sigilcloud.build" target="_blank" class="rounded-lg bg-brand-600 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-brand-500 transition-colors">
+          See a live example →
+        </a>
+        <a href="#start" onclick="showPage('start')" class="rounded-lg bg-white px-6 py-3 text-sm font-semibold text-gray-700 shadow-sm ring-1 ring-gray-300 hover:bg-gray-50 transition-colors">
+          Get Started
+        </a>
+      </div>
     </div>
   </section>
 
-  <section class="pillars">
-    <div class="pillar">
-      <div class="pillar-icon">🤖</div>
-      <h3>Agents That Run Forever</h3>
-      <p>
-        OTP-supervised agents with automatic checkpointing, context window
-        management, and progressive summarization. They crash? They restart
-        exactly where they left off.
-      </p>
+  <!-- The Sigil Way -->
+  <section class="py-20 sm:py-28">
+    <div class="mx-auto max-w-5xl px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">The Sigil Way</h2>
+        <p class="mt-4 text-lg text-gray-500 max-w-2xl mx-auto">A framework that gives you the building blocks. An AI that assembles them. A codebase you own forever.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <!-- Step 1 -->
+        <div class="relative rounded-2xl border border-gray-200 bg-white p-8 hover:border-brand-300 hover:shadow-lg transition-all duration-300">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="flex-shrink-0 w-8 h-8 rounded-full bg-brand-100 text-brand-600 flex items-center justify-center font-bold text-sm">1</div>
+            <h3 class="text-base font-semibold text-gray-900">The Foundation</h3>
+          </div>
+          <p class="text-sm text-gray-500 leading-relaxed">
+            Sigil is the <strong class="text-gray-700">framework</strong> — it gives you an AI agent system, memory management, tool execution,
+            real-time UI, auth, and admin. Think of it as the engine, not the car.
+          </p>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="relative rounded-2xl border-2 border-brand-200 bg-brand-50/30 p-8 hover:border-brand-300 hover:shadow-lg transition-all duration-300">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="flex-shrink-0 w-8 h-8 rounded-full bg-brand-100 text-brand-600 flex items-center justify-center font-bold text-sm">2</div>
+            <h3 class="text-base font-semibold text-gray-900">AI Builds On It</h3>
+          </div>
+          <p class="text-sm text-gray-500 leading-relaxed">
+            Tell Claude, Cursor, or any AI coding tool: <em class="text-gray-700">"Build me a coaching app with Sigil."</em>
+            It works because Sigil gives AI a clean, opinionated codebase to build on — not a blank canvas.
+          </p>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="relative rounded-2xl border border-gray-200 bg-white p-8 hover:border-brand-300 hover:shadow-lg transition-all duration-300">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="flex-shrink-0 w-8 h-8 rounded-full bg-brand-100 text-brand-600 flex items-center justify-center font-bold text-sm">3</div>
+            <h3 class="text-base font-semibold text-gray-900">You Own It</h3>
+          </div>
+          <p class="text-sm text-gray-500 leading-relaxed">
+            The result is a real codebase — not a no-code export, not a platform dependency.
+            You can read it, modify it, deploy it anywhere, and never pay a platform fee.
+          </p>
+        </div>
+      </div>
+
+      <!-- The "AI as builder" callout -->
+      <div class="mt-12 rounded-xl bg-gray-50 border border-gray-200 p-6 sm:p-8">
+        <div class="flex flex-col sm:flex-row gap-6 items-start">
+          <div class="flex-shrink-0 text-4xl">🤖</div>
+          <div>
+            <h3 class="text-lg font-bold text-gray-900 mb-2">Why this matters for non-technical founders</h3>
+            <p class="text-gray-500 leading-relaxed">
+              You don't need to write code yourself. Sigil gives AI tools like Claude a <strong class="text-gray-700">structured, well-documented Elixir codebase</strong> to work with.
+              Describe what you want — "add a booking page," "change the agent's personality," "add a pricing table" — and the AI modifies your Sigil app directly.
+              The code it generates follows the framework's patterns, so it actually works. <strong class="text-gray-700">Sigil is your AI's favorite framework to build on.</strong>
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="pillar">
-      <div class="pillar-icon">⚡</div>
-      <h3>Real-Time Web UI</h3>
-      <p>
-        Server-rendered pages that update in real-time via WebSocket.
-        No JavaScript framework. No build step. Just Elixir.
-        The client runtime is ~2KB.
-      </p>
+  </section>
+
+  <!-- What the framework gives you -->
+  <section class="py-20 sm:py-28 bg-gray-50">
+    <div class="mx-auto max-w-7xl px-6 lg:px-8">
+      <div class="mx-auto max-w-2xl text-center mb-16">
+        <div class="inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-medium text-gray-500 ring-1 ring-gray-200 bg-white mb-6">🧱 The Framework</div>
+        <h2 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">What Sigil gives you out of the box</h2>
+        <p class="mt-4 text-lg text-gray-500">These are the building blocks. Every app you create with Sigil gets all of this — agents, auth, admin, deploy. No assembly required.</p>
+      </div>
+
+      <div class="mx-auto max-w-5xl grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+        <div class="relative rounded-2xl border border-gray-200 bg-white p-8 hover:border-brand-300 hover:shadow-lg transition-all duration-300">
+          <div class="text-3xl mb-4">🤖</div>
+          <h3 class="text-base font-semibold text-gray-900">AI Agent System</h3>
+          <p class="mt-2 text-sm text-gray-500 leading-relaxed">
+            Create and manage AI agents from the admin UI. Define their personality, pick an AI model,
+            assign tools. Agents stay alive between conversations — no cold starts.
+          </p>
+        </div>
+
+        <div class="relative rounded-2xl border border-gray-200 bg-white p-8 hover:border-brand-300 hover:shadow-lg transition-all duration-300">
+          <div class="text-3xl mb-4">🧠</div>
+          <h3 class="text-base font-semibold text-gray-900">Memory & Context</h3>
+          <p class="mt-2 text-sm text-gray-500 leading-relaxed">
+            Agents remember conversations and compress old messages automatically.
+            Long chats stay cheap — estimated 80% fewer tokens than sending full history every time.
+          </p>
+        </div>
+
+        <div class="relative rounded-2xl border border-gray-200 bg-white p-8 hover:border-brand-300 hover:shadow-lg transition-all duration-300">
+          <div class="text-3xl mb-4">🔧</div>
+          <h3 class="text-base font-semibold text-gray-900">Tool System</h3>
+          <p class="mt-2 text-sm text-gray-500 leading-relaxed">
+            Agents can call tools — search your data, check calendars, book meetings, anything you define.
+            Add a new tool with one module. Assign tools to agents from the admin.
+          </p>
+        </div>
+
+        <div class="relative rounded-2xl border border-gray-200 bg-white p-8 hover:border-brand-300 hover:shadow-lg transition-all duration-300">
+          <div class="text-3xl mb-4">⚡</div>
+          <h3 class="text-base font-semibold text-gray-900">Real-Time UI</h3>
+          <p class="mt-2 text-sm text-gray-500 leading-relaxed">
+            Pages update instantly — no page reloads, no waiting. Chat responses stream in real time.
+            Built on LiveView, the ~2KB runtime that makes every page feel alive.
+          </p>
+        </div>
+
+        <div class="relative rounded-2xl border border-gray-200 bg-white p-8 hover:border-brand-300 hover:shadow-lg transition-all duration-300">
+          <div class="text-3xl mb-4">🛡️</div>
+          <h3 class="text-base font-semibold text-gray-900">Auth & Admin</h3>
+          <p class="mt-2 text-sm text-gray-500 leading-relaxed">
+            User accounts, login, protected routes, sessions — built in from day one.
+            A full admin dashboard to manage agents, content, tools, and conversations.
+          </p>
+        </div>
+
+        <div class="relative rounded-2xl border border-gray-200 bg-white p-8 hover:border-brand-300 hover:shadow-lg transition-all duration-300">
+          <div class="text-3xl mb-4">🚀</div>
+          <h3 class="text-base font-semibold text-gray-900">One-Click Deploy</h3>
+          <p class="mt-2 text-sm text-gray-500 leading-relaxed">
+            Docker + Render config included. Push to GitHub, click deploy.
+            Your app is live. No DevOps knowledge needed.
+          </p>
+        </div>
+      </div>
     </div>
-    <div class="pillar">
-      <div class="pillar-icon">🔑</div>
-      <h3>Auth Built In</h3>
-      <p>
-        User registration, bcrypt passwords, cookie sessions, and
-        protected routes. One line in your router:
-        <code>live "/dashboard", DashboardLive, auth: true</code>
-      </p>
+  </section>
+
+  <!-- Example App — clearly labeled -->
+  <section class="py-20 sm:py-28">
+    <div class="mx-auto max-w-5xl px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <div class="inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-medium text-emerald-600 ring-1 ring-emerald-200 bg-emerald-50 mb-6">📦 Example App</div>
+        <h2 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">See it in action: the starter app</h2>
+        <p class="mt-4 text-lg text-gray-500 max-w-2xl mx-auto">
+          When you run <code class="text-sm bg-gray-100 px-1.5 py-0.5 rounded text-brand-600">mix sigil.new my_app</code>, you get a working app — a personal blog with an AI chat assistant,
+          multi-agent routing, and a full admin panel. It's a starting point, not the destination.
+        </p>
+      </div>
+
+      <!-- Showcase 1: Chat UI -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-24">
+        <div>
+          <div class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-emerald-600 mb-3">💬 AI Chat</div>
+          <h3 class="text-2xl font-bold tracking-tight text-gray-900">A real AI assistant for your visitors</h3>
+          <p class="mt-4 text-gray-500 leading-relaxed">The example app ships with a Blog Assistant that knows your content. Ask it anything — it searches your posts, answers questions, and helps visitors find what they need. You can change the agent's name, personality, and tools from the admin.</p>
+          <p class="mt-3 text-sm text-gray-400 italic">This is the example app's chat. Your app could be a coaching bot, a customer support AI, an intake form — whatever you build on the framework.</p>
+        </div>
+        <div class="rounded-xl border border-gray-200 shadow-lg overflow-hidden">
+          <img src="images/chat-hero.png" alt="Example app: AI chat assistant that searches blog posts and answers visitor questions" class="w-full" loading="lazy" />
+        </div>
+      </div>
+
+      <!-- Showcase 2: Admin Dashboard -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-24">
+        <div class="order-2 lg:order-1 rounded-xl border border-gray-200 shadow-lg overflow-hidden">
+          <img src="images/admin-dashboard.png" alt="Example app: admin dashboard showing conversation list and agent management" class="w-full" loading="lazy" />
+        </div>
+        <div class="order-1 lg:order-2">
+          <div class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-emerald-600 mb-3">🛡️ Admin Dashboard</div>
+          <h3 class="text-2xl font-bold tracking-tight text-gray-900">Manage your app without touching code</h3>
+          <p class="mt-4 text-gray-500 leading-relaxed">Every Sigil app gets a full admin dashboard. Create agents, manage conversations, edit content, configure tools — all from a clean UI. The admin is part of the <em>framework</em>, so every app you build has it.</p>
+          <a href="https://sigilcloud.build/login" target="_blank" class="inline-block mt-4 text-sm text-brand-600 font-medium hover:underline">Try the admin live →</a>
+        </div>
+      </div>
+
+      <!-- Showcase 3: Tools & Agent Config -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-24">
+        <div>
+          <div class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-emerald-600 mb-3">🔧 Tools</div>
+          <h3 class="text-2xl font-bold tracking-tight text-gray-900">Agents that do things, not just talk</h3>
+          <p class="mt-4 text-gray-500 leading-relaxed">The example app includes tools like <code class="text-xs bg-gray-100 px-1 py-0.5 rounded">search_posts</code>, <code class="text-xs bg-gray-100 px-1 py-0.5 rounded">check_calendar</code>, and <code class="text-xs bg-gray-100 px-1 py-0.5 rounded">book_meeting</code>. These are tool <em>examples</em> — the framework lets you create any tool your product needs. Your AI can query databases, call APIs, send emails, anything.</p>
+        </div>
+        <div class="rounded-xl border border-gray-200 shadow-lg overflow-hidden">
+          <img src="images/agent-tools.png" alt="Example app: tools admin showing search_posts, check_calendar, and book_meeting" class="w-full" loading="lazy" />
+        </div>
+      </div>
+
+      <!-- Showcase 4: Blog/Content -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div class="order-2 lg:order-1 rounded-xl border border-gray-200 shadow-lg overflow-hidden">
+          <img src="images/blog-editor.png" alt="Example app: rich text blog editor with formatting toolbar" class="w-full" loading="lazy" />
+        </div>
+        <div class="order-1 lg:order-2">
+          <div class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-emerald-600 mb-3">📝 Blog</div>
+          <h3 class="text-2xl font-bold tracking-tight text-gray-900">The example app is a blog. Yours can be anything.</h3>
+          <p class="mt-4 text-gray-500 leading-relaxed">The starter app generates a personal blog with a rich editor, tags, and a public feed. But this is just the <em>example</em>. You can modify it — or ask Claude to rebuild it entirely as a SaaS dashboard, a customer portal, a marketplace. The framework supports whatever you need.</p>
+          <a href="https://sigilcloud.build" target="_blank" class="inline-block mt-4 text-sm text-brand-600 font-medium hover:underline">See the example app live →</a>
+        </div>
+      </div>
     </div>
-    <div class="pillar">
-      <div class="pillar-icon">🧠</div>
-      <h3>AI Code Generation</h3>
-      <p>
-        Describe what you want in plain English.
-        <code>mix sigil.gen "blog with posts"</code> generates schemas,
-        migrations, views, and routes.
-      </p>
+  </section>
+
+  <!-- Before / After -->
+  <section class="py-20 sm:py-28 bg-gray-50">
+    <div class="mx-auto max-w-4xl px-6 lg:px-8">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Stop duct-taping SaaS tools</h2>
+        <p class="mt-4 text-lg text-gray-500">Most indie hackers piece together 5+ services. Sigil replaces them with one codebase you own.</p>
+      </div>
+
+      <div class="rounded-xl border border-gray-200 overflow-hidden bg-white">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="border-b border-gray-200 bg-gray-50">
+              <th class="text-left px-5 py-3.5 text-xs font-medium uppercase tracking-wider text-gray-400 w-1/2">The old way</th>
+              <th class="text-left px-5 py-3.5 text-xs font-medium uppercase tracking-wider text-brand-600 w-1/2">The Sigil way</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-100">
+            <tr>
+              <td class="px-5 py-4 text-gray-400">Pay $200/mo for a blog, chatbot, CRM, and hosting that don't talk to each other</td>
+              <td class="px-5 py-4 text-emerald-600 font-medium">One codebase — agents, UI, admin, auth. Deploy for $0-7/mo.</td>
+            </tr>
+            <tr>
+              <td class="px-5 py-4 text-gray-400">Spend weeks connecting APIs, auth systems, and deployment configs</td>
+              <td class="px-5 py-4 text-emerald-600 font-medium">Run <code class="text-xs bg-gray-100 px-1 py-0.5 rounded">mix sigil.new</code> — framework + example app in 5 minutes</td>
+            </tr>
+            <tr>
+              <td class="px-5 py-4 text-gray-400">Your AI chatbot is a toy — no memory, no context, no tools</td>
+              <td class="px-5 py-4 text-emerald-600 font-medium">Framework agents remember context, call tools, stay alive</td>
+            </tr>
+            <tr>
+              <td class="px-5 py-4 text-gray-400">No-code platform owns your data. They raise prices. You're stuck.</td>
+              <td class="px-5 py-4 text-emerald-600 font-medium">You own the code. Deploy anywhere. No lock-in, ever.</td>
+            </tr>
+            <tr>
+              <td class="px-5 py-4 text-gray-400">Want to customize? Learn the platform's proprietary system.</td>
+              <td class="px-5 py-4 text-emerald-600 font-medium">Tell Claude to modify your Sigil codebase. It just works.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
-    <div class="pillar">
-      <div class="pillar-icon">📦</div>
-      <h3>One Dependency</h3>
-      <p>
-        No Phoenix. No complex dependency trees. Just add
-        <code>{:sigil, "~> 0.1"}</code> to your mix.exs. Sigil pulls
-        in everything you need.
-      </p>
-    </div>
-    <div class="pillar">
-      <div class="pillar-icon">🚀</div>
-      <h3>Deploy Anywhere</h3>
-      <p>
-        Ships with a production Dockerfile for Render.com.
-        Your app is a single BEAM release. No Node.js required.
-      </p>
+  </section>
+
+  <!-- Right for you if -->
+  <section class="py-20">
+    <div class="mx-auto max-w-3xl px-6 lg:px-8">
+      <h2 class="text-2xl font-bold tracking-tight text-gray-900 mb-8">Right for you if…</h2>
+      <div class="space-y-4">
+        <div class="flex items-start gap-3">
+          <span class="mt-0.5 flex-shrink-0 text-brand-500">✓</span>
+          <p class="text-gray-600">You want to launch an AI-powered product without writing code yourself</p>
+        </div>
+        <div class="flex items-start gap-3">
+          <span class="mt-0.5 flex-shrink-0 text-brand-500">✓</span>
+          <p class="text-gray-600">You'd rather own your codebase than rent a no-code platform</p>
+        </div>
+        <div class="flex items-start gap-3">
+          <span class="mt-0.5 flex-shrink-0 text-brand-500">✓</span>
+          <p class="text-gray-600">You want Claude or Cursor to be able to build and modify your app</p>
+        </div>
+        <div class="flex items-start gap-3">
+          <span class="mt-0.5 flex-shrink-0 text-brand-500">✓</span>
+          <p class="text-gray-600">You're tired of paying monthly fees for tools that don't work together</p>
+        </div>
+        <div class="flex items-start gap-3">
+          <span class="mt-0.5 flex-shrink-0 text-brand-500">✓</span>
+          <p class="text-gray-600">You want to go from zero to deployed in under an hour</p>
+        </div>
+      </div>
+
+      <div class="mt-10 text-center">
+        <a href="#start" onclick="showPage('start')" class="rounded-lg bg-brand-600 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-brand-500 transition-colors">
+          Get Started →
+        </a>
+      </div>
     </div>
   </section>
 
@@ -803,197 +374,117 @@
 <!-- PAGE: WHY SIGIL                              -->
 <!-- ============================================ -->
 <div id="page-why" class="page">
-  <div class="why-page">
+  <div class="mx-auto max-w-3xl px-6 lg:px-8 pt-28 pb-20">
 
-    <div class="why-hero">
-      <h1>An AI framework that<br /><span class="gradient">burns less energy</span></h1>
-      <p class="subtitle">
-        AI is consuming enormous resources. Sigil is built from the ground up
-        to experiment on long-running agents with less token and energy usage.
+    <div class="text-center mb-20">
+      <h1 class="text-4xl sm:text-5xl font-black tracking-tight leading-tight">
+        Own your product.<br /><span class="gradient-text">Not someone else's platform.</span>
+      </h1>
+      <p class="mt-6 text-lg text-gray-500 max-w-2xl mx-auto leading-relaxed">
+        Most indie hackers rent their entire stack. Sigil gives you a product you own,
+        that costs less to run, and that you'll never get locked out of.
       </p>
     </div>
 
-    <!-- WHY -->
-    <section class="why-section">
-      <div class="why-section-label">🌍 Why</div>
-      <h2>AI has a resource problem</h2>
-      <p>
-        Every time an AI agent answers a question, writes code, or runs a task,
-        it spins up fresh infrastructure, loads context from scratch, and throws
-        everything away when it's done. <strong>It's like starting your car engine
-        from cold every time you want to drive a block.</strong>
-      </p>
-      <p>
-        At global scale, this adds up fast. Data centers are already
-        consuming record amounts of electricity. As AI agents become part of
-        daily life, the energy cost will only grow — unless we build
-        smarter foundations.
-      </p>
-      <p>
-        <strong>We believe the best agent framework should also be the most
-        efficient one.</strong> Not as an afterthought — efficiency should be
-        the starting point.
-      </p>
-    </section>
+    <!-- Section A: Outcomes -->
+    <section class="mb-16">
+      <div class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-brand-600 mb-4">🏠 Own Everything</div>
+      <h2 class="text-2xl font-bold tracking-tight text-gray-900 mb-4">No monthly fees. No vendor lock-in. No platform risk.</h2>
+      <div class="space-y-4 text-gray-600 leading-relaxed">
+        <p>Every SaaS tool you use is a dependency you don't control. They can raise prices, change features, sunset your plan, or shut down entirely. <strong class="text-gray-900">When you build with Sigil, the code is yours.</strong></p>
+        <p>You host it where you want. You change anything you want. You pay only for the server — which can be as cheap as <strong class="text-gray-900">$0/mo on Render's free tier</strong> or $7/mo for a production server.</p>
+      </div>
 
-    <hr class="why-divider" />
-
-    <!-- WHAT -->
-    <section class="why-section">
-      <div class="why-section-label">⚡ What</div>
-      <h2>A framework for agents that stay alive</h2>
-      <p>
-        Sigil is a framework for building AI agents and web applications
-        with <strong>Elixir</strong> — a language designed for systems that
-        never stop running. Instead of treating each AI interaction as a
-        one-time request, Sigil keeps agents alive as long-running processes.
-      </p>
-      <p>
-        That means your agent remembers its conversation, keeps its tools
-        ready, and picks up right where it left off — even after a crash.
-        No cold starts. No wasted context. <strong>Just continuous, efficient work.</strong>
-      </p>
-
-      <div class="why-stats">
-        <div class="why-stat">
-          <div class="why-stat-number">~2M</div>
-          <div class="why-stat-label">lightweight processes<br />per server</div>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-8">
+        <div class="rounded-xl border border-gray-200 p-6 text-center hover:border-brand-300 transition-colors">
+          <div class="text-3xl font-black gradient-text">$0</div>
+          <div class="text-xs text-gray-500 mt-1">monthly platform fees<br />forever</div>
         </div>
-        <div class="why-stat">
-          <div class="why-stat-number">0</div>
-          <div class="why-stat-label">cold starts for<br />long-running agents</div>
+        <div class="rounded-xl border border-gray-200 p-6 text-center hover:border-brand-300 transition-colors">
+          <div class="text-3xl font-black gradient-text">100%</div>
+          <div class="text-xs text-gray-500 mt-1">ownership of<br />your code & data</div>
         </div>
-        <div class="why-stat">
-          <div class="why-stat-number">~2KB</div>
-          <div class="why-stat-label">client runtime for<br />real-time web UI</div>
+        <div class="rounded-xl border border-gray-200 p-6 text-center hover:border-brand-300 transition-colors">
+          <div class="text-3xl font-black gradient-text">0</div>
+          <div class="text-xs text-gray-500 mt-1">risk of being<br />locked out</div>
         </div>
       </div>
     </section>
 
-    <hr class="why-divider" />
+    <hr class="border-gray-200 my-12" />
 
-    <!-- HOW -->
-    <section class="why-section">
-      <div class="why-section-label">🔧 How</div>
-      <h2>Built on the most battle-tested runtime in the world</h2>
-      <p>
-        Sigil runs on the <strong>BEAM</strong> — the same virtual machine that
-        powers phone networks carrying billions of calls with 99.9999999%
-        uptime. It was built for exactly this kind of problem: millions of
-        independent processes, running forever, supervised automatically.
-      </p>
-      <p>
-        When an agent crashes, the system restarts it from its last
-        checkpoint — no human intervention, no data loss. When traffic
-        spikes, new processes spin up in microseconds. When an agent
-        is idle, it consumes almost <strong>zero resources</strong>.
-      </p>
-      <p>
-        We combine this with <strong>intelligent memory management</strong>
-        — context windows that compress and summarize old conversations,
-        so your agents use the fewest tokens possible for each AI call.
-        Less tokens means less compute means less energy.
-      </p>
-    </section>
+    <!-- Section B: Cost / Energy -->
+    <section class="mb-16">
+      <div class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-brand-600 mb-4">💰 Runs Cheaper, Runs Longer</div>
+      <h2 class="text-2xl font-bold tracking-tight text-gray-900 mb-4">Your AI costs less because the foundation is efficient</h2>
+      <div class="space-y-4 text-gray-600 leading-relaxed">
+        <p>Most AI tools send your entire conversation history with every request. A 50-message chat can burn <strong class="text-gray-900">25,000+ tokens per call</strong>. That adds up fast — and most of those tokens are wasted repeating context the AI already saw.</p>
+        <p>Sigil uses <strong class="text-gray-900">progressive summarization</strong> to keep context windows small. Instead of replaying the whole history, it compresses older messages into summaries. The result: an estimated <strong class="text-gray-900">80% reduction in tokens per call</strong> for long conversations.</p>
+        <p><strong class="text-gray-900">The engine underneath matters too.</strong> Most frameworks spin up a fresh process for every request, then throw it away. Sigil keeps your agents alive between conversations — like keeping your car engine warm instead of cold-starting it every time you drive a block.</p>
+      </div>
 
-    <hr class="why-divider" />
-
-    <!-- THE HYPOTHESIS -->
-    <section class="why-section">
-      <div class="why-section-label">📊 The Hypothesis</div>
-      <h2>What if agents didn't start from scratch every time?</h2>
-      <p>
-        Most AI frameworks today follow the same pattern: receive a request,
-        spin up a process, load all the context, call the model, return a
-        response, tear everything down. <strong>Every single interaction pays
-        the full cost.</strong>
-      </p>
-      <p>
-        Sigil takes a fundamentally different approach. Agents stay alive
-        between interactions. Context is managed intelligently. The runtime
-        is designed for millions of concurrent, idle-cheap processes.
-        Here's how we think this could play out:
-      </p>
-
-      <div class="why-comparison-wrap">
-        <table class="why-comparison">
+      <div class="mt-8 rounded-xl border border-gray-200 overflow-hidden">
+        <table class="w-full text-sm">
           <thead>
-            <tr>
-              <th></th>
-              <th class="col-typical">Typical approach</th>
-              <th class="col-sigil">Sigil on BEAM</th>
+            <tr class="border-b border-gray-200">
+              <th class="text-left px-5 py-3 text-xs font-medium uppercase tracking-wider text-gray-400 w-2/5"></th>
+              <th class="text-left px-5 py-3 text-xs font-medium uppercase tracking-wider text-gray-400">Typical approach</th>
+              <th class="text-left px-5 py-3 text-xs font-medium uppercase tracking-wider text-brand-500">Sigil</th>
             </tr>
           </thead>
-          <tbody>
-            <tr>
-              <td>Agent lifecycle</td>
-              <td class="typical">Spun up per request, torn down after</td>
-              <td class="sigil">Long-running, stays alive between calls</td>
-            </tr>
-            <tr>
-              <td>Context loading</td>
-              <td class="typical">Full history reloaded every call</td>
-              <td class="sigil">Kept in-memory, summarized progressively</td>
-            </tr>
-            <tr>
-              <td>Tokens per interaction</td>
-              <td class="typical">Grows linearly with conversation length</td>
-              <td class="sigil">Stays bounded via context budgeting</td>
-            </tr>
-            <tr>
-              <td>Idle agent cost</td>
-              <td class="typical">Container / thread sitting idle</td>
-              <td class="sigil">~2KB suspended BEAM process</td>
-            </tr>
-            <tr>
-              <td>Crash recovery</td>
-              <td class="typical">Manual retry logic, lost state</td>
-              <td class="sigil">Auto-restart from last checkpoint</td>
-            </tr>
-            <tr>
-              <td>Concurrent agents</td>
-              <td class="typical">Hundreds per server (threads / containers)</td>
-              <td class="sigil">Millions per server (BEAM processes)</td>
-            </tr>
+          <tbody class="divide-y divide-gray-100">
+            <tr><td class="px-5 py-3 font-medium text-gray-900">Tokens per long chat</td><td class="px-5 py-3 text-gray-400">~25,000 (full history resent)</td><td class="px-5 py-3 text-emerald-600 font-medium">~4,000 (summarized context)</td></tr>
+            <tr><td class="px-5 py-3 font-medium text-gray-900">Cost of idle agents</td><td class="px-5 py-3 text-gray-400">Container / thread sitting idle</td><td class="px-5 py-3 text-emerald-600 font-medium">~2KB per agent — nearly zero</td></tr>
+            <tr><td class="px-5 py-3 font-medium text-gray-900">Conversation recovery</td><td class="px-5 py-3 text-gray-400">Lost on crash or restart</td><td class="px-5 py-3 text-emerald-600 font-medium">Auto-restart from last checkpoint</td></tr>
+            <tr><td class="px-5 py-3 font-medium text-gray-900">Hosting cost</td><td class="px-5 py-3 text-gray-400">$50-200/mo across services</td><td class="px-5 py-3 text-emerald-600 font-medium">$0-7/mo (one server)</td></tr>
           </tbody>
         </table>
       </div>
 
-      <div class="why-highlight">
-        <h3>🧠 The memory strategy is the key</h3>
-        <p>
-          The biggest cost in running AI agents isn't compute — it's
-          <strong>tokens</strong>. Every token sent to the model costs money
-          and energy. Most frameworks send the entire conversation history
-          with every request. As conversations grow, so does the cost.
-        </p>
-        <p>
-          Sigil's memory layer uses <strong>progressive summarization</strong>
-          and <strong>token budgeting</strong> to keep context windows small.
-          Old messages are compressed into summaries. The system allocates a
-          fixed token budget across system prompt, history, and response —
-          so you never overflow and never overspend.
-        </p>
-        <p>
-          For a 50-message conversation, a typical framework might send
-          <strong>~25,000 tokens per call</strong>. Sigil's budget system
-          could keep that under <strong>~4,000 tokens</strong> — an estimated
-          <strong>80% reduction</strong> in token usage per interaction.
-        </p>
-      </div>
-
-      <p class="why-note">
-        These are hypothetical projections based on architectural analysis,
-        not benchmarks. We're building Sigil to test this thesis in practice.
-      </p>
+      <p class="text-xs text-gray-400 italic mt-4">Token estimates are based on architectural analysis. Energy savings come from Elixir's lightweight process model — explained below.</p>
     </section>
 
-    <hr class="why-divider" />
+    <hr class="border-gray-200 my-12" />
+
+    <!-- Section C: Why Elixir (educational) -->
+    <section class="mb-16">
+      <div class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-brand-600 mb-4">🧪 Why Elixir?</div>
+      <h2 class="text-2xl font-bold tracking-tight text-gray-900 mb-4">You don't need to know Elixir to use Sigil.<br />But here's why we chose it.</h2>
+      <div class="space-y-4 text-gray-600 leading-relaxed">
+        <p>Elixir runs on the <strong class="text-gray-900">BEAM</strong> — the same technology that powers WhatsApp for 2 billion users with a fraction of the servers competitors need. It was originally built by Ericsson for phone networks that can never go down.</p>
+
+        <p>Here's what that means for your product:</p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
+        <div class="rounded-xl border border-gray-200 p-5 hover:border-brand-300 transition-colors">
+          <div class="text-sm font-semibold text-gray-900 mb-1">💡 Millions of tiny processes</div>
+          <p class="text-xs text-gray-500">Each agent, each chat, each user gets its own lightweight process. They're so small (~2KB) that one server can run millions. Compare that to threads in Python or Node, which cost megabytes each.</p>
+        </div>
+        <div class="rounded-xl border border-gray-200 p-5 hover:border-brand-300 transition-colors">
+          <div class="text-sm font-semibold text-gray-900 mb-1">🔄 Self-healing</div>
+          <p class="text-xs text-gray-500">If something crashes, the system automatically restarts it in milliseconds — from the last good state. No lost conversations. No manual recovery. It just keeps working.</p>
+        </div>
+        <div class="rounded-xl border border-gray-200 p-5 hover:border-brand-300 transition-colors">
+          <div class="text-sm font-semibold text-gray-900 mb-1">⚡ Real-time by default</div>
+          <p class="text-xs text-gray-500">Elixir's LiveView sends UI updates over a WebSocket — your pages update instantly without any JavaScript framework. The client runtime is just ~2KB. Pages feel alive.</p>
+        </div>
+        <div class="rounded-xl border border-gray-200 p-5 hover:border-brand-300 transition-colors">
+          <div class="text-sm font-semibold text-gray-900 mb-1">🔥 Update without downtime</div>
+          <p class="text-xs text-gray-500">Hot code reloading means you can push updates to your running app without restarting it. Your users won't even notice. This is the same technology that lets phone switches update without dropping calls.</p>
+        </div>
+      </div>
+
+      <div class="mt-8 rounded-xl bg-brand-50 border border-brand-200 p-6">
+        <h3 class="text-sm font-semibold text-brand-700 mb-2">🌍 Better for the planet, too</h3>
+        <p class="text-sm text-gray-600 leading-relaxed">AI is consuming enormous energy. Data centers are already using record amounts of electricity, and it's growing. Building on an efficient foundation isn't just good for your wallet — it's responsible engineering. Elixir processes use a fraction of the resources that containers and threads need, which means less compute, less energy, and lower costs at every scale.</p>
+      </div>
+    </section>
 
     <!-- CTA -->
-    <div class="why-cta">
-      <p>Ready to build something that lasts?</p>
-      <a href="#start" class="hero-cta" onclick="showPage('start')">
+    <div class="text-center pt-8">
+      <p class="text-gray-500 mb-6">Ready to own your product?</p>
+      <a href="#start" onclick="showPage('start')" class="rounded-lg bg-brand-600 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-brand-500 transition-colors">
         Get Started →
       </a>
     </div>
@@ -1005,181 +496,215 @@
 <!-- PAGE 2: GET STARTED                          -->
 <!-- ============================================ -->
 <div id="page-start" class="page">
-  <div class="docs-page">
+  <div class="mx-auto max-w-3xl px-6 lg:px-8 pt-28 pb-20">
 
-    <h1>Get Started</h1>
-    <p>Go from zero to a running app in under 5 minutes.</p>
+    <h1 class="text-3xl font-bold tracking-tight text-gray-900">Get Started</h1>
+    <p class="mt-2 text-gray-500">Two paths. Pick the one that fits.</p>
 
-    <div class="step">
-      <span class="step-number">1</span>
-      <h3>Install Elixir</h3>
-      <p style="margin-top:1rem">If you don't have Elixir yet, install it with <a href="https://mise.jdx.dev">mise</a> (recommended) or <a href="https://github.com/asdf-vm/asdf">asdf</a>:</p>
-<pre><span class="dim">$</span> mise install elixir@1.18
-<span class="dim">$</span> mise install erlang@27</pre>
+    <!-- Path A: Try it live -->
+    <div class="mt-10 rounded-2xl border-2 border-brand-200 bg-brand-50/50 p-8">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="text-2xl">🌐</span>
+        <h2 class="text-xl font-bold text-gray-900">See it live — no install needed</h2>
+      </div>
+      <p class="text-gray-600 mb-5">Click the link below to explore a running Sigil app. Browse blog posts, chat with the AI assistant, and log into the admin dashboard.</p>
+      <a href="https://sigilcloud.build" target="_blank" class="inline-flex rounded-lg bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-brand-500 transition-colors">
+        Open live demo → sigilcloud.build
+      </a>
+      <div class="mt-4 flex gap-6 text-sm text-gray-500">
+        <div><strong class="text-gray-700">Email:</strong> admin@example.com</div>
+        <div><strong class="text-gray-700">Password:</strong> admin123</div>
+      </div>
     </div>
 
-    <div class="step">
-      <span class="step-number">2</span>
-      <h3>Install the Sigil generator</h3>
-<pre><span class="dim">$</span> mix archive.install hex sigil_new</pre>
-    </div>
+    <!-- Path B: Run locally -->
+    <div class="mt-8">
+      <div class="flex items-center gap-3 mb-6">
+        <span class="text-2xl">💻</span>
+        <h2 class="text-xl font-bold text-gray-900">Run it locally</h2>
+      </div>
+      <p class="text-gray-600 mb-6">When you're ready to build your own, three commands get you running:</p>
 
-    <div class="step">
-      <span class="step-number">3</span>
-      <h3>Create your app</h3>
-<pre><span class="dim">$</span> mix sigil.new my_app
-<span class="dim">$</span> <span class="kw">cd</span> my_app
-<span class="dim">$</span> mix setup</pre>
-    </div>
+      <pre class="bg-gray-900 text-gray-300 rounded-xl px-5 py-4 text-sm overflow-x-auto leading-loose"><span class="cmt"># Generate your app</span>
+<span class="dim">$</span> mix sigil.new my_app && <span class="kw">cd</span> my_app
 
-    <div class="step">
-      <span class="step-number">4</span>
-      <h3>Start the server</h3>
-<pre><span class="dim">$</span> mix sigil.server</pre>
-      <p style="margin-top:1rem">Visit <a href="http://localhost:4000">http://localhost:4000</a>. You should see your app's welcome page with a live counter.</p>
-    </div>
+<span class="cmt"># Set up database and dependencies</span>
+<span class="dim">$</span> mix setup
 
-    <div class="callout">
-      <div class="callout-title">🎉 That's it.</div>
-      <p>You have a running Sigil app with real-time updates, a database, and auth ready to go. Now <a href="#tutorial" onclick="showPage('tutorial')">build something</a>.</p>
+<span class="cmt"># Start the server</span>
+<span class="dim">$</span> mix sigil.server</pre>
+
+      <p class="text-sm text-gray-500 mt-4">Visit <a href="http://localhost:4000" class="text-brand-600 hover:underline">localhost:4000</a>. You'll see the same app as the live demo, running on your machine.</p>
+
+      <details class="mt-6 rounded-xl border border-gray-200 overflow-hidden">
+        <summary class="px-5 py-3 cursor-pointer text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">New to Elixir? Install it first ↓</summary>
+        <div class="px-5 py-4 bg-gray-50 border-t border-gray-200">
+          <p class="text-sm text-gray-600 mb-3">Install Elixir and Erlang with <a href="https://mise.jdx.dev" class="text-brand-600 hover:underline">mise</a> (recommended):</p>
+          <pre class="bg-gray-900 text-gray-300 rounded-lg px-4 py-3 text-sm overflow-x-auto"><span class="dim">$</span> mise install elixir@1.18 erlang@27</pre>
+          <p class="text-xs text-gray-400 mt-3">You'll also need <a href="https://www.postgresql.org/download/" class="text-brand-600 hover:underline">PostgreSQL</a> running locally for the database.</p>
+        </div>
+      </details>
     </div>
 
   </div>
 </div>
 
 <!-- ============================================ -->
-<!-- PAGE 3: TUTORIAL                             -->
+<!-- PAGE 3: WHAT YOU GET                         -->
 <!-- ============================================ -->
 <div id="page-tutorial" class="page">
-  <div class="docs-page">
+  <div class="mx-auto max-w-3xl px-6 lg:px-8 pt-28 pb-20">
 
-    <h1>Build Something</h1>
-    <p>A progressive tutorial that takes you from a generated app to a personal site with a blog, auth, and AI agents. Each step builds on the last.</p>
+    <h1 class="text-3xl font-bold tracking-tight text-gray-900">What You Get</h1>
+    <p class="mt-2 text-gray-500 leading-relaxed">Sigil is two things: a framework and a starter app. Here's what each gives you.</p>
 
-    <!-- Step 1 -->
-    <h2>1. Your Homepage</h2>
-    <p>Open <code>lib/my_app_web/pages/home_live.ex</code>. This is your homepage — a Sigil Live view. Edit the <code>render/1</code> function to show your name:</p>
+    <!-- =============================== -->
+    <!-- SECTION 1: THE FRAMEWORK        -->
+    <!-- =============================== -->
+    <div class="mt-12">
+      <div class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-brand-600 mb-4">⚡ The Framework</div>
+      <h2 class="text-2xl font-bold tracking-tight text-gray-900">Sigil gives you the building blocks</h2>
+      <p class="mt-3 text-gray-500">Add <code class="text-sm bg-gray-100 px-1.5 py-0.5 rounded">{:sigil, "~> 0.1"}</code> to any Elixir project. You get five composable layers:</p>
 
-    <div class="code-title">lib/my_app_web/pages/home_live.ex</div>
-<pre><span class="kw">def</span> <span class="fn">render</span>(assigns) <span class="kw">do</span>
-  <span class="str">"""
-  &lt;div&gt;
-    &lt;h1&gt;Hi, I'm Ada 👋&lt;/h1&gt;
-    &lt;p&gt;I build things with Sigil.&lt;/p&gt;
-  &lt;/div&gt;
-  """</span>
-<span class="kw">end</span></pre>
+      <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="rounded-xl border border-gray-200 p-5">
+          <div class="text-sm font-semibold text-gray-900 mb-1">🧩 Sigil.LLM</div>
+          <p class="text-xs text-gray-500">Unified API for Claude, GPT, and any LLM. Swap models without changing code.</p>
+        </div>
+        <div class="rounded-xl border border-gray-200 p-5">
+          <div class="text-sm font-semibold text-gray-900 mb-1">🔧 Sigil.Tool</div>
+          <p class="text-xs text-gray-500">Define actions your agents can take — API calls, database writes, anything.</p>
+        </div>
+        <div class="rounded-xl border border-gray-200 p-5">
+          <div class="text-sm font-semibold text-gray-900 mb-1">🧠 Sigil.Memory</div>
+          <p class="text-xs text-gray-500">Context windows, token budgeting, and progressive summarization. Never overflow.</p>
+        </div>
+        <div class="rounded-xl border border-gray-200 p-5">
+          <div class="text-sm font-semibold text-gray-900 mb-1">🤖 Sigil.Agent</div>
+          <p class="text-xs text-gray-500">Long-running OTP agents with checkpointing, crash recovery, and tool dispatch.</p>
+        </div>
+        <div class="rounded-xl border border-gray-200 p-5">
+          <div class="text-sm font-semibold text-gray-900 mb-1">⚡ Sigil.Live</div>
+          <p class="text-xs text-gray-500">Real-time server-rendered UI over WebSocket. No React, no build step, ~2KB client.</p>
+        </div>
+        <div class="rounded-xl border border-gray-200 p-5">
+          <div class="text-sm font-semibold text-gray-900 mb-1">🔑 Sigil.Auth</div>
+          <p class="text-xs text-gray-500">User registration, login, sessions, and protected routes — out of the box.</p>
+        </div>
+      </div>
 
-    <p>Save and refresh. Your server auto-recompiles.</p>
-
-    <div class="callout">
-      <div class="callout-title">💡 How it works</div>
-      <p>Sigil.Live views are server-rendered on first load, then updated in real-time via WebSocket. The <code>render/1</code> function returns HTML as a string. No templates, no JSX — just Elixir string interpolation.</p>
+      <p class="mt-6 text-sm text-gray-400">Use any layer independently, or all of them together. See the <a href="#reference" onclick="showPage('reference')" class="text-brand-600 hover:underline">Reference</a> for full API docs.</p>
     </div>
 
-    <!-- Step 2 -->
-    <h2>2. Add a Blog</h2>
-    <p>Use AI to generate the code:</p>
-<pre><span class="dim">$</span> mix sigil.gen <span class="str">"blog with posts that have a title, body, and published_at date"</span></pre>
+    <hr class="border-gray-200 my-14" />
 
-    <p>This calls your configured LLM, which generates:</p>
-    <ul>
-      <li>An Ecto schema (<code>Post</code>) with validations</li>
-      <li>A database migration</li>
-      <li>A context module with CRUD functions</li>
-      <li>Live views for listing and viewing posts</li>
-    </ul>
+    <!-- =============================== -->
+    <!-- SECTION 2: THE STARTER APP      -->
+    <!-- =============================== -->
+    <div>
+      <div class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-brand-600 mb-4">🚢 The Starter App</div>
+      <h2 class="text-2xl font-bold tracking-tight text-gray-900">mix sigil.new generates a working product</h2>
+      <p class="mt-3 text-gray-500 leading-relaxed">Not a blank project. A personal blog with AI chat, multi-agent routing, and meeting scheduling — ready to customize and deploy.</p>
 
-    <p>Review the files, confirm, then run the migration:</p>
-<pre><span class="dim">$</span> mix ecto.migrate</pre>
+      <div class="mt-8 rounded-2xl bg-gray-900 text-gray-300 px-6 py-5 text-sm font-mono">
+        <span class="text-gray-500">$</span> mix sigil.new my_app<br/>
+        <span class="text-emerald-400 mt-2 block">✓ Created my_app/</span>
+        <span class="text-gray-500 text-xs block mt-1">  Blog, Chat, Admin, Auth, Tools, Deploy config — all included</span>
+      </div>
 
-    <p>Add the routes to your router:</p>
-    <div class="code-title">lib/my_app/router.ex</div>
-<pre><span class="kw">defmodule</span> <span class="mod">MyApp.Router</span> <span class="kw">do</span>
-  <span class="kw">use</span> <span class="mod">Sigil.Router</span>
+      <!-- Walkthrough -->
+      <h3 class="text-lg font-bold text-gray-900 mt-10 mb-6">Walk through your new app</h3>
 
-  live <span class="str">"/"</span>, <span class="mod">MyAppWeb.HomeLive</span>
-  live <span class="str">"/blog"</span>, <span class="mod">MyAppWeb.BlogLive</span>
-  live <span class="str">"/blog/:slug"</span>, <span class="mod">MyAppWeb.PostLive</span>
+      <div class="space-y-6">
 
-  sigil_routes()
-<span class="kw">end</span></pre>
+        <!-- Step 1 -->
+        <div class="rounded-xl border border-gray-200 p-6">
+          <div class="flex items-start gap-4">
+            <span class="flex-shrink-0 flex items-center justify-center w-8 h-8 rounded-full bg-brand-100 text-brand-700 text-sm font-bold">1</span>
+            <div>
+              <h4 class="font-semibold text-gray-900">Browse your blog</h4>
+              <p class="mt-1 text-sm text-gray-500">Visit <code class="text-xs bg-gray-100 px-1 py-0.5 rounded">localhost:4000</code>. You'll see a public blog with sample posts. This is the customer-facing side of your app.</p>
+              <a href="https://sigilcloud.build" target="_blank" class="inline-block mt-2 text-sm text-brand-600 hover:underline">See this live on sigilcloud.build →</a>
+            </div>
+          </div>
+        </div>
 
-    <!-- Step 3 -->
-    <h2>3. Add Auth</h2>
-    <p>Sigil has auth built in. Create the users table:</p>
-<pre><span class="dim">$</span> mix ecto.migrate</pre>
+        <!-- Step 2 -->
+        <div class="rounded-xl border border-gray-200 p-6">
+          <div class="flex items-start gap-4">
+            <span class="flex-shrink-0 flex items-center justify-center w-8 h-8 rounded-full bg-brand-100 text-brand-700 text-sm font-bold">2</span>
+            <div>
+              <h4 class="font-semibold text-gray-900">Chat with the AI assistant</h4>
+              <p class="mt-1 text-sm text-gray-500">Go to <code class="text-xs bg-gray-100 px-1 py-0.5 rounded">/chat/blog-assistant</code>. The assistant knows about your blog content and can answer questions, suggest posts, and help with writing.</p>
+              <a href="https://sigilcloud.build/chat/blog-assistant" target="_blank" class="inline-block mt-2 text-sm text-brand-600 hover:underline">Try the chat →</a>
+            </div>
+          </div>
+        </div>
 
-    <p>Protect any route by adding <code>auth: true</code>:</p>
-    <div class="code-title">lib/my_app/router.ex</div>
-<pre>live <span class="str">"/dashboard"</span>, <span class="mod">MyAppWeb.DashboardLive</span>, <span class="kw">auth:</span> <span class="num">true</span></pre>
+        <!-- Step 3 -->
+        <div class="rounded-xl border border-gray-200 p-6">
+          <div class="flex items-start gap-4">
+            <span class="flex-shrink-0 flex items-center justify-center w-8 h-8 rounded-full bg-brand-100 text-brand-700 text-sm font-bold">3</span>
+            <div>
+              <h4 class="font-semibold text-gray-900">Log into the admin dashboard</h4>
+              <p class="mt-1 text-sm text-gray-500">Go to <code class="text-xs bg-gray-100 px-1 py-0.5 rounded">/login</code>. Use the default credentials. You'll see the admin panel where you manage posts, agents, tools, and conversations.</p>
+              <div class="mt-2 flex gap-4 text-xs text-gray-400">
+                <span><strong class="text-gray-600">Email:</strong> admin@example.com</span>
+                <span><strong class="text-gray-600">Password:</strong> admin123</span>
+              </div>
+              <a href="https://sigilcloud.build/login" target="_blank" class="inline-block mt-2 text-sm text-brand-600 hover:underline">See the admin →</a>
+            </div>
+          </div>
+        </div>
 
-    <p>Unauthenticated users get redirected to <code>/login</code>. Registration, login, and session management are all built into the framework.</p>
+        <!-- Step 4 -->
+        <div class="rounded-xl border border-gray-200 p-6">
+          <div class="flex items-start gap-4">
+            <span class="flex-shrink-0 flex items-center justify-center w-8 h-8 rounded-full bg-brand-100 text-brand-700 text-sm font-bold">4</span>
+            <div>
+              <h4 class="font-semibold text-gray-900">Create or edit an agent — no code needed</h4>
+              <p class="mt-1 text-sm text-gray-500">In the admin, go to <strong>Agents</strong>. You can create new agents, change their name, system prompt, LLM model, and assign tools — all from the UI. Changes take effect immediately, no restart required.</p>
+            </div>
+          </div>
+        </div>
 
-    <!-- Step 4 -->
-    <h2>4. Your First Agent</h2>
-    <p>Create a writing assistant that helps draft blog posts:</p>
-<pre><span class="dim">$</span> mix sigil.gen.agent WritingAssistant <span class="str">"helps write blog posts in a conversational tone"</span></pre>
+        <!-- Step 5 -->
+        <div class="rounded-xl border border-gray-200 p-6">
+          <div class="flex items-start gap-4">
+            <span class="flex-shrink-0 flex items-center justify-center w-8 h-8 rounded-full bg-brand-100 text-brand-700 text-sm font-bold">5</span>
+            <div>
+              <h4 class="font-semibold text-gray-900">Assign tools to your agents</h4>
+              <p class="mt-1 text-sm text-gray-500">The starter app includes tools for <strong>checking calendars</strong> and <strong>booking meetings</strong>. In the admin, assign tools to any agent. The agent will automatically use them when relevant in conversation.</p>
+            </div>
+          </div>
+        </div>
 
-    <p>This generates two files:</p>
-    <ul>
-      <li><code>lib/my_app/agents/writing_assistant.ex</code> — The agent module</li>
-      <li><code>lib/my_app_web/pages/writing_assistant_live.ex</code> — A chat UI</li>
-    </ul>
+        <!-- Step 6 -->
+        <div class="rounded-xl border border-gray-200 p-6">
+          <div class="flex items-start gap-4">
+            <span class="flex-shrink-0 flex items-center justify-center w-8 h-8 rounded-full bg-brand-100 text-brand-700 text-sm font-bold">6</span>
+            <div>
+              <h4 class="font-semibold text-gray-900">Deploy to Render</h4>
+              <p class="mt-1 text-sm text-gray-500">Your app includes a <code class="text-xs bg-gray-100 px-1 py-0.5 rounded">Dockerfile</code> and <code class="text-xs bg-gray-100 px-1 py-0.5 rounded">render.yaml</code>. Push to GitHub, connect Render, set two environment variables — you're live.</p>
+              <div class="mt-3 text-xs text-gray-400 space-y-1">
+                <div><code class="bg-gray-100 px-1 py-0.5 rounded text-gray-600">ANTHROPIC_API_KEY</code> — your Claude API key</div>
+                <div><code class="bg-gray-100 px-1 py-0.5 rounded text-gray-600">DATABASE_URL</code> — Render provides this automatically</div>
+              </div>
+            </div>
+          </div>
+        </div>
 
-    <p>Add the route and set your API key:</p>
-<pre>live <span class="str">"/assistant"</span>, <span class="mod">MyAppWeb.WritingAssistantLive</span>
+      </div>
 
-<span class="cmt"># In config/dev.exs:</span>
-<span class="kw">config</span> <span class="str">:sigil</span>, <span class="str">:gen</span>,
-  <span class="kw">api_key:</span> System.get_env(<span class="str">"ANTHROPIC_API_KEY"</span>)</pre>
+      <div class="mt-10 rounded-xl bg-brand-50 border border-brand-200 p-6 text-center">
+        <p class="text-sm font-semibold text-brand-700 mb-1">That's the full product.</p>
+        <p class="text-sm text-gray-600 mb-4">Blog + AI chat + admin + tools + deploy. All from <code class="text-xs bg-white px-1.5 py-0.5 rounded border border-brand-200">mix sigil.new</code>.</p>
+        <a href="#start" onclick="showPage('start')" class="rounded-lg bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-brand-500 transition-colors">
+          Get Started →
+        </a>
+      </div>
 
-    <div class="callout">
-      <div class="callout-title">💡 How agents work</div>
-      <p>Sigil agents are OTP GenServers. They maintain conversation history, manage context windows (so you never overflow the token limit), and checkpoint their state to the database. If they crash, the BEAM supervisor restarts them and they resume from the last checkpoint.</p>
     </div>
-
-    <!-- Step 5 -->
-    <h2>5. Agent Dashboard</h2>
-    <p>Build a dashboard to manage multiple agents. Create a Live view that lists running agents and lets you chat with any of them:</p>
-
-    <div class="code-title">lib/my_app_web/pages/dashboard_live.ex</div>
-<pre><span class="kw">defmodule</span> <span class="mod">MyAppWeb.DashboardLive</span> <span class="kw">do</span>
-  <span class="kw">use</span> <span class="mod">Sigil.Live</span>
-
-  <span class="kw">def</span> <span class="fn">mount</span>(_params, socket) <span class="kw">do</span>
-    agents = DynamicSupervisor.which_children(<span class="mod">Sigil.Agent.Runner</span>)
-    {:ok, <span class="mod">Sigil.Live</span>.assign(socket, <span class="kw">agents:</span> agents)}
-  <span class="kw">end</span>
-
-  <span class="kw">def</span> <span class="fn">render</span>(assigns) <span class="kw">do</span>
-    <span class="str">"""
-    &lt;h1&gt;Agent Dashboard&lt;/h1&gt;
-    &lt;p&gt;#{length(assigns.agents)} agents running&lt;/p&gt;
-    """</span>
-  <span class="kw">end</span>
-<span class="kw">end</span></pre>
-
-    <p>Add it as a protected route:</p>
-<pre>live <span class="str">"/dashboard"</span>, <span class="mod">MyAppWeb.DashboardLive</span>, <span class="kw">auth:</span> <span class="num">true</span></pre>
-
-    <!-- Step 6 -->
-    <h2>6. Deploy</h2>
-    <p>Your app includes a production Dockerfile. Deploy to <a href="https://render.com">Render.com</a>:</p>
-
-    <ol>
-      <li>Push your code to GitHub</li>
-      <li>Create a new <strong>Web Service</strong> on Render</li>
-      <li>Set environment to <strong>Docker</strong></li>
-      <li>Add environment variables:</li>
-    </ol>
-
-<pre>DATABASE_URL=postgresql://...
-SECRET_KEY_BASE=<span class="dim"># run: openssl rand -base64 64</span>
-ANTHROPIC_API_KEY=sk-ant-...
-PORT=<span class="num">4000</span></pre>
-
-    <p>Render will build and deploy your app. That's it — you're live. 🚀</p>
 
   </div>
 </div>
@@ -1188,204 +713,124 @@ PORT=<span class="num">4000</span></pre>
 <!-- PAGE 4: REFERENCE                            -->
 <!-- ============================================ -->
 <div id="page-reference" class="page">
-  <div class="docs-page">
+  <div class="mx-auto max-w-3xl px-6 lg:px-8 pt-28 pb-20">
 
-    <h1>Reference</h1>
-    <p>Sigil is organized into five composable layers, from low-level to high-level.</p>
+    <h1 class="text-3xl font-bold tracking-tight text-gray-900">Reference</h1>
+    <p class="mt-2 text-gray-500">Sigil is organized into five composable layers, from low-level to high-level.</p>
 
-    <div class="arch-diagram">
-      <div class="arch-layer layer-5">Layer 5 · Sigil.Live</div><br />
-      <div class="arch-arrow">↑</div>
-      <div class="arch-layer layer-4">Layer 4 · Sigil.Agent</div><br />
-      <div class="arch-arrow">↑</div>
-      <div class="arch-layer layer-3">Layer 3 · Sigil.Memory</div><br />
-      <div class="arch-arrow">↑</div>
-      <div class="arch-layer layer-2">Layer 2 · Sigil.Tool</div><br />
-      <div class="arch-arrow">↑</div>
-      <div class="arch-layer layer-1">Layer 1 · Sigil.LLM</div>
+    <!-- Architecture diagram -->
+    <div class="mt-8 rounded-xl border border-gray-200 bg-gray-50 p-8 text-center space-y-2">
+      <div class="inline-block px-6 py-2 rounded-lg text-sm font-semibold bg-brand-100 text-brand-700 border border-brand-200">Layer 5 · Sigil.Live</div><br />
+      <div class="text-gray-300 text-lg">↑</div>
+      <div class="inline-block px-6 py-2 rounded-lg text-sm font-semibold bg-brand-100/80 text-brand-600 border border-brand-200/80">Layer 4 · Sigil.Agent</div><br />
+      <div class="text-gray-300 text-lg">↑</div>
+      <div class="inline-block px-6 py-2 rounded-lg text-sm font-semibold bg-purple-100 text-purple-700 border border-purple-200">Layer 3 · Sigil.Memory</div><br />
+      <div class="text-gray-300 text-lg">↑</div>
+      <div class="inline-block px-6 py-2 rounded-lg text-sm font-semibold bg-purple-100/80 text-purple-600 border border-purple-200/80">Layer 2 · Sigil.Tool</div><br />
+      <div class="text-gray-300 text-lg">↑</div>
+      <div class="inline-block px-6 py-2 rounded-lg text-sm font-semibold bg-purple-50 text-purple-500 border border-purple-200/60">Layer 1 · Sigil.LLM</div>
     </div>
 
     <!-- Layer 1 -->
-    <h2>Layer 1: Sigil.LLM</h2>
-    <p>Unified interface to AI models. Swap providers without changing code.</p>
-
-    <div class="ref-grid">
-      <div class="ref-card">
-        <h4>Sigil.LLM</h4>
-        <p>Behaviour defining <code>chat/2</code>, <code>stream/2</code>, <code>embed/2</code></p>
-      </div>
-      <div class="ref-card">
-        <h4>Sigil.LLM.Anthropic</h4>
-        <p>Claude adapter (Sonnet, Opus, Haiku)</p>
-      </div>
-      <div class="ref-card">
-        <h4>Sigil.LLM.OpenAI</h4>
-        <p>GPT adapter (GPT-4o, GPT-4, etc.)</p>
-      </div>
+    <h2 class="text-xl font-bold text-gray-900 mt-12 mb-2 pt-6 border-t border-gray-200">Layer 1: Sigil.LLM</h2>
+    <p class="text-sm text-gray-500 mb-4">Unified interface to AI models. Swap providers without changing code.</p>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <div class="rounded-lg border border-gray-200 p-4"><h4 class="text-sm font-semibold text-brand-600 font-mono">Sigil.LLM</h4><p class="text-xs text-gray-500 mt-1">Behaviour: <code>chat/2</code>, <code>stream/2</code>, <code>embed/2</code></p></div>
+      <div class="rounded-lg border border-gray-200 p-4"><h4 class="text-sm font-semibold text-brand-600 font-mono">Sigil.LLM.Anthropic</h4><p class="text-xs text-gray-500 mt-1">Claude adapter (Sonnet, Opus, Haiku)</p></div>
+      <div class="rounded-lg border border-gray-200 p-4"><h4 class="text-sm font-semibold text-brand-600 font-mono">Sigil.LLM.OpenAI</h4><p class="text-xs text-gray-500 mt-1">GPT adapter (GPT-4o, GPT-4, etc.)</p></div>
     </div>
 
     <!-- Layer 2 -->
-    <h2>Layer 2: Sigil.Tool</h2>
-    <p>Define actions agents can take, with permissions and timeouts.</p>
-
-    <div class="ref-grid">
-      <div class="ref-card">
-        <h4>Sigil.Tool</h4>
-        <p>Behaviour: <code>name/0</code>, <code>description/0</code>, <code>schema/0</code>, <code>call/2</code></p>
-      </div>
-      <div class="ref-card">
-        <h4>Sigil.Tools.HTTPRequest</h4>
-        <p>Built-in tool for HTTP API calls via Req</p>
-      </div>
+    <h2 class="text-xl font-bold text-gray-900 mt-12 mb-2 pt-6 border-t border-gray-200">Layer 2: Sigil.Tool</h2>
+    <p class="text-sm text-gray-500 mb-4">Define actions agents can take, with permissions and timeouts.</p>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <div class="rounded-lg border border-gray-200 p-4"><h4 class="text-sm font-semibold text-brand-600 font-mono">Sigil.Tool</h4><p class="text-xs text-gray-500 mt-1">Behaviour: <code>name/0</code>, <code>description/0</code>, <code>schema/0</code>, <code>call/2</code></p></div>
+      <div class="rounded-lg border border-gray-200 p-4"><h4 class="text-sm font-semibold text-brand-600 font-mono">Sigil.Tools.HTTPRequest</h4><p class="text-xs text-gray-500 mt-1">Built-in tool for HTTP API calls via Req</p></div>
     </div>
 
     <!-- Layer 3 -->
-    <h2>Layer 3: Sigil.Memory</h2>
-    <p>Context window management so agents never overflow token limits.</p>
-
-    <div class="ref-grid">
-      <div class="ref-card">
-        <h4>Sigil.Memory.Context</h4>
-        <p>Manages conversation history with token-aware truncation</p>
-      </div>
-      <div class="ref-card">
-        <h4>Sigil.Memory.Budget</h4>
-        <p>Allocates tokens across system, history, and response</p>
-      </div>
-      <div class="ref-card">
-        <h4>Sigil.Memory.Summarizer</h4>
-        <p>Progressive summarization of old messages</p>
-      </div>
-      <div class="ref-card">
-        <h4>Sigil.Memory.Store</h4>
-        <p>Persistent key-value store per agent</p>
-      </div>
+    <h2 class="text-xl font-bold text-gray-900 mt-12 mb-2 pt-6 border-t border-gray-200">Layer 3: Sigil.Memory</h2>
+    <p class="text-sm text-gray-500 mb-4">Context window management so agents never overflow token limits.</p>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <div class="rounded-lg border border-gray-200 p-4"><h4 class="text-sm font-semibold text-brand-600 font-mono">Sigil.Memory.Context</h4><p class="text-xs text-gray-500 mt-1">Manages conversation history with token-aware truncation</p></div>
+      <div class="rounded-lg border border-gray-200 p-4"><h4 class="text-sm font-semibold text-brand-600 font-mono">Sigil.Memory.Budget</h4><p class="text-xs text-gray-500 mt-1">Allocates tokens across system, history, and response</p></div>
+      <div class="rounded-lg border border-gray-200 p-4"><h4 class="text-sm font-semibold text-brand-600 font-mono">Sigil.Memory.Summarizer</h4><p class="text-xs text-gray-500 mt-1">Progressive summarization of old messages</p></div>
+      <div class="rounded-lg border border-gray-200 p-4"><h4 class="text-sm font-semibold text-brand-600 font-mono">Sigil.Memory.Store</h4><p class="text-xs text-gray-500 mt-1">Persistent key-value store per agent</p></div>
     </div>
 
     <!-- Layer 4 -->
-    <h2>Layer 4: Sigil.Agent</h2>
-    <p>The orchestrator. A GenServer that runs the agent loop.</p>
-
-    <div class="ref-grid">
-      <div class="ref-card">
-        <h4>Sigil.Agent</h4>
-        <p>Core behaviour: <code>init_agent/1</code>. Provides <code>start/2</code>, <code>chat/2</code></p>
-      </div>
-      <div class="ref-card">
-        <h4>Sigil.Agent.Checkpoint</h4>
-        <p>Persists agent state to database for crash recovery</p>
-      </div>
-      <div class="ref-card">
-        <h4>Sigil.Agent.EventStore</h4>
-        <p>Append-only log of every agent action for replay</p>
-      </div>
-      <div class="ref-card">
-        <h4>Sigil.Agent.Observer</h4>
-        <p>Observability: token usage, decision history, drift detection</p>
-      </div>
-      <div class="ref-card">
-        <h4>Sigil.Agent.Guard</h4>
-        <p>Input sanitization and prompt injection heuristics</p>
-      </div>
-      <div class="ref-card">
-        <h4>Sigil.Agent.Team</h4>
-        <p>Multi-agent coordination with message routing</p>
-      </div>
+    <h2 class="text-xl font-bold text-gray-900 mt-12 mb-2 pt-6 border-t border-gray-200">Layer 4: Sigil.Agent</h2>
+    <p class="text-sm text-gray-500 mb-4">The orchestrator. A GenServer that runs the agent loop.</p>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <div class="rounded-lg border border-gray-200 p-4"><h4 class="text-sm font-semibold text-brand-600 font-mono">Sigil.Agent</h4><p class="text-xs text-gray-500 mt-1">Core behaviour: <code>init_agent/1</code>. Provides <code>start/2</code>, <code>chat/2</code></p></div>
+      <div class="rounded-lg border border-gray-200 p-4"><h4 class="text-sm font-semibold text-brand-600 font-mono">Sigil.Agent.Checkpoint</h4><p class="text-xs text-gray-500 mt-1">Persists agent state for crash recovery</p></div>
+      <div class="rounded-lg border border-gray-200 p-4"><h4 class="text-sm font-semibold text-brand-600 font-mono">Sigil.Agent.EventStore</h4><p class="text-xs text-gray-500 mt-1">Append-only log of every agent action</p></div>
+      <div class="rounded-lg border border-gray-200 p-4"><h4 class="text-sm font-semibold text-brand-600 font-mono">Sigil.Agent.Observer</h4><p class="text-xs text-gray-500 mt-1">Token usage, decision history, drift detection</p></div>
+      <div class="rounded-lg border border-gray-200 p-4"><h4 class="text-sm font-semibold text-brand-600 font-mono">Sigil.Agent.Guard</h4><p class="text-xs text-gray-500 mt-1">Input sanitization and prompt injection heuristics</p></div>
+      <div class="rounded-lg border border-gray-200 p-4"><h4 class="text-sm font-semibold text-brand-600 font-mono">Sigil.Agent.Team</h4><p class="text-xs text-gray-500 mt-1">Multi-agent coordination with message routing</p></div>
     </div>
 
     <!-- Layer 5 -->
-    <h2>Layer 5: Sigil.Live</h2>
-    <p>Real-time web views over WebSocket. No JavaScript framework.</p>
-
-    <div class="ref-grid">
-      <div class="ref-card">
-        <h4>Sigil.Live</h4>
-        <p>Behaviour: <code>mount/2</code>, <code>render/1</code>, <code>handle_event/3</code></p>
-      </div>
-      <div class="ref-card">
-        <h4>Sigil.Router</h4>
-        <p>Routing DSL: <code>live/2</code>, <code>sigil_routes/0</code>, auth protection</p>
-      </div>
-      <div class="ref-card">
-        <h4>Sigil.Layout</h4>
-        <p>HTML layout system with default shell</p>
-      </div>
-      <div class="ref-card">
-        <h4>Sigil.Auth</h4>
-        <p>Register, login, sessions, protected routes</p>
-      </div>
+    <h2 class="text-xl font-bold text-gray-900 mt-12 mb-2 pt-6 border-t border-gray-200">Layer 5: Sigil.Live</h2>
+    <p class="text-sm text-gray-500 mb-4">Real-time web views over WebSocket. No JavaScript framework.</p>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <div class="rounded-lg border border-gray-200 p-4"><h4 class="text-sm font-semibold text-brand-600 font-mono">Sigil.Live</h4><p class="text-xs text-gray-500 mt-1">Behaviour: <code>mount/2</code>, <code>render/1</code>, <code>handle_event/3</code></p></div>
+      <div class="rounded-lg border border-gray-200 p-4"><h4 class="text-sm font-semibold text-brand-600 font-mono">Sigil.Router</h4><p class="text-xs text-gray-500 mt-1">Routing DSL: <code>live/2</code>, <code>sigil_routes/0</code>, auth</p></div>
+      <div class="rounded-lg border border-gray-200 p-4"><h4 class="text-sm font-semibold text-brand-600 font-mono">Sigil.Layout</h4><p class="text-xs text-gray-500 mt-1">HTML layout system with default shell</p></div>
+      <div class="rounded-lg border border-gray-200 p-4"><h4 class="text-sm font-semibold text-brand-600 font-mono">Sigil.Auth</h4><p class="text-xs text-gray-500 mt-1">Register, login, sessions, protected routes</p></div>
     </div>
 
     <!-- Config -->
-    <h2>Configuration</h2>
-
-    <div class="code-title">config/dev.exs</div>
-<pre><span class="kw">config</span> <span class="str">:sigil</span>,
-  <span class="kw">port:</span> <span class="num">4000</span>,                        <span class="cmt"># HTTP port</span>
-  <span class="kw">router:</span> <span class="mod">MyApp.Router</span>,             <span class="cmt"># Your router module</span>
-  <span class="kw">secret_key_base:</span> <span class="str">"..."</span>           <span class="cmt"># For cookie encryption</span>
+    <h2 class="text-xl font-bold text-gray-900 mt-12 mb-2 pt-6 border-t border-gray-200">Configuration</h2>
+    <div class="text-xs text-gray-400 bg-gray-50 border border-gray-200 border-b-0 rounded-t-lg px-4 py-2 font-mono mt-4">config/dev.exs</div>
+    <pre class="bg-gray-900 text-gray-300 rounded-b-lg px-4 py-3 text-sm overflow-x-auto mt-0"><span class="kw">config</span> <span class="str">:sigil</span>,
+  <span class="kw">port:</span> <span class="num">4000</span>,
+  <span class="kw">router:</span> <span class="mod">MyApp.Router</span>,
+  <span class="kw">secret_key_base:</span> <span class="str">"..."</span>
 
 <span class="kw">config</span> <span class="str">:sigil</span>, <span class="mod">Sigil.Repo</span>,
   <span class="kw">database:</span> <span class="str">"my_app_dev"</span>,
   <span class="kw">username:</span> <span class="str">"postgres"</span>,
   <span class="kw">password:</span> <span class="str">"postgres"</span>,
-  <span class="kw">hostname:</span> <span class="str">"localhost"</span>
-
-<span class="kw">config</span> <span class="str">:sigil</span>, <span class="str">:gen</span>,
-  <span class="kw">adapter:</span> <span class="mod">Sigil.LLM.Anthropic</span>,
-  <span class="kw">model:</span> <span class="str">"claude-sonnet-4-20250514"</span>,
-  <span class="kw">api_key:</span> System.get_env(<span class="str">"ANTHROPIC_API_KEY"</span>)</pre>
+  <span class="kw">hostname:</span> <span class="str">"localhost"</span></pre>
 
     <!-- CLI -->
-    <h2>CLI Commands</h2>
-
-<pre><span class="dim">$</span> mix sigil.new my_app               <span class="cmt"># Create a new Sigil app</span>
+    <h2 class="text-xl font-bold text-gray-900 mt-12 mb-2 pt-6 border-t border-gray-200">CLI Commands</h2>
+    <pre class="bg-gray-900 text-gray-300 rounded-lg px-4 py-3 text-sm overflow-x-auto mt-4"><span class="dim">$</span> mix sigil.new my_app               <span class="cmt"># Create a new Sigil app</span>
 <span class="dim">$</span> mix sigil.server                    <span class="cmt"># Start the dev server</span>
-<span class="dim">$</span> mix sigil.gen <span class="str">"description"</span>          <span class="cmt"># Generate code from a prompt</span>
-<span class="dim">$</span> mix sigil.gen.agent Name <span class="str">"desc"</span>    <span class="cmt"># Scaffold a new agent</span>
-<span class="dim">$</span> mix sigil.tailwind install          <span class="cmt"># Install Tailwind CSS</span>
-<span class="dim">$</span> mix sigil.tailwind watch            <span class="cmt"># Watch for CSS changes</span></pre>
+<span class="dim">$</span> mix sigil.gen <span class="str">"description"</span>          <span class="cmt"># Generate code from prompt</span>
+<span class="dim">$</span> mix sigil.gen.agent Name <span class="str">"desc"</span>    <span class="cmt"># Scaffold a new agent</span></pre>
 
   </div>
 </div>
 
 <!-- === FOOTER === -->
-<footer>
-  <p>Sigil Framework — Built with ❤️ on the BEAM</p>
+<footer class="border-t border-gray-200 py-12 text-center">
+  <p class="text-sm text-gray-400">Sigil Framework — Built with ❤️ on the BEAM</p>
 </footer>
 
 <!-- === NAVIGATION SCRIPT === -->
 <script>
 function showPage(name) {
-  // Hide all pages
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+  document.querySelectorAll('.nav-link').forEach(a => a.classList.remove('active', 'text-gray-900', 'bg-gray-100'));
 
-  // Show target
   document.getElementById('page-' + name).classList.add('active');
-  document.getElementById('nav-' + name).classList.add('active');
+  const navEl = document.getElementById('nav-' + name);
+  if (navEl) { navEl.classList.add('active', 'text-gray-900', 'bg-gray-100'); }
 
-  // Scroll to top
   window.scrollTo(0, 0);
-
-  // Update URL hash
   history.pushState(null, '', '#' + name);
 }
 
-// Handle hash on load
 window.addEventListener('load', function() {
   var hash = location.hash.replace('#', '') || 'home';
-  if (document.getElementById('page-' + hash)) {
-    showPage(hash);
-  }
+  if (document.getElementById('page-' + hash)) { showPage(hash); }
 });
 
-// Handle back/forward
 window.addEventListener('popstate', function() {
   var hash = location.hash.replace('#', '') || 'home';
-  if (document.getElementById('page-' + hash)) {
-    showPage(hash);
-  }
+  if (document.getElementById('page-' + hash)) { showPage(hash); }
 });
 </script>
 

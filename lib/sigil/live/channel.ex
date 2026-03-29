@@ -79,8 +79,8 @@ if Code.ensure_loaded?(WebSock) do
       else
         case Sigil.Live.SessionStore.get(session_id) do
           nil ->
-            Logger.warning("[Sigil.Live] Unknown session: #{session_id}")
-            reply = Jason.encode!(%{type: "error", reason: "unknown_session"})
+            Logger.debug("[Sigil.Live] Stale session: #{session_id} — asking client to reload")
+            reply = Jason.encode!(%{type: "error", reason: "unknown_session", action: "reload"})
             {:reply, :ok, {:text, reply}, state}
 
           %{view: view, assigns: assigns, params: params} ->
@@ -136,12 +136,13 @@ if Code.ensure_loaded?(WebSock) do
       new_html = state.view.render(state.assigns)
 
       if new_html != state.last_html do
-        patches = Sigil.Live.Diff.diff(state.last_html, new_html)
-
+        # Send full innerHTML replacement — simple, robust, and correct
+        # for complex layouts. The tiny overhead of sending full HTML is
+        # negligible for most views.
         reply =
           Jason.encode!(%{
             type: "patch",
-            patches: patches
+            patches: [%{op: "replace_inner", html: new_html}]
           })
 
         state = %{state | last_html: new_html}

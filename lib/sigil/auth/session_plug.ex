@@ -15,26 +15,26 @@ if Code.ensure_loaded?(Plug) do
     @session_options [
       store: :cookie,
       key: "_sigil_session",
-      signing_salt: "sigil_auth",
+      signing_salt: "sigil_sign",
+      encryption_salt: "sigil_enc",
       same_site: "Lax",
       max_age: 86_400 * 30
     ]
 
     @impl true
-    def init(opts), do: opts
+    def init(opts) do
+      # Pre-compute session init at compile time for performance
+      Plug.Session.init(@session_options ++ opts)
+    end
 
     @impl true
-    def call(conn, _opts) do
-      secret = Application.get_env(:sigil, :secret_key_base, generate_secret())
+    def call(conn, session_opts) do
+      secret = Application.get_env(:sigil, :secret_key_base) || ensure_secret()
 
       conn
-      |> Plug.Conn.put_private(:plug_session_cookie_opts, signing_salt: "sigil_auth")
-      |> Plug.Session.call(
-        Plug.Session.init(
-          @session_options ++
-            [encryption_salt: "sigil_enc", signing_salt: "sigil_sign", secret_key_base: secret]
-        )
-      )
+      |> Plug.Conn.put_private(:plug_skip_csrf_protection, true)
+      |> Map.put(:secret_key_base, secret)
+      |> Plug.Session.call(session_opts)
       |> Plug.Conn.fetch_session()
       |> load_current_user()
     end
@@ -43,21 +43,25 @@ if Code.ensure_loaded?(Plug) do
       user_id = Plug.Conn.get_session(conn, :user_id)
 
       if user_id do
-        case Sigil.Auth.get_user(user_id) do
-          nil ->
-            conn
-            |> Plug.Conn.delete_session(:user_id)
-            |> Plug.Conn.assign(:current_user, nil)
+        if Code.ensure_loaded?(Sigil.Auth) do
+          case Sigil.Auth.get_user(user_id) do
+            nil ->
+              conn
+              |> Plug.Conn.delete_session(:user_id)
+              |> Plug.Conn.assign(:current_user, nil)
 
-          user ->
-            Plug.Conn.assign(conn, :current_user, user)
+            user ->
+              Plug.Conn.assign(conn, :current_user, user)
+          end
+        else
+          Plug.Conn.assign(conn, :current_user, nil)
         end
       else
         Plug.Conn.assign(conn, :current_user, nil)
       end
     end
 
-    defp generate_secret do
+    defp ensure_secret do
       secret = :crypto.strong_rand_bytes(64) |> Base.encode64(padding: false)
       Application.put_env(:sigil, :secret_key_base, secret)
       secret
