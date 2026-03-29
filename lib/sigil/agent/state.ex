@@ -36,7 +36,11 @@ defmodule Sigil.Agent.State do
           turn_count: non_neg_integer(),
           status: :ready | :running,
           event_sequence: non_neg_integer(),
-          token_usage: %{input_tokens: non_neg_integer(), output_tokens: non_neg_integer(), total_tokens: non_neg_integer()},
+          token_usage: %{
+            input_tokens: non_neg_integer(),
+            output_tokens: non_neg_integer(),
+            total_tokens: non_neg_integer()
+          },
           checkpoint_policy: map(),
           summaries_cache: map(),
           checkpoint_after_tool: boolean(),

@@ -85,7 +85,9 @@ if Code.ensure_loaded?(WebSock) do
 
             case resolve_view_module(view_name) do
               {:ok, view} ->
-                Logger.debug("[Sigil.Live] Recovering stale session #{session_id} — fresh mount of #{inspect(view)}")
+                Logger.debug(
+                  "[Sigil.Live] Recovering stale session #{session_id} — fresh mount of #{inspect(view)}"
+                )
 
                 # Build minimal params from the path
                 params = parse_path_params(path)
@@ -112,12 +114,20 @@ if Code.ensure_loaded?(WebSock) do
 
                 # Send joined + full HTML patch to rehydrate the client
                 reply = Jason.encode!(%{type: "joined", session: session_id})
-                patch = Jason.encode!(%{type: "patch", patches: [%{op: "replace_inner", html: html}]})
+
+                patch =
+                  Jason.encode!(%{type: "patch", patches: [%{op: "replace_inner", html: html}]})
+
                 {:push, [{:text, reply}, {:text, patch}], state}
 
               :error ->
-                Logger.debug("[Sigil.Live] Stale session #{session_id}, no view to recover — reload")
-                reply = Jason.encode!(%{type: "error", reason: "unknown_session", action: "reload"})
+                Logger.debug(
+                  "[Sigil.Live] Stale session #{session_id}, no view to recover — reload"
+                )
+
+                reply =
+                  Jason.encode!(%{type: "error", reason: "unknown_session", action: "reload"})
+
                 {:reply, :ok, {:text, reply}, state}
             end
 

@@ -33,9 +33,12 @@ defmodule Sigil.Memory.BudgetIntegrationTest do
       system = %{role: "system", content: "You are a helper"}
 
       messages =
-        [system | Enum.map(1..20, fn i ->
-          %{role: "user", content: "This is message number #{i} with some wordy content here"}
-        end)]
+        [
+          system
+          | Enum.map(1..20, fn i ->
+              %{role: "user", content: "This is message number #{i} with some wordy content here"}
+            end)
+        ]
 
       result = Context.compact(messages, strategy: :sliding_window, budget: budget)
 

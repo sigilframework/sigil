@@ -381,13 +381,15 @@ defmodule Sigil.Agent do
   end
 
   def handle_info({:sigil_state_sync, new_state}, state) do
-    {:noreply, %{state |
-      messages: new_state.messages,
-      token_usage: new_state.token_usage,
-      summaries_cache: new_state.summaries_cache,
-      event_sequence: new_state.event_sequence,
-      status: :ready
-    }}
+    {:noreply,
+     %{
+       state
+       | messages: new_state.messages,
+         token_usage: new_state.token_usage,
+         summaries_cache: new_state.summaries_cache,
+         event_sequence: new_state.event_sequence,
+         status: :ready
+     }}
   end
 
   def handle_info(_msg, state) do
@@ -883,30 +885,39 @@ defmodule Sigil.Agent do
                 input_tokens: usage.input_tokens + (new_usage[:input_tokens] || 0),
                 output_tokens: usage.output_tokens + (new_usage[:output_tokens] || 0)
               }
+
               {text_acc, tools, merged}
 
             {:tool_call_start, tool_info}, {text_acc, tools, usage} ->
-              {text_acc, tools ++ [%{id: tool_info.id, name: tool_info.name, input_json: ""}], usage}
+              {text_acc, tools ++ [%{id: tool_info.id, name: tool_info.name, input_json: ""}],
+               usage}
 
             {:tool_call_delta, json_fragment}, {text_acc, tools, usage} ->
               case List.last(tools) do
-                nil -> {text_acc, tools, usage}
+                nil ->
+                  {text_acc, tools, usage}
+
                 last ->
                   updated = %{last | input_json: last.input_json <> json_fragment}
                   {text_acc, List.replace_at(tools, -1, updated), usage}
               end
 
-            :done, acc -> acc
-            _, acc -> acc
+            :done, acc ->
+              acc
+
+            _, acc ->
+              acc
           end)
 
         # Parse accumulated tool call JSON
         tool_calls =
           Enum.map(tool_calls, fn tc ->
-            input = case Jason.decode(tc.input_json) do
-              {:ok, parsed} -> parsed
-              _ -> %{}
-            end
+            input =
+              case Jason.decode(tc.input_json) do
+                {:ok, parsed} -> parsed
+                _ -> %{}
+              end
+
             %{id: tc.id, name: tc.name, input: input}
           end)
 
@@ -940,11 +951,13 @@ defmodule Sigil.Agent do
 
   defp accumulate_usage(state, %{input_tokens: inp, output_tokens: out}) do
     current = state.token_usage
+
     updated = %{
       input_tokens: current.input_tokens + inp,
       output_tokens: current.output_tokens + out,
       total_tokens: current.total_tokens + inp + out
     }
+
     %{state | token_usage: updated}
   end
 
