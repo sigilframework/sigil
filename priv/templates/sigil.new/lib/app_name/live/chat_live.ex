@@ -14,6 +14,9 @@ defmodule Journal.ChatLive do
 
   @impl true
   def mount(params, socket) do
+    api_key = Application.get_env(:sigil, :anthropic_api_key)
+    ai_available = is_binary(api_key) and api_key != ""
+
     agent_config =
       case params do
         %{"slug" => slug} -> Journal.Agents.get_agent_by_slug!(slug)
@@ -27,30 +30,31 @@ defmodule Journal.ChatLive do
     # Load ALL active agent configs from DB — team is fully DB-driven
     agent_configs = Journal.Agents.list_active_agents()
 
-    # Check session for existing conversation
-    session = params["_session"] || %{}
-    session_key = "conv_#{slug}"
-    existing_conv_id = session[session_key]
+    # Only start conversations and teams if AI is available
+    {conversation, messages, team, session_writes} =
+      if ai_available do
+        session = params["_session"] || %{}
+        session_key = "conv_#{slug}"
+        existing_conv_id = session[session_key]
 
-    {conversation, messages} = resume_or_create_conversation(existing_conv_id, agent_config)
-
-    # Start a Sigil.Agent.Team from DB configs (all GenericAgent instances)
-    team = start_team(agent_configs, conversation)
-
-    # Subscribe to real-time updates from admin
-    Journal.ConversationPubSub.subscribe(conversation.id)
-
-    # Write conversation ID to session for persistence across reloads
-    session_writes = Map.put(%{}, session_key, conversation.id)
+        {conv, msgs} = resume_or_create_conversation(existing_conv_id, agent_config)
+        t = start_team(agent_configs, conv)
+        Journal.ConversationPubSub.subscribe(conv.id)
+        sw = Map.put(%{}, session_key, conv.id)
+        {conv, msgs, t, sw}
+      else
+        {nil, [], nil, %{}}
+      end
 
     {:ok,
      Sigil.Live.assign(socket,
+       ai_available: ai_available,
        agent_config: agent_config,
        agent_configs: agent_configs,
        team: team,
        tags: tags,
        recent_posts: recent_posts,
-       conversation_id: conversation.id,
+       conversation_id: conversation && conversation.id,
        messages: messages,
        loading: false,
        __session__: session_writes
@@ -124,7 +128,7 @@ defmodule Journal.ChatLive do
         <!-- Messages -->
         <div class="flex-1 overflow-y-auto" id="chatLog" data-sigil-scroll="chatLog">
           <div class="max-w-3xl mx-auto px-6 py-8 space-y-6">
-            #{messages_html}
+            #{if assigns.ai_available, do: messages_html, else: ai_unavailable_banner()}
           </div>
         </div>
 
@@ -132,10 +136,10 @@ defmodule Journal.ChatLive do
         <div class="border-t border-stone-200 dark:border-stone-800 flex-shrink-0">
           <div class="max-w-3xl mx-auto px-6 py-4">
             <form class="relative" sigil-submit="send_message">
-              <input type="text" name="message" placeholder="Message #{agent_name}..."
-                autocomplete="off"
-                class="w-full rounded-xl border border-stone-300 dark:border-stone-700 bg-white dark:bg-stone-900 pl-4 pr-12 py-3 text-sm text-stone-900 dark:text-stone-100 placeholder-stone-400 dark:placeholder-stone-500 outline-none focus:border-stone-400 dark:focus:border-stone-600 focus:ring-1 focus:ring-stone-400/30 dark:focus:ring-stone-600/30 transition-colors" />
-              <button type="submit" class="absolute right-2 top-1/2 -translate-y-1/2 rounded-lg bg-stone-900 dark:bg-stone-100 p-1.5 text-white dark:text-stone-900 hover:bg-stone-700 dark:hover:bg-stone-300 transition-colors">
+              <input type="text" name="message" placeholder="#{if assigns.ai_available, do: "Message #{agent_name}...", else: "AI chat is not configured"}" 
+                autocomplete="off" #{unless assigns.ai_available, do: "disabled", else: ""}
+                class="w-full rounded-xl border border-stone-300 dark:border-stone-700 bg-white dark:bg-stone-900 pl-4 pr-12 py-3 text-sm text-stone-900 dark:text-stone-100 placeholder-stone-400 dark:placeholder-stone-500 outline-none focus:border-stone-400 dark:focus:border-stone-600 focus:ring-1 focus:ring-stone-400/30 dark:focus:ring-stone-600/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" />
+              <button type="submit" #{unless assigns.ai_available, do: "disabled", else: ""} class="absolute right-2 top-1/2 -translate-y-1/2 rounded-lg bg-stone-900 dark:bg-stone-100 p-1.5 text-white dark:text-stone-900 hover:bg-stone-700 dark:hover:bg-stone-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5" /></svg>
               </button>
             </form>
@@ -366,5 +370,23 @@ defmodule Journal.ChatLive do
 
       {conv, [%{role: "ai", content: welcome_message(agent_config)}]}
     end
+  end
+
+  defp ai_unavailable_banner do
+    """
+    <div class="max-w-md mx-auto text-center py-12">
+      <div class="inline-flex items-center justify-center h-12 w-12 rounded-full bg-amber-100 dark:bg-amber-900/30 mb-4">
+        <svg class="h-6 w-6 text-amber-600 dark:text-amber-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+        </svg>
+      </div>
+      <h3 class="text-sm font-semibold text-stone-900 dark:text-stone-100 mb-2">AI Chat Not Configured</h3>
+      <p class="text-sm text-stone-500 mb-4">To enable the AI assistant, add your API key to the <code class="text-xs bg-stone-100 dark:bg-stone-800 px-1.5 py-0.5 rounded">.env</code> file:</p>
+      <div class="bg-stone-100 dark:bg-stone-800 rounded-lg px-4 py-3 text-left">
+        <code class="text-xs text-stone-600 dark:text-stone-400">ANTHROPIC_API_KEY=sk-ant-...</code>
+      </div>
+      <p class="text-xs text-stone-400 mt-3">Then restart the server.</p>
+    </div>
+    """
   end
 end
