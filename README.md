@@ -26,7 +26,7 @@
 
 ### 1. A framework — the building blocks
 
-Add `{:sigil, "~> 0.1"}` to any Elixir project. You get six composable layers:
+Add `{:sigil, "~> 0.1.4"}` to any Elixir project. You get six composable layers:
 
 | Layer | What it does |
 |-------|-------------|
@@ -44,7 +44,11 @@ Use any layer independently, or all of them together. [Full API docs →](https:
 `mix sigil.new` generates a real, deployable app — not a blank project. It's a starting point you customize or rebuild entirely.
 
 ```bash
-mix sigil.new my_app && cd my_app && mix setup && mix sigil.server
+mix sigil.new my_app
+```
+
+```bash
+cd my_app && mix setup && mix sigil.server
 ```
 
 Open `localhost:4000`. You have:
@@ -88,81 +92,6 @@ my_app/
 
 ---
 
-## Code examples
-
-### Define an agent in 10 lines
-
-```elixir
-defmodule MyApp.GenericAgent do
-  use Sigil.Agent
-
-  def init_agent(opts) do
-    %{
-      llm: {Sigil.LLM.Anthropic, model: opts[:model] || "claude-sonnet-4-20250514"},
-      tools: MyApp.ToolRegistry.resolve(opts[:tools] || []),
-      system: opts[:system_prompt] || "You are a helpful assistant.",
-      memory: :progressive,
-      max_turns: 15
-    }
-  end
-end
-```
-
-That's a **generic agent** — one module that powers every agent in your app. The system prompt, model, and tools come from the database. Add a new agent? Add a row. No code.
-
-### Define a tool
-
-```elixir
-defmodule MyApp.Tools.BookMeeting do
-  use Sigil.Tool
-
-  def name, do: "book_meeting"
-  def description, do: "Book a meeting on the calendar"
-
-  def params do
-    %{
-      "type" => "object",
-      "properties" => %{
-        "title" => %{"type" => "string"},
-        "time" => %{"type" => "string", "description" => "ISO 8601 datetime"},
-        "email" => %{"type" => "string"}
-      },
-      "required" => ["title", "time", "email"]
-    }
-  end
-
-  def call(%{"title" => title, "time" => time, "email" => email}, _ctx) do
-    {:ok, "Booked: #{title} at #{time} with #{email}"}
-  end
-end
-```
-
-### Real-time UI (no React, no build step)
-
-Sigil.Live renders HTML on the server and patches the DOM over WebSocket:
-
-```elixir
-defmodule MyApp.ChatLive do
-  use Sigil.Live
-
-  def mount(_params, socket) do
-    {:ok, Sigil.Live.assign(socket, messages: [], loading: false)}
-  end
-
-  def render(assigns) do
-    """
-    <div id="chat">
-      #{render_messages(assigns.messages)}
-      <form sigil-submit="send">
-        <input type="text" name="message" placeholder="Ask anything..." />
-      </form>
-    </div>
-    """
-  end
-end
-```
-
----
 
 ## How Sigil compares
 
@@ -208,10 +137,19 @@ Each agent, each chat, each user gets its own lightweight process (~2KB). One se
 ### Full app (recommended)
 
 ```bash
-mix sigil.new my_app    # prompts for your Anthropic API key
+mix sigil.new my_app
+```
+
+```bash
 cd my_app
-mix setup               # install deps, create DB, seed
-mix sigil.server        # running at localhost:4000
+```
+
+```bash
+mix setup
+```
+
+```bash
+mix sigil.server
 ```
 
 The generator will ask for your Anthropic API key and save it to `.env`. If you skip it, add it later:

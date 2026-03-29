@@ -640,9 +640,14 @@ defmodule Mix.Tasks.Sigil.New do
     ## Getting Started
 
     ```bash
-    mix setup        # Install deps, create DB, seed data
-    mix sigil.server  # Start at http://localhost:4000
+    mix setup
     ```
+
+    ```bash
+    mix sigil.server
+    ```
+
+    Open http://localhost:4000.
 
     **Admin:** http://localhost:4000/admin
     **Login:** admin@example.com / admin123
