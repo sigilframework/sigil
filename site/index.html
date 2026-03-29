@@ -85,7 +85,7 @@
       </p>
 
       <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-        <a href="https://sigilcloud.build" target="_blank" class="rounded-lg bg-brand-600 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-brand-500 transition-colors">
+        <a href="#" onclick="showComingSoon(event)" class="rounded-lg bg-brand-600 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-brand-500 transition-colors">
           See a live example →
         </a>
         <a href="#start" onclick="showPage('start')" class="rounded-lg bg-white px-6 py-3 text-sm font-semibold text-gray-700 shadow-sm ring-1 ring-gray-300 hover:bg-gray-50 transition-colors">
@@ -259,7 +259,7 @@
           <div class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-emerald-600 mb-3">🛡️ Admin Dashboard</div>
           <h3 class="text-2xl font-bold tracking-tight text-gray-900">Manage your app without touching code</h3>
           <p class="mt-4 text-gray-500 leading-relaxed">Every Sigil app gets a full admin dashboard. Create agents, manage conversations, edit content, configure tools — all from a clean UI. The admin is part of the <em>framework</em>, so every app you build has it.</p>
-          <a href="https://sigilcloud.build/login" target="_blank" class="inline-block mt-4 text-sm text-brand-600 font-medium hover:underline">Try the admin live →</a>
+          <a href="#" onclick="showComingSoon(event)" class="inline-block mt-4 text-sm text-brand-600 font-medium hover:underline">Try the admin live →</a>
         </div>
       </div>
 
@@ -284,7 +284,7 @@
           <div class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-emerald-600 mb-3">📝 Blog</div>
           <h3 class="text-2xl font-bold tracking-tight text-gray-900">The example app is a blog. Yours can be anything.</h3>
           <p class="mt-4 text-gray-500 leading-relaxed">The starter app generates a personal blog with a rich editor, tags, and a public feed. But this is just the <em>example</em>. You can modify it — or ask Claude to rebuild it entirely as a SaaS dashboard, a customer portal, a marketplace. The framework supports whatever you need.</p>
-          <a href="https://sigilcloud.build" target="_blank" class="inline-block mt-4 text-sm text-brand-600 font-medium hover:underline">See the example app live →</a>
+          <a href="#" onclick="showComingSoon(event)" class="inline-block mt-4 text-sm text-brand-600 font-medium hover:underline">See the example app live →</a>
         </div>
       </div>
     </div>
@@ -508,8 +508,8 @@
         <h2 class="text-xl font-bold text-gray-900">See it live — no install needed</h2>
       </div>
       <p class="text-gray-600 mb-5">Click the link below to explore a running Sigil app. Browse blog posts, chat with the AI assistant, and log into the admin dashboard.</p>
-      <a href="https://sigilcloud.build" target="_blank" class="inline-flex rounded-lg bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-brand-500 transition-colors">
-        Open live demo → sigilcloud.build
+      <a href="#" onclick="showComingSoon(event)" class="inline-flex rounded-lg bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-brand-500 transition-colors">
+        Open live demo → coming soon
       </a>
       <div class="mt-4 flex gap-6 text-sm text-gray-500">
         <div><strong class="text-gray-700">Email:</strong> admin@example.com</div>
@@ -624,7 +624,7 @@
             <div>
               <h4 class="font-semibold text-gray-900">Browse your blog</h4>
               <p class="mt-1 text-sm text-gray-500">Visit <code class="text-xs bg-gray-100 px-1 py-0.5 rounded">localhost:4000</code>. You'll see a public blog with sample posts. This is the customer-facing side of your app.</p>
-              <a href="https://sigilcloud.build" target="_blank" class="inline-block mt-2 text-sm text-brand-600 hover:underline">See this live on sigilcloud.build →</a>
+              <a href="#" onclick="showComingSoon(event)" class="inline-block mt-2 text-sm text-brand-600 hover:underline">See this live →</a>
             </div>
           </div>
         </div>
@@ -636,7 +636,7 @@
             <div>
               <h4 class="font-semibold text-gray-900">Chat with the AI assistant</h4>
               <p class="mt-1 text-sm text-gray-500">Go to <code class="text-xs bg-gray-100 px-1 py-0.5 rounded">/chat/blog-assistant</code>. The assistant knows about your blog content and can answer questions, suggest posts, and help with writing.</p>
-              <a href="https://sigilcloud.build/chat/blog-assistant" target="_blank" class="inline-block mt-2 text-sm text-brand-600 hover:underline">Try the chat →</a>
+              <a href="#" onclick="showComingSoon(event)" class="inline-block mt-2 text-sm text-brand-600 hover:underline">Try the chat →</a>
             </div>
           </div>
         </div>
@@ -652,7 +652,7 @@
                 <span><strong class="text-gray-600">Email:</strong> admin@example.com</span>
                 <span><strong class="text-gray-600">Password:</strong> admin123</span>
               </div>
-              <a href="https://sigilcloud.build/login" target="_blank" class="inline-block mt-2 text-sm text-brand-600 hover:underline">See the admin →</a>
+              <a href="#" onclick="showComingSoon(event)" class="inline-block mt-2 text-sm text-brand-600 hover:underline">See the admin →</a>
             </div>
           </div>
         </div>
@@ -832,7 +832,40 @@ window.addEventListener('popstate', function() {
   var hash = location.hash.replace('#', '') || 'home';
   if (document.getElementById('page-' + hash)) { showPage(hash); }
 });
+function showComingSoon(e) {
+  e.preventDefault();
+  document.getElementById('coming-soon-modal').classList.remove('hidden');
+}
+function hideComingSoon() {
+  document.getElementById('coming-soon-modal').classList.add('hidden');
+}
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') hideComingSoon();
+});
 </script>
+
+<!-- Coming Soon Modal -->
+<div id="coming-soon-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center" onclick="if(event.target===this)hideComingSoon()">
+  <div class="absolute inset-0 bg-gray-900/50 backdrop-blur-sm"></div>
+  <div class="relative bg-white rounded-2xl shadow-2xl max-w-md mx-4 p-8 text-center transform transition-all">
+    <div class="text-5xl mb-4">⚡</div>
+    <h3 class="text-xl font-bold text-gray-900 mb-2">Live demo coming soon</h3>
+    <p class="text-gray-500 text-sm leading-relaxed mb-6">
+      We're putting the finishing touches on the hosted demo. In the meantime, you can run it locally in under 5 minutes:
+    </p>
+    <pre class="bg-gray-900 text-gray-300 rounded-xl px-4 py-3 text-sm text-left mb-6 overflow-x-auto"><span class="dim">$</span> mix sigil.new my_app && <span class="kw">cd</span> my_app
+<span class="dim">$</span> mix setup
+<span class="dim">$</span> mix sigil.server</pre>
+    <div class="flex gap-3 justify-center">
+      <a href="#start" onclick="hideComingSoon();showPage('start')" class="rounded-lg bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-brand-500 transition-colors">
+        Get Started
+      </a>
+      <button onclick="hideComingSoon()" class="rounded-lg bg-white px-5 py-2.5 text-sm font-semibold text-gray-600 ring-1 ring-gray-300 hover:bg-gray-50 transition-colors">
+        Close
+      </button>
+    </div>
+  </div>
+</div>
 
 </body>
 </html>
