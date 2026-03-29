@@ -1,14 +1,21 @@
 # Sigil
 
-**Ship AI products, not agent scripts.** One framework — agents, memory, real-time UI, and admin — in 3,000 lines of Elixir.
+[![Hex.pm](https://img.shields.io/hexpm/v/sigil.svg)](https://hex.pm/packages/sigil)
+[![Downloads](https://img.shields.io/hexpm/dt/sigil.svg)](https://hex.pm/packages/sigil)
+[![Docs](https://img.shields.io/badge/docs-hexdocs-blue.svg)](https://hexdocs.pm/sigil)
+[![CI](https://github.com/sigilframework/sigil/actions/workflows/ci.yml/badge.svg)](https://github.com/sigilframework/sigil/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE)
 
-[Docs](https://hexdocs.pm/sigil/0.1.0) · [Discord](https://discord.com/channels/1487814726950981674/1487814838066483221) · [GitHub](https://github.com/sigilframework/sigil)
+**Ship AI products, not agent scripts.** One framework — agents, memory, real-time UI, and admin — in Elixir.
+
+[Docs](https://hexdocs.pm/sigil) · [Discord](https://discord.com/channels/1487814726950981674/1487814838066483221) · [GitHub](https://github.com/sigilframework/sigil)
 
 ---
 
 ## One command to a running AI product
 
-```
+```bash
+mix archive.install hex sigil    # install the generator (once)
 mix sigil.new my_app && cd my_app && mix setup && mix sigil.server
 ```
 
@@ -36,7 +43,7 @@ Sigil gives you the full stack:
 |-------|-------------|
 | **Sigil.LLM** | Unified interface to Claude, GPT — swap models without changing code |
 | **Sigil.Tool** | Define actions agents can take (book meetings, query DBs, call APIs) |
-| **Sigil.Memory** | Progressive context compression — 80% fewer tokens on long conversations |
+| **Sigil.Memory** | Progressive context compression — keeps long conversations within budget |
 | **Sigil.Agent** | Long-running agents with event sourcing, checkpointing, crash recovery |
 | **Sigil.Live** | Real-time UI over WebSocket — server-rendered, ~2KB client, no React |
 | **Sigil.Auth** | Users, login, sessions, protected routes — built in |
@@ -108,7 +115,7 @@ defmodule MyApp.ChatLive do
     """
     <div id="chat">
       #{render_messages(assigns.messages)}
-      <form sigil-event="send">
+      <form sigil-submit="send">
         <input type="text" name="message" placeholder="Ask anything..." />
       </form>
     </div>
@@ -138,6 +145,12 @@ Sigil runs on Elixir and the Erlang VM — the same runtime that powers WhatsApp
 
 ## Installation
 
+### Prerequisites
+
+- [Elixir](https://elixir-lang.org/install.html) 1.18+
+- [PostgreSQL](https://www.postgresql.org/download/) 14+
+- An [Anthropic API key](https://console.anthropic.com/) (for AI chat)
+
 ### Full app (recommended)
 
 ```bash
@@ -147,12 +160,14 @@ mix setup               # install deps, create DB, seed
 mix sigil.server        # running at localhost:4000
 ```
 
-The generator will ask for your [Anthropic API key](https://console.anthropic.com/) and save it to `.env`. If you skip it, add it later:
+The generator will ask for your Anthropic API key and save it to `.env`. If you skip it, add it later:
 
 ```bash
 # .env (auto-loaded by mix sigil.server)
 ANTHROPIC_API_KEY=sk-ant-your-key-here
 ```
+
+Default admin login: `admin@example.com` / `admin123`
 
 ### Add to an existing Elixir project
 
@@ -160,7 +175,7 @@ ANTHROPIC_API_KEY=sk-ant-your-key-here
 # mix.exs
 def deps do
   [
-    {:sigil, "~> 0.1.0"},
+    {:sigil, "~> 0.1.4"},
 
     # Optional — add only what you need:
     {:bandit, "~> 1.6"},           # Web server (for Sigil.Live)
@@ -187,9 +202,10 @@ config :sigil,
 - ✅ DB-driven agent configuration
 - ✅ Admin dashboard (agents, tools, conversations)
 - ✅ `mix sigil.new` app generator
+- ✅ Token usage tracking and telemetry
 - ⚪ Plugin ecosystem on Hex
 - ⚪ OpenAI provider
-- ⚪ Agent templates (support bot, content writer, scheduler)
+- ⚪ Agent templates (support bot, content writer)
 - ⚪ Sigil Cloud (hosted deployment)
 
 ---
@@ -198,7 +214,6 @@ config :sigil,
 
 - [Discord](https://discord.com/channels/1487814726950981674/1487814838066483221) — get help, share what you're building
 - [GitHub Discussions](https://github.com/sigilframework/sigil/discussions) — ideas, RFCs, questions
-- [Contributing](CONTRIBUTING.md) — we welcome PRs
 
 ## License
 
