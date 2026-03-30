@@ -690,10 +690,15 @@
       <hr class="border-gray-200 my-12" />
 
       <!-- AI Avatar Video Callout -->
-      <section class="mb-16">
+      <section id="ai-avatar" class="mb-16 scroll-mt-24">
         <div class="rounded-2xl border border-dashed border-brand-300 bg-gradient-to-br from-brand-50/60 to-purple-50/40 p-8 sm:p-10 text-center">
-          <div class="inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-semibold text-brand-600 ring-1 ring-brand-200 bg-white mb-6">
-            🤖✨ haha… this is a generative AI avatar
+          <div class="flex items-center justify-center gap-3 mb-6">
+            <div class="inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-semibold text-brand-600 ring-1 ring-brand-200 bg-white">
+              🤖✨ haha… this is a generative AI avatar
+            </div>
+            <button onclick="shareSection('why/ai-avatar')" class="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium text-gray-400 ring-1 ring-gray-200 bg-white hover:text-brand-600 hover:ring-brand-200 transition-colors" title="Copy link to share">
+              🔗 Share
+            </button>
           </div>
           <div class="mx-auto max-w-xl">
             <div class="relative rounded-xl overflow-hidden shadow-lg ring-1 ring-gray-900/5" style="padding-bottom: 56.25%; height: 0;">
@@ -1346,15 +1351,41 @@
       history.pushState(null, '', '#' + name);
     }
 
-    window.addEventListener('load', function () {
-      var hash = location.hash.replace('#', '') || 'home';
-      if (document.getElementById('page-' + hash)) { showPage(hash); }
-    });
+    function parseHash(hash) {
+      hash = hash.replace('#', '') || 'home';
+      var parts = hash.split('/');
+      return { page: parts[0], section: parts[1] || null };
+    }
 
-    window.addEventListener('popstate', function () {
-      var hash = location.hash.replace('#', '') || 'home';
-      if (document.getElementById('page-' + hash)) { showPage(hash); }
-    });
+    function navigateToHash() {
+      var parsed = parseHash(location.hash);
+      if (document.getElementById('page-' + parsed.page)) {
+        showPage(parsed.page);
+        if (parsed.section) {
+          setTimeout(function () {
+            var el = document.getElementById(parsed.section);
+            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }, 100);
+        }
+      }
+    }
+
+    function shareSection(path) {
+      var url = location.origin + location.pathname + '#' + path;
+      navigator.clipboard.writeText(url).then(function () {
+        var btn = event.currentTarget;
+        var original = btn.innerHTML;
+        btn.innerHTML = '✅ Copied!';
+        btn.classList.add('text-emerald-600', 'ring-emerald-200');
+        setTimeout(function () {
+          btn.innerHTML = original;
+          btn.classList.remove('text-emerald-600', 'ring-emerald-200');
+        }, 2000);
+      });
+    }
+
+    window.addEventListener('load', navigateToHash);
+    window.addEventListener('popstate', navigateToHash);
     function showComingSoon(e) {
       e.preventDefault();
       document.getElementById('coming-soon-modal').classList.remove('hidden');
