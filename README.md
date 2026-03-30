@@ -79,6 +79,8 @@ Open `localhost:4000`. You have:
 
 **The example app is a blog. Yours can be anything.** A coaching app, a customer support bot, a SaaS dashboard — the framework supports whatever you need.
 
+> **🌐 Live Example:** [adambouchard.com](https://adambouchard.com) is a personal blog built entirely with Sigil — AI chat assistant, tag filtering, slug-based URLs, and multi-agent routing. See what a Sigil app looks like in production.
+
 > **New to Elixir?** See the [full setup walkthrough](#getting-started) below — it covers installing Elixir, PostgreSQL, and everything you need.
 
 ---
@@ -239,7 +241,7 @@ config :sigil,
 - ✅ `mix sigil.new` app generator
 - ✅ Token usage tracking and telemetry
 - ✅ Plugin ecosystem on Hex
-- ⚪ Build out more robust demo
+- ✅ Live production example — [adambouchard.com](https://adambouchard.com)
 - ⚪ Agent templates (support bot, content writer)
 - ⚪ OpenAI provider
 - ⚪ Hosted deployments
