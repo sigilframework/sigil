@@ -271,7 +271,5 @@ if Code.ensure_loaded?(WebSock) do
       Regex.match?(~r/^[0-9a-f]{8}-[0-9a-f]{4}-/i, segment) ||
         Regex.match?(~r/^\d+$/, segment)
     end
-
-
   end
 end
