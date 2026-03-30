@@ -264,12 +264,14 @@ if Code.ensure_loaded?(WebSock) do
       end
     end
 
+    defp parse_path_params(_), do: %{}
+
     defp is_dynamic_segment?(segment) do
       # UUIDs, numeric IDs, or anything with a dash that looks like a UUID/slug
       Regex.match?(~r/^[0-9a-f]{8}-[0-9a-f]{4}-/i, segment) ||
         Regex.match?(~r/^\d+$/, segment)
     end
 
-    defp parse_path_params(_), do: %{}
+
   end
 end
