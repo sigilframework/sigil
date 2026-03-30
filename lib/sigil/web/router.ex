@@ -102,7 +102,10 @@ if Code.ensure_loaded?(Plug) do
               Sigil.Web.Static.serve(var!(conn), ["uploads" | file_parts])
 
             _ ->
-              send_resp(var!(conn), 404, "Not Found")
+              var!(conn)
+              |> Plug.Conn.put_resp_header("location", "/")
+              |> send_resp(302, "")
+              |> halt()
           end
         end
       end

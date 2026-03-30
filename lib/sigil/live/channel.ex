@@ -232,14 +232,42 @@ if Code.ensure_loaded?(WebSock) do
         |> String.split("/")
         |> Enum.reject(&(&1 == ""))
 
-      # Build params from path segments using the router convention:
-      # /resource/:slug → %{"slug" => value}
-      # /resource/:id/action → %{"id" => value}
+      # Build params from path segments using the router convention.
+      # Only treat a segment as an :id/:slug if it looks like a dynamic value
+      # (UUID or numeric), not a static resource name.
       case segments do
-        [_, param] -> %{"slug" => param, "id" => param, "_path" => path}
-        [_, param, _action] -> %{"id" => param, "_path" => path}
-        _ -> %{"_path" => path}
+        [_, param] when byte_size(param) >= 32 ->
+          %{"slug" => param, "id" => param, "_path" => path}
+
+        [_, param] ->
+          if is_dynamic_segment?(param) do
+            %{"slug" => param, "id" => param, "_path" => path}
+          else
+            %{"_path" => path}
+          end
+
+        [_, _, param] when byte_size(param) >= 32 ->
+          %{"id" => param, "_path" => path}
+
+        [_, _, param] ->
+          if is_dynamic_segment?(param) do
+            %{"slug" => param, "id" => param, "_path" => path}
+          else
+            %{"_path" => path}
+          end
+
+        [_, _, param, _action] ->
+          %{"id" => param, "_path" => path}
+
+        _ ->
+          %{"_path" => path}
       end
+    end
+
+    defp is_dynamic_segment?(segment) do
+      # UUIDs, numeric IDs, or anything with a dash that looks like a UUID/slug
+      Regex.match?(~r/^[0-9a-f]{8}-[0-9a-f]{4}-/i, segment) ||
+        Regex.match?(~r/^\d+$/, segment)
     end
 
     defp parse_path_params(_), do: %{}
