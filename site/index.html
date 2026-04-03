@@ -401,36 +401,31 @@
         </p>
       </div>
 
-      <!-- Section A: Ideas worth exploring -->
+      <!-- Section A: Why the BEAM -->
       <section class="mb-16">
-        <div class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-brand-600 mb-4">💡
-          Ideas Worth Exploring</div>
-        <h2 class="text-2xl font-bold tracking-tight text-gray-900 mb-4">Three hypotheses I'm testing</h2>
-        <div class="space-y-4 text-gray-600 leading-relaxed">
-          <p>These aren't proven advantages — they're ideas that seem to work well in practice. The framework is built
-            around them.</p>
-        </div>
+        <h2 class="text-2xl font-bold tracking-tight text-gray-900 mb-4">Elixir runs on the BEAM — a runtime built for
+          concurrent, fault-tolerant systems. Here's what that gives you in practice.</h2>
 
         <div class="grid grid-cols-1 gap-6 mt-8">
           <div class="rounded-xl border border-gray-200 p-6 hover:border-brand-300 transition-colors">
-            <h3 class="text-base font-semibold text-gray-900 mb-2">What if agents were just processes?</h3>
-            <p class="text-sm text-gray-500 leading-relaxed">On the BEAM, each agent runs as its own lightweight process
-              (~2KB). They stay alive between conversations, crash independently, and get restarted by supervisors. No
-              Redis queues, no container orchestration — an agent is just a process that runs.</p>
+            <h3 class="text-base font-semibold text-gray-900 mb-2">Agents are processes.</h3>
+            <p class="text-sm text-gray-500 leading-relaxed">Each agent is a BEAM process: ~2 KB of memory, isolated
+              heap, preemptive scheduling. Context switches happen in user space at ~20 ns — three orders of magnitude
+              faster than OS threads. WhatsApp ran 2 million connections per server on this model. Phoenix benchmarked
+              the same for WebSockets. No queues, no orchestration layer, no container per agent.</p>
           </div>
           <div class="rounded-xl border border-gray-200 p-6 hover:border-brand-300 transition-colors">
-            <h3 class="text-base font-semibold text-gray-900 mb-2">What if context was compressed instead of replayed?
-            </h3>
-            <p class="text-sm text-gray-500 leading-relaxed">Most chat systems resend the entire conversation history
-              every turn. A 50-message chat can burn 25,000+ tokens per API call. Sigil uses progressive summarization —
-              older messages get compressed into summaries. The agent remembers what happened without paying to re-read
-              every word.</p>
+            <h3 class="text-base font-semibold text-gray-900 mb-2">Memory is compressed, not replayed.</h3>
+            <p class="text-sm text-gray-500 leading-relaxed">Most chat systems resend the full conversation every turn —
+              a 50-message thread can cost 25,000+ tokens per API call. Sigil summarizes older messages progressively,
+              keeping the working context small. The agent retains what matters without paying to re-read the full
+              history.</p>
           </div>
           <div class="rounded-xl border border-gray-200 p-6 hover:border-brand-300 transition-colors">
-            <h3 class="text-base font-semibold text-gray-900 mb-2">What if the UI was just a process too?</h3>
-            <p class="text-sm text-gray-500 leading-relaxed">Sigil.Live renders HTML on the server and pushes diffs over
-              a WebSocket. No React, no build step, ~2KB client. Chat responses stream in real time. Each connected user
-              is just another lightweight process on the same runtime as the agents.</p>
+            <h3 class="text-base font-semibold text-gray-900 mb-2">The UI runs on the same runtime.</h3>
+            <p class="text-sm text-gray-500 leading-relaxed">Each connected user is a BEAM process. The server renders
+              HTML and pushes diffs over a WebSocket — no React, no build step. Discord serves 11 million concurrent
+              users on Elixir. The same process model that runs your agents also runs your UI.</p>
           </div>
         </div>
       </section>
