@@ -4,9 +4,9 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Sigil — Ship AI Products</title>
+  <title>Sigil — Experimental AI Agent Framework for Elixir</title>
   <meta name="description"
-    content="Full-stack Elixir framework for solo developers building AI-powered products. Agents, memory, real-time UI, and admin — 3,000 lines to a running product." />
+    content="An experimental Elixir framework for building AI agents on the BEAM. Agents, memory, tools, real-time UI — composable layers for exploring AI ideas." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
     rel="stylesheet" />
@@ -93,7 +93,7 @@
     }
 
     .group:hover .copy-btn,
-    .relative:hover > .copy-btn {
+    .relative:hover>.copy-btn {
       opacity: 1;
     }
 
@@ -124,7 +124,7 @@
           class="nav-link active px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors">Home</a>
         <a href="#why" onclick="showPage('why')" id="nav-why"
           class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors">Why
-          Sigil</a>
+          Elixir?</a>
         <a href="#start" onclick="showPage('start')" id="nav-start"
           class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors">Get
           Started</a>
@@ -155,105 +155,74 @@
       <div class="mx-auto max-w-3xl px-6 text-center lg:px-8">
         <div
           class="inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-medium text-brand-600 ring-1 ring-brand-200 bg-brand-50 mb-8">
-          ⚡ Open source · Self-hosted · You own the code
+          🧪 Experimental · Open source · Come explore
         </div>
 
         <h1 class="text-5xl sm:text-7xl font-black tracking-tight leading-[1.08]">
-          <span class="gradient-text">Ship AI products</span>
+          <span class="gradient-text">AI agents on the BEAM</span>
         </h1>
 
         <p class="mt-6 text-lg sm:text-xl text-gray-500 leading-relaxed max-w-2xl mx-auto">
-          Sigil is the foundation for building real AI-powered products—faster to ship, cheaper to run.
-          <strong class="text-gray-700">Own everything. Scale without friction.</strong>
+          Sigil is an experimental Elixir framework for building AI agents.
+          I wanted to see what happens when you build agents on a runtime designed for
+          <strong class="text-gray-700">fault-tolerant, concurrent systems</strong>.
+          This is what came out of that.
         </p>
 
         <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-          <a href="https://adambouchard.com" target="_blank"
-            class="rounded-lg bg-brand-600 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-brand-500 transition-colors">
-            See a live example →
-          </a>
           <a href="#start" onclick="showPage('start')"
+            class="rounded-lg bg-brand-600 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-brand-500 transition-colors">
+            Try the demo →
+          </a>
+          <a href="https://github.com/sigilframework/sigil" target="_blank"
             class="rounded-lg bg-white px-6 py-3 text-sm font-semibold text-gray-700 shadow-sm ring-1 ring-gray-300 hover:bg-gray-50 transition-colors">
-            Get Started
+            Read the source
           </a>
         </div>
       </div>
     </section>
 
-    <!-- The Sigil Way -->
+    <!-- What is this? -->
     <section class="py-20 sm:py-28">
       <div class="mx-auto max-w-5xl px-6 lg:px-8">
         <div class="text-center mb-16">
-          <h2 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">The Sigil Way</h2>
-          <p class="mt-4 text-lg text-gray-500 max-w-2xl mx-auto">A foundation for building real AI products—fast.
-            You own every line of code.</p>
+          <h2 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">What is this?</h2>
+          <p class="mt-4 text-lg text-gray-500 max-w-2xl mx-auto">Sigil is two things — a framework and a starter app.
+            The framework gives you composable layers for building AI agents. The starter app shows how they fit
+            together.</p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <!-- Step 1 -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div
             class="relative rounded-2xl border border-gray-200 bg-white p-8 hover:border-brand-300 hover:shadow-lg transition-all duration-300">
-            <div class="flex items-center gap-3 mb-4">
-              <div
-                class="flex-shrink-0 w-8 h-8 rounded-full bg-brand-100 text-brand-600 flex items-center justify-center font-bold text-sm">
-                1</div>
-              <h3 class="text-base font-semibold text-gray-900">The Foundation</h3>
-            </div>
-            <p class="text-sm text-gray-500 leading-relaxed">
-              Sigil is the <strong class="text-gray-700">framework</strong> — it gives you an AI agent system, memory
-              management, tool execution,
-              real-time UI, auth, and admin. Think of it as the engine, not the car.
+            <div class="text-3xl mb-4">🧱</div>
+            <h3 class="text-base font-semibold text-gray-900">The framework</h3>
+            <p class="text-sm text-gray-500 leading-relaxed mt-2">
+              Add <code class="text-xs bg-gray-100 px-1 py-0.5 rounded text-brand-600">{:sigil, "~> 0.1.4"}</code> to
+              any Elixir project.
+              You get agents, memory management, tool execution, real-time UI, and auth as independent, composable
+              layers.
+              Use one or all of them.
             </p>
           </div>
 
-          <!-- Step 2 -->
-          <div
-            class="relative rounded-2xl border-2 border-brand-200 bg-brand-50/30 p-8 hover:border-brand-300 hover:shadow-lg transition-all duration-300">
-            <div class="flex items-center gap-3 mb-4">
-              <div
-                class="flex-shrink-0 w-8 h-8 rounded-full bg-brand-100 text-brand-600 flex items-center justify-center font-bold text-sm">
-                2</div>
-              <h3 class="text-base font-semibold text-gray-900">AI Builds On It</h3>
-            </div>
-            <p class="text-sm text-gray-500 leading-relaxed">
-              Tell any AI coding assistant: <em class="text-gray-700">"Build me a coaching app with Sigil."</em>
-              It works because Sigil gives AI a clean, opinionated codebase to build on — not a blank canvas.
-            </p>
-          </div>
-
-          <!-- Step 3 -->
           <div
             class="relative rounded-2xl border border-gray-200 bg-white p-8 hover:border-brand-300 hover:shadow-lg transition-all duration-300">
-            <div class="flex items-center gap-3 mb-4">
-              <div
-                class="flex-shrink-0 w-8 h-8 rounded-full bg-brand-100 text-brand-600 flex items-center justify-center font-bold text-sm">
-                3</div>
-              <h3 class="text-base font-semibold text-gray-900">You Own It</h3>
-            </div>
-            <p class="text-sm text-gray-500 leading-relaxed">
-              The result is a real codebase — not a no-code export, not a platform dependency.
-              You can read it, modify it, deploy it anywhere, and never pay a platform fee.
+            <div class="text-3xl mb-4">📦</div>
+            <h3 class="text-base font-semibold text-gray-900">The starter app</h3>
+            <p class="text-sm text-gray-500 leading-relaxed mt-2">
+              Run <code class="text-xs bg-gray-100 px-1 py-0.5 rounded text-brand-600">mix sigil.new my_app</code> and
+              you get a working blog with AI chat, an admin dashboard, and agent tools.
+              It's meant to show how the pieces fit together — poke at it, modify it, rebuild it.
             </p>
           </div>
         </div>
 
-        <!-- The "AI as builder" callout -->
-        <div class="mt-12 rounded-xl bg-gray-50 border border-gray-200 p-6 sm:p-8">
-          <div class="flex flex-col sm:flex-row gap-6 items-start">
-            <div class="flex-shrink-0 text-4xl">🤖</div>
-            <div>
-              <h3 class="text-lg font-bold text-gray-900 mb-2">Why this matters for non-technical founders</h3>
-              <p class="text-gray-500 leading-relaxed">
-                You don't need to code. Just describe what you want—your AI builds it.
-              </p>
-              <p class="text-gray-500 leading-relaxed mt-3">
-                Sigil gives it a structured system to work in, so what it creates actually holds up as your product grows.
-              </p>
-              <p class="text-gray-500 leading-relaxed mt-3">
-                <strong class="text-gray-700">No chaos. No runaway costs.</strong> You stay in control of how your product runs, what it costs, and how efficiently it scales.
-              </p>
-            </div>
-          </div>
+        <!-- Tip: AI coding tools -->
+        <div class="mt-8 rounded-xl bg-gray-50 border border-gray-200 p-5">
+          <p class="text-sm text-gray-500"><strong class="text-gray-700">Tip:</strong> AI coding tools (Claude Code,
+            Cursor, etc.) work well with Sigil's codebase — the structure is opinionated enough that they can extend it
+            without inventing architecture from scratch.</p>
         </div>
       </div>
     </section>
@@ -264,11 +233,11 @@
         <div class="mx-auto max-w-2xl text-center mb-16">
           <div
             class="inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-medium text-gray-500 ring-1 ring-gray-200 bg-white mb-6">
-            🧱 The Framework</div>
-          <h2 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">What Sigil gives you out of the box
+            🧱 The Layers</div>
+          <h2 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">What's in the box
           </h2>
-          <p class="mt-4 text-lg text-gray-500">These are the building blocks. Every app you create with Sigil gets all
-            of this — agents, auth, admin, deploy. No assembly required.</p>
+          <p class="mt-4 text-lg text-gray-500">Six composable layers. Use any of them independently, or all together.
+          </p>
         </div>
 
         <div class="mx-auto max-w-5xl grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
@@ -336,196 +305,79 @@
       </div>
     </section>
 
-    <!-- Example App — clearly labeled -->
+    <!-- The starter app -->
     <section class="py-20 sm:py-28">
       <div class="mx-auto max-w-5xl px-6 lg:px-8">
         <div class="text-center mb-16">
           <div
             class="inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-medium text-emerald-600 ring-1 ring-emerald-200 bg-emerald-50 mb-6">
-            📦 Example App</div>
-          <h2 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">See it in action: the starter app</h2>
+            📦 Starter App</div>
+          <h2 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">The starter app</h2>
           <p class="mt-4 text-lg text-gray-500 max-w-2xl mx-auto">
-            When you run <code
-              class="text-sm bg-gray-100 px-1.5 py-0.5 rounded text-brand-600">mix sigil.new my_app</code>, you get a
-            working app — a personal blog with an AI chat assistant,
-            multi-agent routing, and a full admin panel. It's a starting point, not the destination.
+            <code class="text-sm bg-gray-100 px-1.5 py-0.5 rounded text-brand-600">mix sigil.new</code> generates a blog
+            with AI chat, an admin dashboard, and agent tools. It's a working example to show how the framework layers
+            connect.
           </p>
         </div>
 
-        <!-- Showcase 1: Chat UI -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-24">
-          <div>
-            <div
-              class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-emerald-600 mb-3">
-              💬 AI Chat</div>
-            <h3 class="text-2xl font-bold tracking-tight text-gray-900">A real AI assistant for your visitors</h3>
-            <p class="mt-4 text-gray-500 leading-relaxed">The example app ships with a Blog Assistant that knows your
-              content. Ask it anything — it searches your posts, answers questions, and helps visitors find what they
-              need. You can change the agent's name, personality, and tools from the admin.</p>
-            <p class="mt-3 text-sm text-gray-400 italic">This is the example app's chat. Your app could be a coaching
-              bot, a customer support AI, an intake form — whatever you build on the framework.</p>
-          </div>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-16">
           <div class="rounded-xl border border-gray-200 shadow-lg overflow-hidden">
-            <img src="images/chat-hero.png"
-              alt="Example app: AI chat assistant that searches blog posts and answers visitor questions" class="w-full"
+            <img src="images/chat-hero.png" alt="Starter app: streaming AI chat assistant" class="w-full"
               loading="lazy" />
           </div>
-        </div>
-
-        <!-- Showcase 2: Admin Dashboard -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-24">
-          <div class="order-2 lg:order-1 rounded-xl border border-gray-200 shadow-lg overflow-hidden">
+          <div class="rounded-xl border border-gray-200 shadow-lg overflow-hidden">
             <img src="images/admin-dashboard.png"
-              alt="Example app: admin dashboard showing conversation list and agent management" class="w-full"
-              loading="lazy" />
-          </div>
-          <div class="order-1 lg:order-2">
-            <div
-              class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-emerald-600 mb-3">
-              🛡️ Admin Dashboard</div>
-            <h3 class="text-2xl font-bold tracking-tight text-gray-900">Manage your app without touching code</h3>
-            <p class="mt-4 text-gray-500 leading-relaxed">Every Sigil app gets a full admin dashboard. Create agents,
-              manage conversations, edit content, configure tools — all from a clean UI. The admin is part of the
-              <em>framework</em>, so every app you build has it.
-            </p>
-            <a href="https://adambouchard.com" target="_blank"
-              class="inline-block mt-4 text-sm text-brand-600 font-medium hover:underline">See it live at adambouchard.com →</a>
+              alt="Starter app: admin dashboard for managing agents and conversations" class="w-full" loading="lazy" />
           </div>
         </div>
 
-        <!-- Showcase 3: Tools & Agent Config -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-24">
-          <div>
-            <div
-              class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-emerald-600 mb-3">
-              🔧 Tools</div>
-            <h3 class="text-2xl font-bold tracking-tight text-gray-900">Agents that do things, not just talk</h3>
-            <p class="mt-4 text-gray-500 leading-relaxed">The example app includes tools like <code
-                class="text-xs bg-gray-100 px-1 py-0.5 rounded">search_posts</code>, <code
-                class="text-xs bg-gray-100 px-1 py-0.5 rounded">check_calendar</code>, and <code
-                class="text-xs bg-gray-100 px-1 py-0.5 rounded">book_meeting</code>. These are tool <em>examples</em> —
-              the framework lets you create any tool your product needs. Your AI can query databases, call APIs, send
-              emails, anything.</p>
-          </div>
-          <div class="rounded-xl border border-gray-200 shadow-lg overflow-hidden">
-            <img src="images/agent-tools.png"
-              alt="Example app: tools admin showing search_posts, check_calendar, and book_meeting" class="w-full"
-              loading="lazy" />
-          </div>
-        </div>
-
-        <!-- Showcase 4: Blog/Content -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          <div class="order-2 lg:order-1 rounded-xl border border-gray-200 shadow-lg overflow-hidden">
-            <img src="images/blog-editor.png" alt="Example app: rich text blog editor with formatting toolbar"
-              class="w-full" loading="lazy" />
-          </div>
-          <div class="order-1 lg:order-2">
-            <div
-              class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-emerald-600 mb-3">
-              📝 Blog</div>
-            <h3 class="text-2xl font-bold tracking-tight text-gray-900">The example app is a blog. Yours can be
-              anything.</h3>
-            <p class="mt-4 text-gray-500 leading-relaxed">The starter app generates a personal blog with a rich editor,
-              tags, and a public feed. But this is just the <em>example</em>. You can modify it — or ask Claude to
-              rebuild it entirely as a SaaS dashboard, a customer portal, a marketplace. The framework supports whatever
-              you need.</p>
-            <a href="https://adambouchard.com" target="_blank"
-              class="inline-block mt-4 text-sm text-brand-600 font-medium hover:underline">See it live at adambouchard.com
-              →</a>
-          </div>
+        <div class="text-center">
+          <p class="text-sm text-gray-500">See it running in production: <a href="https://adambouchard.com"
+              target="_blank" class="text-brand-600 font-medium hover:underline">adambouchard.com</a> — the starter app
+            customized as a personal blog.</p>
         </div>
       </div>
     </section>
 
-    <!-- Before / After -->
+    <!-- Current Status -->
     <section class="py-20 sm:py-28 bg-gray-50">
       <div class="mx-auto max-w-4xl px-6 lg:px-8">
         <div class="text-center mb-12">
-          <h2 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">One simple codebase
-          </h2>
-          <p class="mt-4 text-lg text-gray-500">Most frameworks weren't designed for AI.
-            Sigil is—simple, scalable, and built for how products are created today.</p>
+          <h2 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Current status</h2>
+          <p class="mt-4 text-lg text-gray-500">This is early-stage. Some things work well, some are rough. Here's an
+            honest look.</p>
         </div>
 
-        <div class="rounded-xl border border-gray-200 overflow-hidden bg-white">
-          <table class="w-full text-sm">
-            <thead>
-              <tr class="border-b border-gray-200 bg-gray-50">
-                <th class="text-left px-5 py-3.5 text-xs font-medium uppercase tracking-wider text-gray-400 w-1/2">The
-                  old way</th>
-                <th class="text-left px-5 py-3.5 text-xs font-medium uppercase tracking-wider text-brand-600 w-1/2">The
-                  Sigil way</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-100">
-              <tr>
-                <td class="px-5 py-4 text-gray-400">Pay $200/mo for a blog, chatbot, CRM, and hosting that don't talk to
-                  each other</td>
-                <td class="px-5 py-4 text-emerald-600 font-medium">One codebase — agents, UI, admin, auth. Deploy for
-                  $0-50/mo.</td>
-              </tr>
-              <tr>
-                <td class="px-5 py-4 text-gray-400">Spend weeks connecting APIs, auth systems, and deployment configs
-                </td>
-                <td class="px-5 py-4 text-emerald-600 font-medium">Run <code
-                    class="text-xs bg-gray-100 px-1 py-0.5 rounded">mix sigil.new</code> — framework + example app in 5
-                  minutes</td>
-              </tr>
-              <tr>
-                <td class="px-5 py-4 text-gray-400">Basic AI chat — no memory between turns, no tool access, no context
-                  management</td>
-                <td class="px-5 py-4 text-emerald-600 font-medium">Framework agents remember context, call tools, stay
-                  alive</td>
-              </tr>
-              <tr>
-                <td class="px-5 py-4 text-gray-400">Platform dependency — pricing, features, and data access controlled
-                  by a vendor</td>
-                <td class="px-5 py-4 text-emerald-600 font-medium">You own the code. Deploy anywhere. No lock-in, ever.
-                </td>
-              </tr>
-              <tr>
-                <td class="px-5 py-4 text-gray-400">Want to customize? Learn the platform's proprietary system.</td>
-                <td class="px-5 py-4 text-emerald-600 font-medium">AI coding tools can read and extend a Sigil codebase
-                  directly</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-    <!-- Right for you if -->
-    <section class="py-20">
-      <div class="mx-auto max-w-3xl px-6 lg:px-8">
-        <h2 class="text-2xl font-bold tracking-tight text-gray-900 mb-8">Right for you if…</h2>
-        <div class="space-y-4">
-          <div class="flex items-start gap-3">
-            <span class="mt-0.5 flex-shrink-0 text-brand-500">✓</span>
-            <p class="text-gray-600">You want to launch an AI-powered product without writing code yourself</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div class="rounded-xl border border-gray-200 bg-white p-6">
+            <h3 class="text-sm font-semibold text-emerald-600 mb-3">✓ First pass complete</h3>
+            <ul class="text-sm text-gray-600 space-y-2">
+              <li>Multi-agent teams</li>
+              <li>Progressive memory compression</li>
+              <li>Event sourcing + checkpoints</li>
+              <li>Real-time UI (Sigil.Live)</li>
+              <li>DB-driven agent config</li>
+              <li>Admin dashboard</li>
+              <li>App generator</li>
+              <li>Token tracking</li>
+            </ul>
           </div>
-          <div class="flex items-start gap-3">
-            <span class="mt-0.5 flex-shrink-0 text-brand-500">✓</span>
-            <p class="text-gray-600">You'd rather own your codebase than rent a no-code platform</p>
-          </div>
-          <div class="flex items-start gap-3">
-            <span class="mt-0.5 flex-shrink-0 text-brand-500">✓</span>
-            <p class="text-gray-600">A scalable foundation your AI can use to build and evolve your app</p>
-          </div>
-          <div class="flex items-start gap-3">
-            <span class="mt-0.5 flex-shrink-0 text-brand-500">✓</span>
-            <p class="text-gray-600">You're tired of paying monthly fees for tools that don't work together</p>
-          </div>
-          <div class="flex items-start gap-3">
-            <span class="mt-0.5 flex-shrink-0 text-brand-500">✓</span>
-            <p class="text-gray-600">You want to go from zero to deployed in under an hour</p>
+          <div class="rounded-xl border border-gray-200 bg-white p-6">
+            <h3 class="text-sm font-semibold text-gray-400 mb-3">○ Planned</h3>
+            <ul class="text-sm text-gray-600 space-y-2">
+              <li>Plugin ecosystem</li>
+              <li>Agent templates</li>
+              <li>Documentation coverage</li>
+              <li>Other LLM providers</li>
+              <li>Hosted deployments</li>
+            </ul>
           </div>
         </div>
 
         <div class="mt-10 text-center">
           <a href="#start" onclick="showPage('start')"
             class="rounded-lg bg-brand-600 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-brand-500 transition-colors">
-            Get Started →
+            Try it out →
           </a>
         </div>
       </div>
@@ -534,213 +386,124 @@
   </div>
 
   <!-- ============================================ -->
-  <!-- PAGE: WHY SIGIL                              -->
+  <!-- PAGE: WHY ELIXIR?                            -->
   <!-- ============================================ -->
   <div id="page-why" class="page">
     <div class="mx-auto max-w-3xl px-6 lg:px-8 pt-28 pb-20">
 
       <div class="text-center mb-20">
         <h1 class="text-4xl sm:text-5xl font-black tracking-tight leading-tight">
-          Own your product.<br /><span class="gradient-text">Not someone else's platform.</span>
+          Why Elixir<br /><span class="gradient-text">for AI agents?</span>
         </h1>
         <p class="mt-6 text-lg text-gray-500 max-w-2xl mx-auto leading-relaxed">
-          Most indie hackers rent their entire stack. Sigil gives you a product you own,
-          that costs less to run, and that you'll never get locked out of.
+          I started building Sigil because I was curious — what happens when you build AI agents
+          on a runtime designed for fault-tolerant, concurrent systems? Here's what I've found interesting so far.
         </p>
       </div>
 
-      <!-- Section A: Outcomes -->
+      <!-- Section A: Ideas worth exploring -->
       <section class="mb-16">
-        <div class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-brand-600 mb-4">🏠
-          Own Everything</div>
-        <h2 class="text-2xl font-bold tracking-tight text-gray-900 mb-4">No monthly fees. No vendor lock-in. No platform
-          risk.</h2>
+        <div class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-brand-600 mb-4">💡
+          Ideas Worth Exploring</div>
+        <h2 class="text-2xl font-bold tracking-tight text-gray-900 mb-4">Three hypotheses I'm testing</h2>
         <div class="space-y-4 text-gray-600 leading-relaxed">
-          <p>Every SaaS tool you use is a dependency you don't control. They can raise prices, change features, sunset
-            your plan, or shut down entirely. <strong class="text-gray-900">When you build with Sigil, the code is
-              yours.</strong></p>
-          <p>You host it where you want. You change anything you want. You pay only for the server; wherever you want to host it.</p>
+          <p>These aren't proven advantages — they're ideas that seem to work well in practice. The framework is built
+            around them.</p>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-8">
-          <div class="rounded-xl border border-gray-200 p-6 text-center hover:border-brand-300 transition-colors">
-            <div class="text-3xl font-black gradient-text">$0</div>
-            <div class="text-xs text-gray-500 mt-1">monthly platform fees<br />forever</div>
+        <div class="grid grid-cols-1 gap-6 mt-8">
+          <div class="rounded-xl border border-gray-200 p-6 hover:border-brand-300 transition-colors">
+            <h3 class="text-base font-semibold text-gray-900 mb-2">What if agents were just processes?</h3>
+            <p class="text-sm text-gray-500 leading-relaxed">On the BEAM, each agent runs as its own lightweight process
+              (~2KB). They stay alive between conversations, crash independently, and get restarted by supervisors. No
+              Redis queues, no container orchestration — an agent is just a process that runs.</p>
           </div>
-          <div class="rounded-xl border border-gray-200 p-6 text-center hover:border-brand-300 transition-colors">
-            <div class="text-3xl font-black gradient-text">100%</div>
-            <div class="text-xs text-gray-500 mt-1">ownership of<br />your code & data</div>
+          <div class="rounded-xl border border-gray-200 p-6 hover:border-brand-300 transition-colors">
+            <h3 class="text-base font-semibold text-gray-900 mb-2">What if context was compressed instead of replayed?
+            </h3>
+            <p class="text-sm text-gray-500 leading-relaxed">Most chat systems resend the entire conversation history
+              every turn. A 50-message chat can burn 25,000+ tokens per API call. Sigil uses progressive summarization —
+              older messages get compressed into summaries. The agent remembers what happened without paying to re-read
+              every word.</p>
           </div>
-          <div class="rounded-xl border border-gray-200 p-6 text-center hover:border-brand-300 transition-colors">
-            <div class="text-3xl font-black gradient-text">0</div>
-            <div class="text-xs text-gray-500 mt-1">risk of being<br />locked out</div>
+          <div class="rounded-xl border border-gray-200 p-6 hover:border-brand-300 transition-colors">
+            <h3 class="text-base font-semibold text-gray-900 mb-2">What if the UI was just a process too?</h3>
+            <p class="text-sm text-gray-500 leading-relaxed">Sigil.Live renders HTML on the server and pushes diffs over
+              a WebSocket. No React, no build step, ~2KB client. Chat responses stream in real time. Each connected user
+              is just another lightweight process on the same runtime as the agents.</p>
           </div>
         </div>
       </section>
 
       <hr class="border-gray-200 my-12" />
 
-      <!-- Section B: Cost / Energy -->
-      <section class="mb-16">
-        <div class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-brand-600 mb-4">💰
-          Runs Cheaper, Runs Longer</div>
-        <h2 class="text-2xl font-bold tracking-tight text-gray-900 mb-4">Your AI costs less because the foundation is
-          efficient</h2>
-        <div class="space-y-4 text-gray-600 leading-relaxed">
-          <p>Most AI tools send your entire conversation history with every request. A 50-message chat can burn <strong
-              class="text-gray-900">25,000+ tokens per call</strong>. That adds up fast — and most of those tokens are
-            wasted repeating context the AI already saw.</p>
-          <p>Sigil uses <strong class="text-gray-900">progressive summarization</strong> to keep context windows small.
-            Instead of replaying the whole history, it compresses older messages into summaries. The result: <strong
-              class="text-gray-900">significantly fewer tokens per call</strong> for long conversations.</p>
-          <p><strong class="text-gray-900">The engine underneath matters too.</strong> Most frameworks spin up a fresh
-            process for every request, then throw it away. Sigil keeps your agents alive between conversations — like
-            keeping your car engine warm instead of cold-starting it every time you drive a block.</p>
-        </div>
-
-        <div class="mt-8 rounded-xl border border-gray-200 overflow-hidden">
-          <table class="w-full text-sm">
-            <thead>
-              <tr class="border-b border-gray-200">
-                <th class="text-left px-5 py-3 text-xs font-medium uppercase tracking-wider text-gray-400 w-2/5"></th>
-                <th class="text-left px-5 py-3 text-xs font-medium uppercase tracking-wider text-gray-400">Typical
-                  approach</th>
-                <th class="text-left px-5 py-3 text-xs font-medium uppercase tracking-wider text-brand-500">Sigil</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-100">
-              <tr>
-                <td class="px-5 py-3 font-medium text-gray-900">Tokens per long chat</td>
-                <td class="px-5 py-3 text-gray-400">~25,000 (full history resent)</td>
-                <td class="px-5 py-3 text-emerald-600 font-medium">~4,000 (summarized context)</td>
-              </tr>
-              <tr>
-                <td class="px-5 py-3 font-medium text-gray-900">Cost of idle agents</td>
-                <td class="px-5 py-3 text-gray-400">Container / thread sitting idle</td>
-                <td class="px-5 py-3 text-emerald-600 font-medium">~2KB per agent — nearly zero</td>
-              </tr>
-              <tr>
-                <td class="px-5 py-3 font-medium text-gray-900">Conversation recovery</td>
-                <td class="px-5 py-3 text-gray-400">Lost on crash or restart</td>
-                <td class="px-5 py-3 text-emerald-600 font-medium">Auto-restart from last checkpoint</td>
-              </tr>
-              <tr>
-                <td class="px-5 py-3 font-medium text-gray-900">Hosting cost</td>
-                <td class="px-5 py-3 text-gray-400">$50-200/mo across services</td>
-                <td class="px-5 py-3 text-emerald-600 font-medium">$0-50/mo (one server + database)</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <p class="text-xs text-gray-400 italic mt-4">Token estimates are based on architectural analysis. Energy savings
-          come from Elixir's lightweight process model — explained below.</p>
-      </section>
-
-      <hr class="border-gray-200 my-12" />
-
-      <!-- Section C: Why Elixir (educational) -->
+      <!-- Section B: The BEAM -->
       <section class="mb-16">
         <div class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-brand-600 mb-4">🧪
-          Why Elixir?</div>
-        <h2 class="text-2xl font-bold tracking-tight text-gray-900 mb-4">You don't need to know Elixir to use
-          Sigil.<br />But here's why we chose it.</h2>
+          The Runtime</div>
+        <h2 class="text-2xl font-bold tracking-tight text-gray-900 mb-4">A quick intro to the BEAM</h2>
         <div class="space-y-4 text-gray-600 leading-relaxed">
-          <p>Elixir runs on the <strong class="text-gray-900">BEAM</strong> — the same technology that powers WhatsApp
-            for 2 billion users with a fraction of the servers competitors need. It was originally built by Ericsson for
-            phone networks that can never go down.</p>
-
-          <p>Here's what that means for your product:</p>
+          <p>Elixir runs on the <strong class="text-gray-900">BEAM</strong> — the Erlang VM. It was built by Ericsson in
+            the
+            '80s for telecom switches that can never go down. It turns out many of the problems you hit building AI
+            agents
+            — concurrency, fault tolerance, long-running state — are problems the BEAM solved decades ago.</p>
+          <p>If you're coming from Python, Node, or Ruby, some of this will feel unfamiliar. That's part of what makes
+            it interesting to explore.</p>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
           <div class="rounded-xl border border-gray-200 p-5 hover:border-brand-300 transition-colors">
-            <div class="text-sm font-semibold text-gray-900 mb-1">💡 Millions of tiny processes</div>
-            <p class="text-xs text-gray-500">Each agent, each chat, each user gets its own lightweight process. They're
-              so small (~2KB) that one server can run millions. Compare that to threads in Python or Node, which cost
-              megabytes each.</p>
+            <div class="text-sm font-semibold text-gray-900 mb-1">💡 Lightweight processes</div>
+            <p class="text-xs text-gray-500">Each agent, each chat, each user gets its own process. They're
+              ~2KB each — one server can run millions. Compare that to OS threads (MBs each) or containers.</p>
           </div>
           <div class="rounded-xl border border-gray-200 p-5 hover:border-brand-300 transition-colors">
             <div class="text-sm font-semibold text-gray-900 mb-1">🔄 Self-healing</div>
-            <p class="text-xs text-gray-500">If something crashes, the system automatically restarts it in milliseconds
-              — from the last good state. No lost conversations. No manual recovery. It just keeps working.</p>
+            <p class="text-xs text-gray-500">If a process crashes, its supervisor restarts it from the last checkpoint.
+              Conversations don't get lost. No manual recovery. The system just keeps going.</p>
           </div>
           <div class="rounded-xl border border-gray-200 p-5 hover:border-brand-300 transition-colors">
             <div class="text-sm font-semibold text-gray-900 mb-1">⚡ Real-time by default</div>
-            <p class="text-xs text-gray-500">Elixir's LiveView sends UI updates over a WebSocket — your pages update
-              instantly without any JavaScript framework. The client runtime is just ~2KB. Pages feel alive.</p>
+            <p class="text-xs text-gray-500">WebSocket connections are processes too. Streaming chat responses,
+              live UI updates — it's all native. No special infrastructure needed.</p>
           </div>
           <div class="rounded-xl border border-gray-200 p-5 hover:border-brand-300 transition-colors">
-            <div class="text-sm font-semibold text-gray-900 mb-1">🏗️ Battle-tested foundation</div>
-            <p class="text-xs text-gray-500">Built on the same runtime that powers WhatsApp and Discord. The BEAM has
-              30+ years of production reliability behind it — from telecom switches that never go down to modern
-              real-time systems.</p>
+            <div class="text-sm font-semibold text-gray-900 mb-1">🏗️ Battle-tested</div>
+            <p class="text-xs text-gray-500">The BEAM has 30+ years of production use — from Ericsson telecom switches
+              to WhatsApp and Discord. It's not new or unproven technology.</p>
           </div>
         </div>
 
         <div class="mt-8 rounded-xl bg-brand-50 border border-brand-200 p-6">
-          <h3 class="text-sm font-semibold text-brand-700 mb-2">🌍 Efficient by design</h3>
-          <p class="text-sm text-gray-600 leading-relaxed">AI is consuming enormous energy. Data centers are already
-            using record amounts of electricity, and it's growing. Building on an efficient foundation isn't just good
-            for your wallet — it's responsible engineering. Elixir processes use a fraction of the resources that
-            containers and threads need, which means less compute, less energy, and lower costs at every scale.</p>
+          <h3 class="text-sm font-semibold text-brand-700 mb-2">🌍 An aside on efficiency</h3>
+          <p class="text-sm text-gray-600 leading-relaxed">AI workloads are energy-intensive. Building on a runtime
+            where
+            processes use a fraction of the resources of containers and threads means less compute per request. I don't
+            know
+            if this matters at small scale, but it's an interesting property to have as things grow.</p>
         </div>
       </section>
 
       <hr class="border-gray-200 my-12" />
 
-      <!-- AI Avatar Video Callout -->
-      <section id="ai-avatar" class="mb-16 scroll-mt-24">
-        <div class="rounded-2xl border border-dashed border-brand-300 bg-gradient-to-br from-brand-50/60 to-purple-50/40 p-8 sm:p-10 text-center">
-          <div class="flex items-center justify-center gap-3 mb-6">
-            <div class="inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-semibold text-brand-600 ring-1 ring-brand-200 bg-white">
-              🤖✨ haha… this is a generative AI avatar
-            </div>
-            <button onclick="shareSection('why/ai-avatar')" class="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium text-gray-400 ring-1 ring-gray-200 bg-white hover:text-brand-600 hover:ring-brand-200 transition-colors" title="Copy link to share">
-              🔗 Share
-            </button>
-          </div>
-          <div class="mx-auto max-w-xl">
-            <div class="relative rounded-xl overflow-hidden shadow-lg ring-1 ring-gray-900/5" style="padding-bottom: 56.25%; height: 0;">
-              <iframe
-                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
-                src="https://app.heygen.com/embeds/549d75b1c00b4e97a408eaaa7f4b970e"
-                title="Why Sigil"
-                frameborder="0"
-                allow="encrypted-media; fullscreen;"
-                allowfullscreen>
-              </iframe>
-            </div>
-            <p class="mt-4 text-sm text-gray-400 italic">Yes, that's an AI-generated avatar. We figured — if we're building AI products, we might as well go all in. 😄</p>
-          </div>
-        </div>
-      </section>
-
       <!-- Founder Message -->
       <section class="mb-16">
-        <div class="rounded-2xl border border-brand-200 bg-gradient-to-br from-brand-50/80 to-white p-8 sm:p-10">
+        <div class="rounded-2xl border border-gray-200 bg-gray-50 p-8 sm:p-10">
           <div class="flex flex-col sm:flex-row gap-6 items-start">
-            <img src="https://avatars.githubusercontent.com/u/362348?v=4"
-              alt="Adam Bouchard"
-              class="w-16 h-16 rounded-full ring-2 ring-brand-200 flex-shrink-0" />
+            <img src="https://avatars.githubusercontent.com/u/362348?v=4" alt="Adam Bouchard"
+              class="w-16 h-16 rounded-full ring-2 ring-gray-200 flex-shrink-0" />
             <div>
               <div class="mb-4">
                 <h3 class="text-lg font-bold text-gray-900">Adam Bouchard</h3>
-                <p class="text-sm text-brand-600 font-medium">Creator of Sigil</p>
+                <p class="text-sm text-gray-500 font-medium">Building Sigil</p>
               </div>
               <div class="space-y-4 text-gray-600 leading-relaxed">
-                <p>It's fun to have AI agents building things for us.</p>
-                <p>But the energy use is getting out of hand.</p>
-                <p>A lot of these tools just keep doing the same work over and over.
-                  That gets expensive fast — and it doesn't scale.</p>
-                <p><strong class="text-gray-900">That's why I built Sigil around this idea of progressive memory.</strong></p>
-                <p>It remembers what matters, so it stops repeating itself.
-                  Over time, it gets more efficient.</p>
-                <p>And it runs on the Erlang BEAM — the same tech behind WhatsApp —
-                  built to handle massive scale and stay up no matter what.</p>
-                <p>So your app stays fast, stable, and much cheaper to run.</p>
-                <p>At the end of the day, Sigil is just a better foundation —
-                  for building apps that use less energy and get smarter over time.</p>
+                <p>It's early, it's opinionated,
+                  and there's plenty of rough edges. But the core ideas feel right, and I'd love
+                  more people poking at them.</p>
+                <p>If you try it out, <a href="https://github.com/sigilframework/sigil/discussions"
+                    class="text-brand-600 hover:underline">let me know what you think</a>.</p>
               </div>
             </div>
           </div>
@@ -749,10 +512,10 @@
 
       <!-- CTA -->
       <div class="text-center pt-8">
-        <p class="text-gray-500 mb-6">Ready to own your product?</p>
+        <p class="text-gray-500 mb-6">Curious? Give it a spin.</p>
         <a href="#start" onclick="showPage('start')"
           class="rounded-lg bg-brand-600 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-brand-500 transition-colors">
-          Get Started →
+          Try it out →
         </a>
       </div>
 
@@ -771,15 +534,7 @@
       <!-- Demo Video -->
       <div class="mt-10 mb-10">
         <div class="rounded-2xl overflow-hidden shadow-lg ring-1 ring-gray-200">
-          <video
-            autoplay
-            muted
-            loop
-            playsinline
-            controls
-            class="w-full"
-            poster="images/chat-hero.png"
-          >
+          <video autoplay muted loop playsinline controls class="w-full" poster="images/chat-hero.png">
             <source src="videos/up-and-running.mp4" type="video/mp4" />
             Your browser does not support the video tag.
           </video>
@@ -791,21 +546,28 @@
       <div class="mt-10 rounded-2xl border-2 border-brand-200 bg-brand-50/50 p-8">
         <div class="flex items-center gap-3 mb-1">
           <span class="text-2xl">⚡</span>
-          <h2 class="text-xl font-bold text-gray-900">Tell your AI what to build</h2>
+          <h2 class="text-xl font-bold text-gray-900">Use an AI coding tool</h2>
         </div>
-        <p class="text-gray-500 text-sm mb-6">Use Claude Code, Cursor, or any AI coding tool. Describe what you want — your AI builds it on Sigil.</p>
+        <p class="text-gray-500 text-sm mb-6">If you use Claude Code, Cursor, or similar — this prompt gets a Sigil app
+          running on your machine.</p>
 
         <!-- Step 1 -->
         <div class="rounded-xl border border-brand-200 bg-white p-5 mb-4">
           <div class="flex items-start gap-3">
-            <span class="flex-shrink-0 w-6 h-6 rounded-full bg-brand-100 text-brand-600 text-xs font-bold flex items-center justify-center mt-0.5">1</span>
+            <span
+              class="flex-shrink-0 w-6 h-6 rounded-full bg-brand-100 text-brand-600 text-xs font-bold flex items-center justify-center mt-0.5">1</span>
             <div>
               <h3 class="text-sm font-semibold text-gray-900">Paste this into your AI coding tool</h3>
               <div class="mt-3 rounded-lg bg-gray-900 px-4 py-3 relative group cursor-pointer" onclick="copyText(this)">
-                <p class="text-sm text-gray-300 leading-relaxed" id="ai-prompt-1">Check if Elixir and PostgreSQL are installed. If not, install them for my operating system. Then install the Sigil AI framework generator: mix archive.install hex sigil --force. Create a new app: mix sigil.new my_journal. Then cd my_journal &amp;&amp; mix setup &amp;&amp; mix sigil.server. The app will be at localhost:4000. Docs: https://hexdocs.pm/sigil — GitHub: https://github.com/sigilframework/sigil</p>
+                <p class="text-sm text-gray-300 leading-relaxed" id="ai-prompt-1">Check if Elixir and PostgreSQL are
+                  installed. If not, install them for my operating system. Then install the Sigil AI framework
+                  generator: mix archive.install hex sigil --force. Create a new app: mix sigil.new my_journal. Then cd
+                  my_journal &amp;&amp; mix setup &amp;&amp; mix sigil.server. The app will be at localhost:4000. Docs:
+                  https://hexdocs.pm/sigil — GitHub: https://github.com/sigilframework/sigil</p>
                 <span class="copy-btn">Copy</span>
               </div>
-              <p class="text-xs text-gray-400 mt-2">Works on Mac, Windows, and Linux. Your AI detects your OS, installs what's missing, and gets the app running at <strong class="text-gray-500">localhost:4000</strong>.</p>
+              <p class="text-xs text-gray-400 mt-2">Works on Mac, Windows, and Linux. Your AI detects your OS, installs
+                what's missing, and gets the app running at <strong class="text-gray-500">localhost:4000</strong>.</p>
             </div>
           </div>
         </div>
@@ -813,14 +575,19 @@
         <!-- Step 2 -->
         <div class="rounded-xl border border-brand-200 bg-white p-5 mb-4">
           <div class="flex items-start gap-3">
-            <span class="flex-shrink-0 w-6 h-6 rounded-full bg-brand-100 text-brand-600 text-xs font-bold flex items-center justify-center mt-0.5">2</span>
+            <span
+              class="flex-shrink-0 w-6 h-6 rounded-full bg-brand-100 text-brand-600 text-xs font-bold flex items-center justify-center mt-0.5">2</span>
             <div>
               <h3 class="text-sm font-semibold text-gray-900">Describe what you want</h3>
               <div class="mt-3 rounded-lg bg-gray-900 px-4 py-3 relative group cursor-pointer" onclick="copyText(this)">
-                <p class="text-sm text-gray-300 leading-relaxed">Add an agent to be a customer support bot that detects if the user is inquiring about the status of an order or contract. Ask me clarifying questions about what I need, one at a time, in order to modify the functionality of this code base.</p>
+                <p class="text-sm text-gray-300 leading-relaxed">Add an agent to be a customer support bot that detects
+                  if the user is inquiring about the status of an order or contract. Ask me clarifying questions about
+                  what I need, one at a time, in order to modify the functionality of this code base.</p>
                 <span class="copy-btn">Copy</span>
               </div>
-              <p class="text-xs text-gray-400 mt-2">Your AI edits the agent's system prompt, creates a new tool using Sigil's <code class="text-xs bg-gray-100 px-1 py-0.5 rounded">Sigil.Tool</code> contract, and restarts the server. The structure is already there — your AI just fills in the details.</p>
+              <p class="text-xs text-gray-400 mt-2">Your AI edits the agent's system prompt, creates a new tool using
+                Sigil's <code class="text-xs bg-gray-100 px-1 py-0.5 rounded">Sigil.Tool</code> contract, and restarts
+                the server. The structure is already there — your AI just fills in the details.</p>
             </div>
           </div>
         </div>
@@ -828,10 +595,14 @@
         <!-- Step 3 -->
         <div class="rounded-xl border border-brand-200 bg-white p-5 mb-4">
           <div class="flex items-start gap-3">
-            <span class="flex-shrink-0 w-6 h-6 rounded-full bg-brand-100 text-brand-600 text-xs font-bold flex items-center justify-center mt-0.5">3</span>
+            <span
+              class="flex-shrink-0 w-6 h-6 rounded-full bg-brand-100 text-brand-600 text-xs font-bold flex items-center justify-center mt-0.5">3</span>
             <div>
               <h3 class="text-sm font-semibold text-gray-900">You have a product</h3>
-              <p class="text-sm text-gray-600 mt-2">Open <a href="http://localhost:4000" class="text-brand-600 hover:underline">localhost:4000</a>. Your support bot is live — with real-time AI chat, an admin dashboard, user accounts, and conversation history. All from a conversation with your AI.</p>
+              <p class="text-sm text-gray-600 mt-2">Open <a href="http://localhost:4000"
+                  class="text-brand-600 hover:underline">localhost:4000</a>. Your support bot is live — with real-time
+                AI chat, an admin dashboard, user accounts, and conversation history. All from a conversation with your
+                AI.</p>
               <div class="mt-3 flex gap-6 text-sm text-gray-500">
                 <div><strong class="text-gray-700">Admin:</strong> admin@example.com / admin123</div>
               </div>
@@ -840,7 +611,11 @@
         </div>
 
         <div class="rounded-lg bg-white border border-brand-200 p-4">
-          <p class="text-sm text-gray-600"><strong class="text-gray-900">Why this works:</strong> Without Sigil, your AI invents architecture from scratch — fragile, inconsistent, and hard to extend. With Sigil, it has well-defined extension points: edit this file for the agent personality, implement this contract for a new tool, add a route here for a new page. <strong class="text-gray-900">Sigil gives your AI a foundation. What it creates actually holds up.</strong></p>
+          <p class="text-sm text-gray-600"><strong class="text-gray-900">Why this works:</strong> Without Sigil, your AI
+            invents architecture from scratch — fragile, inconsistent, and hard to extend. With Sigil, it has
+            well-defined extension points: edit this file for the agent personality, implement this contract for a new
+            tool, add a route here for a new page. <strong class="text-gray-900">Sigil gives your AI a foundation. What
+              it creates actually holds up.</strong></p>
         </div>
       </div>
 
@@ -853,21 +628,27 @@
         <p class="text-gray-600 mb-5">Run a full Sigil app in 30 seconds. No Elixir, no PostgreSQL — just Docker.</p>
 
         <div class="relative group">
-          <pre class="bg-gray-900 text-gray-300 rounded-xl px-5 py-4 text-sm overflow-x-auto leading-loose cursor-pointer" onclick="copyText(this)"><span class="dim">$</span> git clone https://github.com/sigilframework/sigil.git --depth 1
+          <pre
+            class="bg-gray-900 text-gray-300 rounded-xl px-5 py-4 text-sm overflow-x-auto leading-loose cursor-pointer"
+            onclick="copyText(this)"><span class="dim">$</span> git clone https://github.com/sigilframework/sigil.git --depth 1
 <span class="dim">$</span> <span class="kw">cd</span> sigil/demo
 <span class="dim">$</span> docker compose up</pre>
           <span class="copy-btn" onclick="copyText(this.previousElementSibling)">Copy</span>
         </div>
 
-        <p class="text-sm text-gray-500 mt-4">Open <a href="http://localhost:4000" class="text-brand-600 hover:underline">localhost:4000</a>. Blog, AI chat, admin dashboard — all running.</p>
+        <p class="text-sm text-gray-500 mt-4">Open <a href="http://localhost:4000"
+            class="text-brand-600 hover:underline">localhost:4000</a>. Blog, AI chat, admin dashboard — all running.</p>
         <div class="mt-3 flex gap-6 text-sm text-gray-500">
           <div><strong class="text-gray-700">Email:</strong> admin@example.com</div>
           <div><strong class="text-gray-700">Password:</strong> admin123</div>
         </div>
-        <p class="text-xs text-gray-400 mt-3">To enable AI chat: <code class="text-xs bg-gray-100 px-1 py-0.5 rounded">ANTHROPIC_API_KEY=sk-ant-... docker compose up</code></p>
+        <p class="text-xs text-gray-400 mt-3">To enable AI chat: <code
+            class="text-xs bg-gray-100 px-1 py-0.5 rounded">ANTHROPIC_API_KEY=sk-ant-... docker compose up</code></p>
 
         <div class="mt-5 rounded-lg bg-gray-50 border border-gray-200 p-4">
-          <p class="text-sm text-gray-600"><strong class="text-gray-900">Don't have Docker?</strong> Install <a href="https://docker.com/get-started" class="text-brand-600 hover:underline">Docker Desktop</a> (Mac, Windows, or Linux). It takes 2 minutes.</p>
+          <p class="text-sm text-gray-600"><strong class="text-gray-900">Don't have Docker?</strong> Install <a
+              href="https://docker.com/get-started" class="text-brand-600 hover:underline">Docker Desktop</a> (Mac,
+            Windows, or Linux). It takes 2 minutes.</p>
         </div>
       </div>
 
@@ -877,7 +658,8 @@
           <span class="text-2xl">💻</span>
           <h2 class="text-xl font-bold text-gray-900">Build your own (Elixir)</h2>
         </div>
-        <p class="text-gray-500 mb-6 text-sm">For when you're ready to customize by hand. Install Elixir, generate a Sigil app, and own every line of code.</p>
+        <p class="text-gray-500 mb-6 text-sm">For when you're ready to customize by hand. Install Elixir, generate a
+          Sigil app, and own every line of code.</p>
 
         <!-- Step 1: Prerequisites -->
         <div class="rounded-xl border border-gray-200 p-6 mb-4">
@@ -1125,13 +907,12 @@
 
         </div>
 
-        <div class="mt-10 rounded-xl bg-brand-50 border border-brand-200 p-6 text-center">
-          <p class="text-sm font-semibold text-brand-700 mb-1">That's the full product.</p>
-          <p class="text-sm text-gray-600 mb-4">Blog + AI chat + admin + tools + deploy. All from <code
-              class="text-xs bg-white px-1.5 py-0.5 rounded border border-brand-200">mix sigil.new</code>.</p>
+        <div class="mt-10 rounded-xl bg-gray-50 border border-gray-200 p-6 text-center">
+          <p class="text-sm text-gray-600 mb-4">That's everything the starter app includes. From here, explore and make
+            it your own.</p>
           <a href="#start" onclick="showPage('start')"
             class="rounded-lg bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-brand-500 transition-colors">
-            Get Started →
+            Try it out →
           </a>
         </div>
 
@@ -1181,7 +962,9 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div class="rounded-lg border border-gray-200 p-4">
             <h4 class="text-sm font-semibold text-brand-600 font-mono">Sigil.LLM</h4>
-            <p class="text-xs text-gray-500 mt-1">Behaviour: <code>chat/2</code>, <code>stream/2</code>, <code>embed/2</code></p>
+            <p class="text-xs text-gray-500 mt-1">Behaviour: <code>chat/2</code>, <code>stream/2</code>,
+              <code>embed/2</code>
+            </p>
           </div>
           <div class="rounded-lg border border-gray-200 p-4">
             <h4 class="text-sm font-semibold text-brand-600 font-mono">Sigil.LLM.Anthropic</h4>
@@ -1193,18 +976,24 @@
           </div>
         </div>
         <div class="mt-4 rounded-lg bg-gray-50 border border-gray-200 p-4">
-          <p class="text-xs text-gray-600"><strong class="text-gray-900">Why this matters:</strong> AI models change fast. Last year's best model isn't this year's. Sigil abstracts the provider behind a single behaviour, so you swap from Claude to GPT (or whatever comes next) by changing one line of config. Your business logic never changes. You're never locked to a vendor.</p>
+          <p class="text-xs text-gray-600"><strong class="text-gray-900">Why this matters:</strong> AI models change
+            fast. Last year's best model isn't this year's. Sigil abstracts the provider behind a single behaviour, so
+            you swap from Claude to GPT (or whatever comes next) by changing one line of config. Your business logic
+            never changes. You're never locked to a vendor.</p>
         </div>
       </div>
 
       <!-- Layer 2 -->
       <div class="mt-12 pt-8 border-t border-gray-200">
         <h2 class="text-xl font-bold text-gray-900 mb-1">Layer 2: Sigil.Tool</h2>
-        <p class="text-sm text-gray-500 mb-4">Give your agents the ability to take real actions — not just generate text.</p>
+        <p class="text-sm text-gray-500 mb-4">Give your agents the ability to take real actions — not just generate
+          text.</p>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div class="rounded-lg border border-gray-200 p-4">
             <h4 class="text-sm font-semibold text-brand-600 font-mono">Sigil.Tool</h4>
-            <p class="text-xs text-gray-500 mt-1">Behaviour: <code>name/0</code>, <code>description/0</code>, <code>schema/0</code>, <code>call/2</code></p>
+            <p class="text-xs text-gray-500 mt-1">Behaviour: <code>name/0</code>, <code>description/0</code>,
+              <code>schema/0</code>, <code>call/2</code>
+            </p>
           </div>
           <div class="rounded-lg border border-gray-200 p-4">
             <h4 class="text-sm font-semibold text-brand-600 font-mono">Sigil.Tools.HTTPRequest</h4>
@@ -1212,7 +1001,11 @@
           </div>
         </div>
         <div class="mt-4 rounded-lg bg-gray-50 border border-gray-200 p-4">
-          <p class="text-xs text-gray-600"><strong class="text-gray-900">Why this matters:</strong> An agent that can only talk is a chatbot. An agent that can <em>do things</em> — check a calendar, book a meeting, query your database, send an email — is a product. Sigil.Tool is a four-function contract. Implement it once, assign it to any agent from the admin UI. The agent decides when to use it based on the conversation. You define what it can do. The AI decides when.</p>
+          <p class="text-xs text-gray-600"><strong class="text-gray-900">Why this matters:</strong> An agent that can
+            only talk is a chatbot. An agent that can <em>do things</em> — check a calendar, book a meeting, query your
+            database, send an email — is a product. Sigil.Tool is a four-function contract. Implement it once, assign it
+            to any agent from the admin UI. The agent decides when to use it based on the conversation. You define what
+            it can do. The AI decides when.</p>
         </div>
       </div>
 
@@ -1231,7 +1024,8 @@
           </div>
           <div class="rounded-lg border border-gray-200 p-4">
             <h4 class="text-sm font-semibold text-brand-600 font-mono">Sigil.Memory.Summarizer</h4>
-            <p class="text-xs text-gray-500 mt-1">Progressive summarization — compresses old messages into concise context</p>
+            <p class="text-xs text-gray-500 mt-1">Progressive summarization — compresses old messages into concise
+              context</p>
           </div>
           <div class="rounded-lg border border-gray-200 p-4">
             <h4 class="text-sm font-semibold text-brand-600 font-mono">Sigil.Memory.Store</h4>
@@ -1239,7 +1033,12 @@
           </div>
         </div>
         <div class="mt-4 rounded-lg bg-gray-50 border border-gray-200 p-4">
-          <p class="text-xs text-gray-600"><strong class="text-gray-900">Why this matters:</strong> Every AI API charges by the token. Most chat systems resend the <em>entire</em> conversation history with every message — a 50-message chat can burn 25,000 tokens per call. That's wasted money on context the model already processed. Sigil's memory layer compresses older messages into summaries automatically. The agent remembers what happened without paying to re-read every word. Long conversations stay affordable. Context windows never overflow.</p>
+          <p class="text-xs text-gray-600"><strong class="text-gray-900">Why this matters:</strong> Every AI API charges
+            by the token. Most chat systems resend the <em>entire</em> conversation history with every message — a
+            50-message chat can burn 25,000 tokens per call. That's wasted money on context the model already processed.
+            Sigil's memory layer compresses older messages into summaries automatically. The agent remembers what
+            happened without paying to re-read every word. Long conversations stay affordable. Context windows never
+            overflow.</p>
         </div>
       </div>
 
@@ -1250,7 +1049,9 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div class="rounded-lg border border-gray-200 p-4">
             <h4 class="text-sm font-semibold text-brand-600 font-mono">Sigil.Agent</h4>
-            <p class="text-xs text-gray-500 mt-1">Core behaviour: <code>init_agent/1</code>. Provides <code>start/2</code>, <code>chat/2</code></p>
+            <p class="text-xs text-gray-500 mt-1">Core behaviour: <code>init_agent/1</code>. Provides
+              <code>start/2</code>, <code>chat/2</code>
+            </p>
           </div>
           <div class="rounded-lg border border-gray-200 p-4">
             <h4 class="text-sm font-semibold text-brand-600 font-mono">Sigil.Agent.Checkpoint</h4>
@@ -1274,7 +1075,12 @@
           </div>
         </div>
         <div class="mt-4 rounded-lg bg-gray-50 border border-gray-200 p-4">
-          <p class="text-xs text-gray-600"><strong class="text-gray-900">Why this matters:</strong> Most AI agent frameworks run a script, get a response, and throw everything away. If the process crashes, the conversation is gone. Sigil agents are Erlang/OTP processes — they stay alive between conversations, checkpoint their state to disk, and restart from the last known good state if anything goes wrong. Each agent is ~2KB of memory. One server can run thousands simultaneously. This is the same model that lets WhatsApp handle billions of messages with a small engineering team.</p>
+          <p class="text-xs text-gray-600"><strong class="text-gray-900">Why this matters:</strong> Most AI agent
+            frameworks run a script, get a response, and throw everything away. If the process crashes, the conversation
+            is gone. Sigil agents are Erlang/OTP processes — they stay alive between conversations, checkpoint their
+            state to disk, and restart from the last known good state if anything goes wrong. Each agent is ~2KB of
+            memory. One server can run thousands simultaneously. This is the same model that lets WhatsApp handle
+            billions of messages with a small engineering team.</p>
         </div>
       </div>
 
@@ -1285,11 +1091,14 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div class="rounded-lg border border-gray-200 p-4">
             <h4 class="text-sm font-semibold text-brand-600 font-mono">Sigil.Live</h4>
-            <p class="text-xs text-gray-500 mt-1">Behaviour: <code>mount/2</code>, <code>render/1</code>, <code>handle_event/3</code></p>
+            <p class="text-xs text-gray-500 mt-1">Behaviour: <code>mount/2</code>, <code>render/1</code>,
+              <code>handle_event/3</code>
+            </p>
           </div>
           <div class="rounded-lg border border-gray-200 p-4">
             <h4 class="text-sm font-semibold text-brand-600 font-mono">Sigil.Router</h4>
-            <p class="text-xs text-gray-500 mt-1">Routing DSL: <code>live/2</code>, <code>sigil_routes/0</code>, auth guards</p>
+            <p class="text-xs text-gray-500 mt-1">Routing DSL: <code>live/2</code>, <code>sigil_routes/0</code>, auth
+              guards</p>
           </div>
           <div class="rounded-lg border border-gray-200 p-4">
             <h4 class="text-sm font-semibold text-brand-600 font-mono">Sigil.Layout</h4>
@@ -1301,7 +1110,12 @@
           </div>
         </div>
         <div class="mt-4 rounded-lg bg-gray-50 border border-gray-200 p-4">
-          <p class="text-xs text-gray-600"><strong class="text-gray-900">Why this matters:</strong> Traditional web apps need a frontend framework (React, Vue, Svelte), a build pipeline (Webpack, Vite), API endpoints, and state management. That's thousands of lines of glue code before you ship anything. Sigil.Live renders HTML on the server and pushes updates to the browser over a WebSocket. The client is ~2KB of JavaScript. Pages feel instant. Chat responses stream in real time. You write one language — Elixir — and it handles both the backend and the UI.</p>
+          <p class="text-xs text-gray-600"><strong class="text-gray-900">Why this matters:</strong> Traditional web apps
+            need a frontend framework (React, Vue, Svelte), a build pipeline (Webpack, Vite), API endpoints, and state
+            management. That's thousands of lines of glue code before you ship anything. Sigil.Live renders HTML on the
+            server and pushes updates to the browser over a WebSocket. The client is ~2KB of JavaScript. Pages feel
+            instant. Chat responses stream in real time. You write one language — Elixir — and it handles both the
+            backend and the UI.</p>
         </div>
       </div>
 
@@ -1316,17 +1130,26 @@
           </div>
           <div class="rounded-lg border border-gray-200 p-4">
             <h4 class="text-sm font-semibold text-brand-600 font-mono">Sigil.Auth.Plugs</h4>
-            <p class="text-xs text-gray-500 mt-1">Route-level guards: <code>require_auth</code>, <code>require_admin</code></p>
+            <p class="text-xs text-gray-500 mt-1">Route-level guards: <code>require_auth</code>,
+              <code>require_admin</code>
+            </p>
           </div>
         </div>
         <div class="mt-4 rounded-lg bg-gray-50 border border-gray-200 p-4">
-          <p class="text-xs text-gray-600"><strong class="text-gray-900">Why this matters:</strong> Auth is the first thing every real product needs and the last thing most frameworks provide. Without it, your AI app is a public demo. With Sigil.Auth, user accounts, admin access, and protected routes work from the first <code>mix sigil.new</code>. No third-party auth service. No monthly fees. No data leaving your server. Your users are yours.</p>
+          <p class="text-xs text-gray-600"><strong class="text-gray-900">Why this matters:</strong> Auth is the first
+            thing every real product needs and the last thing most frameworks provide. Without it, your AI app is a
+            public demo. With Sigil.Auth, user accounts, admin access, and protected routes work from the first
+            <code>mix sigil.new</code>. No third-party auth service. No monthly fees. No data leaving your server. Your
+            users are yours.
+          </p>
         </div>
       </div>
 
       <div class="mt-12 pt-8 border-t border-gray-200 text-center">
-        <p class="text-sm text-gray-500">These six layers are designed to work together — but each one is independent. Use the pieces you need.</p>
-        <p class="text-sm text-gray-500 mt-2"><a href="https://hexdocs.pm/sigil" target="_blank" class="text-brand-600 hover:underline font-medium">Full API documentation on HexDocs →</a></p>
+        <p class="text-sm text-gray-500">These six layers are designed to work together — but each one is independent.
+          Use the pieces you need.</p>
+        <p class="text-sm text-gray-500 mt-2"><a href="https://hexdocs.pm/sigil" target="_blank"
+            class="text-brand-600 hover:underline font-medium">Full API documentation on HexDocs →</a></p>
       </div>
 
     </div>
@@ -1402,12 +1225,12 @@
       var content = text ? text.textContent : el.textContent;
       // Strip $ prompts and extra whitespace for clean copy
       content = content.replace(/^\$\s*/gm, '').replace(/\n\s*\n/g, '\n').trim();
-      navigator.clipboard.writeText(content).then(function() {
+      navigator.clipboard.writeText(content).then(function () {
         var btn = el.querySelector('.copy-btn') || el.nextElementSibling;
         if (btn && btn.classList.contains('copy-btn')) {
           btn.textContent = 'Copied!';
           btn.classList.add('copied');
-          setTimeout(function() { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+          setTimeout(function () { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
         }
       });
     }
@@ -1421,8 +1244,10 @@
       <div class="text-5xl mb-4">⚡</div>
       <h3 class="text-xl font-bold text-gray-900 mb-2">Live Example</h3>
       <p class="text-gray-500 text-sm leading-relaxed mb-6">
-        <a href="https://adambouchard.com" target="_blank" class="text-brand-600 font-semibold hover:underline">adambouchard.com</a>
-        is a personal blog built entirely with Sigil — AI chat assistant, tag filtering, slug-based URLs, and multi-agent routing. All from <code class="text-xs bg-gray-100 px-1 py-0.5 rounded">mix sigil.new</code>.
+        <a href="https://adambouchard.com" target="_blank"
+          class="text-brand-600 font-semibold hover:underline">adambouchard.com</a>
+        is a personal blog built entirely with Sigil — AI chat assistant, tag filtering, slug-based URLs, and
+        multi-agent routing. All from <code class="text-xs bg-gray-100 px-1 py-0.5 rounded">mix sigil.new</code>.
       </p>
       <div class="flex gap-3 justify-center">
         <a href="https://adambouchard.com" target="_blank"

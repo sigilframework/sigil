@@ -6,9 +6,9 @@
 [![CI](https://github.com/sigilframework/sigil/actions/workflows/ci.yml/badge.svg)](https://github.com/sigilframework/sigil/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE)
 
-**Ship AI products, not agent scripts.** A framework for building AI-powered web apps in Elixir.
+An experimental Elixir framework for building AI agents.
 
-*Sigil gives you the foundation — agents, memory, tools, auth, real-time UI — so you can build your product on top. You own every line of code.*
+*I wanted to see what AI agents look like when built on the BEAM — Erlang's runtime for fault-tolerant, concurrent systems. Sigil is what came out of that. It gives you agents, memory, tools, real-time UI, and auth as composable layers. Early stage, actively evolving.*
 
 [Docs](https://hexdocs.pm/sigil) · [GitHub](https://github.com/sigilframework/sigil)
 
@@ -22,42 +22,42 @@
 
 ---
 
-## Try it now (Docker)
+## Try it (Docker)
 
-See a full AI-powered app in 30 seconds. No Elixir required.
+Spin up the example app without installing Elixir. Takes about 30 seconds.
 
 ```bash
 git clone https://github.com/sigilframework/sigil.git --depth 1 && cd sigil/demo && docker compose up
 ```
 
-Open [localhost:4000](http://localhost:4000). Blog, AI chat, admin dashboard — all running.
+Open [localhost:4000](http://localhost:4000). You'll see a blog with an AI chat assistant and an admin dashboard.
 
 **Admin login:** `admin@example.com` / `admin123`
 
-> **Ready to build your own?** See [Getting Started](#getting-started) below to install Elixir and create a fully customizable app.
+> **Want to build on it?** See [Getting Started](#getting-started) below to install Elixir and create your own app.
 
 ---
 
-## Sigil is two things
+## What Sigil is
 
-### 1. A framework — the building blocks
+### The framework — composable layers
 
-Add `{:sigil, "~> 0.1.4"}` to any Elixir project. You get six composable layers:
+Add `{:sigil, "~> 0.1.4"}` to any Elixir project. You get six layers:
 
 | Layer | What it does |
 |-------|-------------|
-| **Sigil.LLM** | Unified interface to Claude, GPT — swap models without changing code |
+| **Sigil.LLM** | Unified interface to Claude, GPT — swap models by changing config |
 | **Sigil.Tool** | Define actions agents can take (API calls, database writes, anything) |
-| **Sigil.Memory** | Context windows, token budgeting, progressive summarization — never overflow |
-| **Sigil.Agent** | Long-running OTP agents with checkpointing, crash recovery, and tool dispatch |
-| **Sigil.Live** | Real-time server-rendered UI over WebSocket — no React, no build step, ~2KB client |
-| **Sigil.Auth** | Users, login, sessions, protected routes — out of the box |
+| **Sigil.Memory** | Context windows, token budgeting, progressive summarization |
+| **Sigil.Agent** | Long-running OTP processes with checkpointing and crash recovery |
+| **Sigil.Live** | Real-time server-rendered UI over WebSocket — ~2KB client, no React |
+| **Sigil.Auth** | Users, login, sessions, protected routes |
 
 Use any layer independently, or all of them together. [Full API docs →](https://hexdocs.pm/sigil)
 
-### 2. A starter app — a working product in one command
+### The starter app — something to poke at
 
-`mix sigil.new` generates a real, deployable app — not a blank project. It's a starting point you customize or rebuild entirely.
+`mix sigil.new` generates a working app — a blog with AI chat — so you can see how the pieces fit together. It's meant as a starting point, not a final product.
 
 ```bash
 mix sigil.new my_app
@@ -67,21 +67,19 @@ mix sigil.new my_app
 cd my_app && mix setup && mix sigil.server
 ```
 
-Open `localhost:4000`. You have:
+Open `localhost:4000`. You get:
 
-- ✅ A personal blog with rich text editor
-- ✅ AI chat assistant with streaming responses over WebSocket
-- ✅ Multi-agent routing — add agents from the admin, not code
-- ✅ Calendar tools — your agents book meetings, check availability
-- ✅ Full admin dashboard — manage agents, tools, posts, conversations
-- ✅ Auth, sessions, protected routes
-- ✅ Dockerfile + Render config — deploy in 5 minutes
+- A blog with a rich text editor
+- AI chat assistant with streaming responses
+- Multi-agent routing (add agents from the admin UI)
+- Calendar tools (agents can book meetings, check availability)
+- Admin dashboard for managing agents, tools, posts, conversations
+- Auth, sessions, protected routes
+- Dockerfile + Render config for deploying
 
-**The example app is a blog. Yours can be anything.** A coaching app, a customer support bot, a SaaS dashboard — the framework supports whatever you need.
+> **Live Example:** [adambouchard.com](https://adambouchard.com) runs on Sigil — it's the starter app customized as a personal blog.
 
-> **🌐 Live Example:** [adambouchard.com](https://adambouchard.com) is a personal blog built entirely with Sigil — AI chat assistant, tag filtering, slug-based URLs, and multi-agent routing. See what a Sigil app looks like in production.
-
-> **New to Elixir?** See the [full setup walkthrough](#getting-started) below — it covers installing Elixir, PostgreSQL, and everything you need.
+> **New to Elixir?** See the [full setup walkthrough](#getting-started) below.
 
 ---
 
@@ -108,39 +106,20 @@ my_app/
 └── render.yaml                # One-click deploy to Render
 ```
 
-**Zero agent code.** Agents are configured in the database. Change a system prompt, swap a model, assign tools — all from the admin UI. No restart required.
+Agents are configured in the database — change a system prompt, swap a model, assign tools from the admin UI. No restart needed.
 
 ---
 
+## Why Elixir for this?
 
-## How Sigil compares
+This is the part I find interesting. Elixir runs on the BEAM — the Erlang VM — which was built for telecom systems that can't go down. It turns out a lot of the problems you hit building AI agents are problems the BEAM solved decades ago:
 
-| | LangChain / CrewAI | Phoenix + custom | **Sigil** |
-|-|-------------------|-----------------|-----------|
-| **Language** | Python / TS | Elixir | Elixir |
-| **Agent runtime** | Short-lived scripts | Build your own | Long-lived GenServer with crash recovery |
-| **UI** | Bring your own (React, etc.) | LiveView (separate dep) | Built-in Sigil.Live (~2KB client) |
-| **Admin** | None | Build your own | Included — agents, tools, posts, conversations |
-| **Memory** | Manual / vector DB | Build your own | Progressive compression + token budgets |
-| **Auth** | None | Separate library | Built in |
-| **Generator** | None | `mix phx.new` (no AI) | `mix sigil.new` — full AI app in 60 seconds |
+- **Agents as processes.** Each agent gets its own lightweight process (~2KB). They stay alive between conversations. No cold starts, no Redis queues — an agent is just a process that runs.
+- **Crash recovery.** If something breaks, the supervisor restarts it from the last checkpoint. Conversations don't get lost.
+- **Concurrency for free.** Thousands of agents, chats, and users running simultaneously in isolated processes. The BEAM schedules them.
+- **Real-time built in.** WebSocket connections are just processes too. Streaming chat responses doesn't require any special infrastructure.
 
----
 
-## Built on the BEAM
-
-Sigil runs on Elixir and the Erlang VM — the same runtime that powers WhatsApp (2B users) and Discord.
-
-Each agent, each chat, each user gets its own lightweight process (~2KB). One server can run millions. If something crashes, the system restarts it in milliseconds from the last checkpoint. No lost conversations.
-
-| Problem | Python/TS | Sigil |
-|---------|-----------|-------|
-| Agent running for hours | Redis queues, Celery, workers | It's a process. It just runs. |
-| 10,000 concurrent users | Kubernetes, message brokers | BEAM handles millions of lightweight processes |
-| Agent crashes mid-conversation | Data lost, manual restart | Supervisor restarts from last checkpoint |
-| Real-time streaming | SSE hacks, polling | Native WebSocket, built in |
-| Long conversations | Manual token counting | Progressive memory compression, automatic |
-| Hosting cost | $50-200/mo across services | $0-50/mo (one server + one database) |
 
 ---
 
@@ -148,13 +127,11 @@ Each agent, each chat, each user gets its own lightweight process (~2KB). One se
 
 ### 1. Install prerequisites
 
-You need three things installed before using Sigil:
+You need three things:
 
-- **Elixir 1.18+** (includes `mix`, the build tool used in all commands below)
+- **Elixir 1.18+** (includes `mix`, the build tool)
 - **Erlang/OTP 27+** (installed automatically with most Elixir installers)
-- **PostgreSQL 14+** (the database — must be running locally)
-
-The fastest way to install Elixir and Erlang:
+- **PostgreSQL 14+** (must be running locally)
 
 ```bash
 # macOS with Homebrew
@@ -176,7 +153,7 @@ You'll also need an [Anthropic API key](https://console.anthropic.com/) for AI c
 mix archive.install hex sigil
 ```
 
-This installs the `mix sigil.new` command globally. You only need to do this once.
+This installs the `mix sigil.new` command globally. One time setup.
 
 ### 3. Create your app
 
@@ -230,27 +207,35 @@ config :sigil,
 
 ---
 
-## Roadmap
+## Current Status
 
-- ✅ Multi-agent teams with shared memory
-- ✅ Progressive context compression
-- ✅ Event sourcing and checkpointing
-- ✅ Real-time UI (Sigil.Live)
-- ✅ DB-driven agent configuration
-- ✅ Admin dashboard (agents, tools, conversations)
-- ✅ `mix sigil.new` app generator
-- ✅ Token usage tracking and telemetry
-- ✅ Plugin ecosystem on Hex
-- ✅ Live production example — [adambouchard.com](https://adambouchard.com)
-- ⚪ Agent templates (support bot, content writer)
-- ⚪ OpenAI provider
-- ⚪ Hosted deployments
+This is an early-stage project. Some things work well, some are rough around the edges.
+
+**Works well:**
+- Multi-agent teams with shared memory
+- Progressive context compression
+- Event sourcing and checkpointing
+- Real-time UI (Sigil.Live)
+- DB-driven agent configuration
+- Admin dashboard
+- `mix sigil.new` app generator
+- Token usage tracking
+
+**Early / experimental:**
+- Plugin ecosystem on Hex
+- Agent templates (support bot, content writer)
+
+**Planned:**
+- OpenAI provider
+- Hosted deployments
+
+**Live:** [adambouchard.com](https://adambouchard.com) — a personal blog running on Sigil in production
 
 ---
 
 ## Community
 
-- [GitHub Discussions](https://github.com/sigilframework/sigil/discussions) — ideas, RFCs, questions
+- [GitHub Discussions](https://github.com/sigilframework/sigil/discussions) — ideas, questions, feedback
 
 ## License
 
