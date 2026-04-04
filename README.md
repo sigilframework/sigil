@@ -8,7 +8,7 @@
 
 An experimental Elixir framework for building AI agents.
 
-*I wanted to see what AI agents look like when built on the BEAM — Erlang's runtime for fault-tolerant, concurrent systems. Sigil is what came out of that. It gives you agents, memory, tools, real-time UI, and auth as composable layers. Early stage, actively evolving.*
+*Composable layers for agents, memory, tools, real-time UI, and auth on the BEAM. Early stage, actively evolving.*
 
 [Docs](https://hexdocs.pm/sigil) · [GitHub](https://github.com/sigilframework/sigil)
 
@@ -57,7 +57,7 @@ Use any layer independently, or all of them together. [Full API docs →](https:
 
 ### The starter app — something to poke at
 
-`mix sigil.new` generates a working app — a blog with AI chat — so you can see how the pieces fit together. It's meant as a starting point, not a final product.
+`mix sigil.new` generates a working app — a blog with AI chat. It's a starting point, not a final product.
 
 ```bash
 mix sigil.new my_app
@@ -112,13 +112,12 @@ Agents are configured in the database — change a system prompt, swap a model, 
 
 ## Why Elixir for this?
 
-This is the part I find interesting. Elixir runs on the BEAM — the Erlang VM — which was built for telecom systems that can't go down. It turns out a lot of the problems you hit building AI agents are problems the BEAM solved decades ago:
+Elixir runs on the BEAM — Erlang's VM, built for systems that can't go down. The problems it solves — concurrency, fault tolerance, long-lived state — are the same ones you hit building AI agents:
 
 - **Agents as processes.** Each agent gets its own lightweight process (~2KB). They stay alive between conversations. No cold starts, no Redis queues — an agent is just a process that runs.
 - **Crash recovery.** If something breaks, the supervisor restarts it from the last checkpoint. Conversations don't get lost.
 - **Concurrency for free.** Thousands of agents, chats, and users running simultaneously in isolated processes. The BEAM schedules them.
 - **Real-time built in.** WebSocket connections are just processes too. Streaming chat responses doesn't require any special infrastructure.
-
 
 
 ---
