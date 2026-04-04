@@ -210,31 +210,6 @@ config :sigil,
 
 This is an early-stage project. Some things work well, some are rough around the edges.
 
-**Works well:**
-- Multi-agent teams with shared memory
-- Progressive context compression
-- Event sourcing and checkpointing
-- Real-time UI (Sigil.Live)
-- DB-driven agent configuration
-- Admin dashboard
-- `mix sigil.new` app generator
-- Token usage tracking
-
-**Early / experimental:**
-- Plugin ecosystem on Hex
-- Agent templates (support bot, content writer)
-
-**Planned:**
-- OpenAI provider
-- Hosted deployments
-
-**Live:** [adambouchard.com](https://adambouchard.com) — a personal blog running on Sigil in production
-
----
-
-## Community
-
-- [GitHub Discussions](https://github.com/sigilframework/sigil/discussions) — ideas, questions, feedback
 
 ## License
 
